@@ -1,0 +1,16 @@
+{
+  "item.better_coordination.target_name": "Targeted Name: %1$s",
+  "item.better_coordination.target_position": "Targeted Position At %1$s %2$s %3$s In %4$s",
+  "item.better_coordination.targeting_to": "Now Compass Targeting To: %1$s",
+  "tooltip.better_coordination.player_distance": "Player is %1$s",
+  "tooltip.better_coordination.entity_distance": "Entity is %1$s",
+  "distance.better_coordination.not_tracked": "Not tracked",
+  "distance.better_coordination.really_far": "Really far",
+  "distance.better_coordination.far": "Far",
+  "distance.better_coordination.near": "Near",
+  "distance.better_coordination.close": "Close",
+  "distance.better_coordination.here": "In front of you",
+  "message.better_coordination.known_place": "You know this place, it's %1$s",
+  "message.better_coordination.locator_targets_limit_hit": "You've reached maximum amount of trackable places, maybe forget one or two",
+  "text.config.better_coordination_config.option.locatorTargetsAmount": "Maximum targets amount stored in one locator"
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "bettercoordination",
+  "version": "${version}",
+  "name": "BetterCoordination",
+  "description": "This mod adds few things, that can help you stop using coordinated or something like that :)",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/bettercoordination/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "me.kveex.bettercoordination.client.BetterCoordinationClient"
+    ],
+    "main": [
+      "me.kveex.bettercoordination.BetterCoordination"
+    ]
+  },
+  "mixins": [
+    "bettercoordination.mixins.json",
+    {
+      "config": "bettercoordination.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
