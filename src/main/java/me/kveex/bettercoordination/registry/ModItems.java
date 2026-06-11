@@ -1,7 +1,7 @@
 package me.kveex.bettercoordination.registry;
 
 import me.kveex.bettercoordination.BetterCoordination;
-import me.kveex.bettercoordination.component.BetterLodestoneTrackerComponent;
+import me.kveex.bettercoordination.component.LodestonePointComponent;
 import me.kveex.bettercoordination.item.LocatorItem;
 import me.kveex.bettercoordination.item.PlayerLocatorItem;
 import net.minecraft.item.Item;
@@ -14,16 +14,16 @@ import net.minecraft.util.Identifier;
 import java.util.function.Function;
 
 public class ModItems {
-    public static final Item LOCATOR = registerItem(
+    public static final Item LOCATOR_ITEM = registerItem(
             "locator",
             LocatorItem::new,
             new Item.Settings().component(
-                    ModComponents.BETTER_TRACKER_COMPONENT,
-                    BetterLodestoneTrackerComponent.DEFAULT
+                    ModComponents.LODESTONE_POINT_COMPONENT,
+                    LodestonePointComponent.DEFAULT
             )
     );
 
-    public static final Item PLAYER_LOCATOR = registerItem(
+    public static final Item PLAYER_LOCATOR_ITEM = registerItem(
             "player_locator",
             PlayerLocatorItem::new,
             new Item.Settings()

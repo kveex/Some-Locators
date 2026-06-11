@@ -1,8 +1,7 @@
 package me.kveex.bettercoordination;
 
 import me.kveex.bettercoordination.config.ModConfig;
-import me.kveex.bettercoordination.registry.ModComponents;
-import me.kveex.bettercoordination.registry.ModItems;
+import me.kveex.bettercoordination.registry.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.DataComponentTypes;
@@ -18,8 +17,11 @@ public class BetterCoordination implements ModInitializer {
     public void onInitialize() {
         ModItems.init();
         ModComponents.init();
+        ModEvents.init();
+        ModNetworking.init();
+        ModTags.init();
 
-        ComponentTooltipAppenderRegistry.addAfter(DataComponentTypes.DAMAGE, ModComponents.BETTER_TRACKER_COMPONENT);
+        ComponentTooltipAppenderRegistry.addAfter(DataComponentTypes.DAMAGE, ModComponents.LODESTONE_POINT_COMPONENT);
         ComponentTooltipAppenderRegistry.addAfter(DataComponentTypes.DAMAGE, ModComponents.ENTITY_TRACKER_COMPONENT);
     }
 }

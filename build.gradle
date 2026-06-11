@@ -6,25 +6,9 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
-//For config generation to work
-//sourceSets.main.java.srcDirs += [ 'src/main/generatedJava' ]
-//compileJava.options.generatedSourceOutputDirectory = file("${projectDir}/src/main/generatedJava/me/kveex/bettercoordination/config")
-
 base {
     archivesName = project.archives_base_name
 }
-
-loom {
-    splitEnvironmentSourceSets()
-
-    mods {
-        "bettercoordination" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
-    }
-}
-
 
 repositories {
     maven { url 'https://maven.wispforest.io/releases/' }

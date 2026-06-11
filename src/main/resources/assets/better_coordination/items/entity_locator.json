@@ -1,0 +1,69 @@
+{
+  "hand_animation_on_swap": false,
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:custom_model_data",
+    "cases": [
+      {
+        "when": "here",
+        "model": {
+          "type": "minecraft:model",
+          "model": "better_coordination:item/entity_locator_here"
+        }
+      },
+      {
+        "when": "close",
+        "model": {
+          "type": "minecraft:model",
+          "model": "better_coordination:item/entity_locator_close"
+        }
+      },
+      {
+        "when": "near",
+        "model": {
+          "type": "minecraft:model",
+          "model": "better_coordination:item/entity_locator_near"
+        }
+      },
+      {
+        "when": "far",
+        "model": {
+          "type": "minecraft:model",
+          "model": "better_coordination:item/entity_locator_far"
+        }
+      },
+      {
+        "when": "really_far",
+        "model": {
+          "type": "minecraft:model",
+          "model": "better_coordination:item/entity_locator_really_far"
+        }
+      },
+      {
+        "when": "not_tracked",
+        "model": {
+          "type": "minecraft:model",
+          "model": "better_coordination:item/entity_locator_not_tracked"
+        }
+      },
+      {
+        "when": "not_found",
+        "model": {
+          "type": "minecraft:model",
+          "model": "better_coordination:item/entity_locator_null"
+        }
+      },
+      {
+        "when": "in_another_dimension",
+        "model": {
+          "type": "minecraft:model",
+          "model": "better_coordination:item/entity_locator_in_another_dimension"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "better_coordination:item/entity_locator"
+    }
+  }
+}

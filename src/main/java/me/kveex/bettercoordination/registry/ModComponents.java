@@ -2,22 +2,22 @@ package me.kveex.bettercoordination.registry;
 
 import com.mojang.serialization.Codec;
 import me.kveex.bettercoordination.BetterCoordination;
-import me.kveex.bettercoordination.component.BetterLodestoneTrackerComponent;
-import me.kveex.bettercoordination.component.EntityTracker;
+import me.kveex.bettercoordination.component.LodestonePointComponent;
+import me.kveex.bettercoordination.component.PlayerTrackerComponent;
 import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModComponents {
-    public static final ComponentType<BetterLodestoneTrackerComponent> BETTER_TRACKER_COMPONENT = register(
+    public static final ComponentType<LodestonePointComponent> LODESTONE_POINT_COMPONENT = register(
             "better_tracker_component",
-            BetterLodestoneTrackerComponent.CODEC
+            LodestonePointComponent.CODEC
     );
 
-    public static final ComponentType<EntityTracker> ENTITY_TRACKER_COMPONENT = register(
+    public static final ComponentType<PlayerTrackerComponent> ENTITY_TRACKER_COMPONENT = register(
             "entity_tracker_component",
-            EntityTracker.CODEC
+            PlayerTrackerComponent.CODEC
     );
 
     private static <T> ComponentType<T> register(String name, Codec<T> codec) {

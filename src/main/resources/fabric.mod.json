@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "bettercoordination",
+  "id": "better_coordination",
   "version": "${version}",
   "name": "BetterCoordination",
   "description": "This mod adds few things, that can help you stop using coordinated or something like that :)",
@@ -18,11 +18,7 @@
     ]
   },
   "mixins": [
-    "bettercoordination.mixins.json",
-    {
-      "config": "bettercoordination.client.mixins.json",
-      "environment": "client"
-    }
+    "bettercoordination.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

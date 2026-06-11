@@ -1,8 +1,8 @@
 package me.kveex.bettercoordination.item;
 
 import me.kveex.bettercoordination.BetterCoordination;
-import me.kveex.bettercoordination.component.EntityTracker;
-import me.kveex.bettercoordination.component.EntityDistance;
+import me.kveex.bettercoordination.component.PlayerTrackerComponent;
+import me.kveex.bettercoordination.component.PlayerDistance;
 import me.kveex.bettercoordination.registry.ModComponents;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
@@ -12,9 +12,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.world.World;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -28,51 +32,121 @@ public class PlayerLocatorItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
-        EntityTracker component = stack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
+        if (world.getServer() == null) return;
+        PlayerTrackerComponent component = stack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
         if (component == null) return;
+        if (!component.tracked()) return;
 
-        Optional<UUID> trackedEntityUUID = component.trackedEntityUUID();
-        if (trackedEntityUUID.isEmpty()) return;
+        Optional<UUID> trackedPlayerUUID = component.trackedEntityUUID();
+        if (trackedPlayerUUID.isEmpty()) return;
 
-        Entity trackedEntity = world.getEntity(trackedEntityUUID.get());
-        if (trackedEntity == null) return;
-        if (!BetterCoordination.CONFIG.canPlayerLocatorTracksAllEntities() && !(trackedEntity instanceof PlayerEntity)) {
+        Optional<Entity> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID.get());
+
+        if (trackedPlayer.isEmpty()) {
+            setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), PlayerDistance.NOT_FOUND, true, component.expiryTicks()));
+            return;
+        }
+
+        boolean isInSameDimension = trackedPlayer.get().getEntityWorld().getRegistryKey().equals(world.getRegistryKey());
+
+        if (!isInSameDimension) {
+            setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), PlayerDistance.IN_ANOTHER_DIMENSION, true, component.expiryTicks()));
+            return;
+        }
+
+        if (!BetterCoordination.CONFIG.canPlayerLocatorTracksAllEntities() && !(trackedPlayer.get() instanceof PlayerEntity)) {
             stack.remove(ModComponents.ENTITY_TRACKER_COMPONENT);
             return;
         }
 
-        double calculatedDistance = entity.getEntityPos().distanceTo(trackedEntity.getEntityPos());
-        EntityDistance distanceForComponent = EntityDistance.fromDistance(calculatedDistance);
+        double calculatedDistance = entity.getEntityPos().distanceTo(trackedPlayer.get().getEntityPos());
+        PlayerDistance distanceForComponent = PlayerDistance.fromDistance(calculatedDistance);
 
-        if (distanceForComponent.equals(component.entityDistance())) return;
+        if (world.getTime() > component.expiryTicks()) {
+            removeEntityTracker(stack);
+            return;
+        }
 
-        setEntityTracker(stack, new EntityTracker(trackedEntityUUID.get(), distanceForComponent));
+        if (distanceForComponent.equals(component.playerDistance())) return;
+
+        setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), distanceForComponent, true, component.expiryTicks()));
+    }
+
+    private Optional<Entity> locatePlayer(MinecraftServer server, UUID targetUUID) {
+        return Optional.ofNullable(server.getPlayerManager().getPlayer(targetUUID));
     }
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (user.getEntityWorld().isClient()) return ActionResult.SUCCESS;
-        ItemStack itemStack = user.getStackInHand(hand);
-        UUID victimUuid;
 
-        if (!BetterCoordination.CONFIG.canPlayerLocatorTracksAllEntities()) {
-            if (!(entity instanceof PlayerEntity victim)) return ActionResult.PASS;
-            victimUuid = victim.getUuid();
-        } else {
-            victimUuid = entity.getUuid();
+        return trySetTrackedPlayer(user, hand, entity);
+    }
+
+    private ActionResult trySetTrackedPlayer(PlayerEntity user, Hand hand, Entity entity) {
+        return trySetTrackedPlayer(user, null, hand, entity, null);
+    }
+
+    public static ActionResult trySetTrackedPlayer(PlayerEntity user, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
+        if (!(entity instanceof PlayerEntity victim)) return ActionResult.PASS;
+
+        ItemStack itemStack = user.getStackInHand(hand);
+        if (!(itemStack.getItem() instanceof PlayerLocatorItem)) return ActionResult.PASS;
+
+        if (!user.isSneaking()) {
+            user.sendMessage(Text.translatable("message.better_coordination.sneak_to_set_target"), true);
+            return ActionResult.FAIL;
         }
 
-        Optional<EntityTracker> newPlayerTargetComponent = setEntityTracker(itemStack, new EntityTracker(victimUuid));
 
-        newPlayerTargetComponent.ifPresent(targetComponent -> BetterCoordination.LOGGER.info("Got PlayerTargetComponent {}", newPlayerTargetComponent));
+        PlayerTrackerComponent component = itemStack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
+        if (component != null && component.tracked()) {
+            user.sendMessage(Text.translatable("message.better_coordination.player_locator_target_set_already"), true);
+            return ActionResult.FAIL;
+        }
+
+        UUID victimUuid = victim.getUuid();
+
+        setPlayerTracker(
+                itemStack,
+                new PlayerTrackerComponent(victimUuid)
+        );
 
         return ActionResult.SUCCESS;
     }
 
-    private Optional<EntityTracker> setEntityTracker(ItemStack stack, EntityTracker component) {
-        EntityTracker entityTracker = stack.set(
+    @Override
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+        PlayerTrackerComponent component = stack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
+        if (component == null) return ActionResult.PASS;
+        if (component.trackedEntityUUID().isEmpty()) return ActionResult.PASS;
+
+        if (component.tracked()) {
+            if (user.isSneaking()) {
+                removeEntityTracker(stack);
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS;
+        }
+
+        long expiryTicks = world.getTime() + BetterCoordination.CONFIG.playerLocatorTrackingTime() * 20L;
+
+        PlayerTrackerComponent newComponent = new PlayerTrackerComponent(
+                component.trackedEntityUUID().get(),
+                component.playerDistance(),
+                true,
+                expiryTicks
+        );
+
+        setPlayerTracker(stack, newComponent);
+        return ActionResult.SUCCESS;
+    }
+
+    private static void setPlayerTracker(ItemStack stack, PlayerTrackerComponent playerTrackerComponent) {
+        stack.set(
                 ModComponents.ENTITY_TRACKER_COMPONENT,
-                component
+                playerTrackerComponent
         );
 
         stack.set(
@@ -80,11 +154,14 @@ public class PlayerLocatorItem extends Item {
                 new CustomModelDataComponent(
                         List.of(),
                         List.of(),
-                        List.of(component.entityDistance().asString()),
+                        List.of(playerTrackerComponent.playerDistance().asString()),
                         List.of()
                 )
         );
+    }
 
-        return entityTracker == null ? Optional.empty() : Optional.of(entityTracker);
+    private void removeEntityTracker(ItemStack stack) {
+        stack.remove(ModComponents.ENTITY_TRACKER_COMPONENT);
+        stack.remove(DataComponentTypes.CUSTOM_MODEL_DATA);
     }
 }

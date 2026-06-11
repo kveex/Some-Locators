@@ -1,0 +1,92 @@
+package me.kveex.bettercoordination.client.ui;
+
+
+import io.wispforest.owo.ui.base.BaseUIModelScreen;
+import io.wispforest.owo.ui.component.ButtonComponent;
+import io.wispforest.owo.ui.component.TextBoxComponent;
+import io.wispforest.owo.ui.container.FlowLayout;
+import me.kveex.bettercoordination.BetterCoordination;
+import me.kveex.bettercoordination.packet.CreateLodestonePoint;
+import me.kveex.bettercoordination.packet.SetLodestonePoint;
+import me.kveex.bettercoordination.registry.ModNetworking;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.GlobalPos;
+
+import java.util.Map;
+
+@Environment(EnvType.CLIENT)
+public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
+    private final GlobalPos globalPos;
+    private final BlockState blockState;
+
+    public NewLocatorPointScreen(CreateLodestonePoint createLodestonePoint) {
+        super(FlowLayout.class, DataSource.asset(Identifier.of(BetterCoordination.MOD_ID, "locator_point_settings_screen")));
+        this.globalPos = createLodestonePoint.globalPos();
+        this.blockState = createLodestonePoint.blockState();
+    }
+
+    @Override
+    protected void build(FlowLayout rootComponent) {
+        //Doing this, because I can't change state, while getting BlockComponent from XML
+//        FlowLayout blockLayout = rootComponent.childById(FlowLayout.class, "block_layout");
+//        BlockComponent block = renderBlock();
+//        blockLayout.child(block);
+//
+//        TextBoxComponent nameTextBox = rootComponent.childById(TextBoxComponent.class, "name_text_box");
+//
+//        ButtonComponent buttonComponent = rootComponent.childById(ButtonComponent.class, "create_button")
+//                .onPress(button -> {
+//                    SetLodestonePoint setLodestonePoint = new SetLodestonePoint(nameTextBox.getText(), globalPos, blockState);
+//                    ModNetworking.MOD_CHANNEL.clientHandle().send(setLodestonePoint);
+//                    this.close();
+//                });
+//
+//        nameTextBox.onChanged().subscribe(s -> buttonComponent.active(!s.isEmpty()));
+
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        buildUi();
+    }
+
+    private void buildUi() {
+        FlowLayout flowLayout = this.uiAdapter.rootComponent;
+
+        flowLayout.clearChildren();
+
+        FlowLayout child = flowLayout.child(
+                this.model.expandTemplate(
+                        FlowLayout.class,
+                        "point_settings_template",
+                        Map.of(
+                                "state", Registries.BLOCK.getId(this.blockState.getBlock()).getPath(),
+                                "button_text", "ui.better_coordination.create_point"
+                        )
+                )
+        );
+
+        TextBoxComponent nameTextBox = child.childById(TextBoxComponent.class, "name_text_box");
+
+        ButtonComponent buttonComponent = child.childById(ButtonComponent.class, "create_button")
+                .onPress(button -> {
+                    SetLodestonePoint setLodestonePoint = new SetLodestonePoint(nameTextBox.getText(), globalPos, blockState);
+                    ModNetworking.MOD_CHANNEL.clientHandle().send(setLodestonePoint);
+                    this.close();
+                });
+
+        nameTextBox.onChanged().subscribe(s -> buttonComponent.active(!s.isEmpty()));
+    }
+
+//    private BlockComponent renderBlock() {
+//        BlockComponent block = UIComponents.block(blockState);
+//        block.sizing(Sizing.fixed(64));
+//        block.tooltip(Text.translatable(blockState.getBlock().getTranslationKey()));
+//        return block;
+//    }
+}
