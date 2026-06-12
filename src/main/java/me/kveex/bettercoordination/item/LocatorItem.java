@@ -13,7 +13,9 @@ import me.kveex.bettercoordination.registry.ModTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LodestoneTrackerComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,6 +36,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +45,15 @@ import java.util.Optional;
 public class LocatorItem extends Item {
     public LocatorItem(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
+        LodestonePointComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT);
+        if (component == null) return;
+        LodestonePointComponent component2 = component.forWorld(world);
+        if (component2 == component) return;
+        stack.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(Optional.empty(), true));
     }
 
     @Override
@@ -95,7 +107,7 @@ public class LocatorItem extends Item {
 
         ItemStack locator = ModItems.LOCATOR_ITEM.getDefaultStack();
 
-        setTracker(locator, currentPoint, points);
+        setTracker(locator, currentPoint, points, true);
 
         return locator;
     }
@@ -251,9 +263,13 @@ public class LocatorItem extends Item {
     }
 
     private static void setTracker(ItemStack itemStack, PointComponent point, List<PointComponent> points) {
+        setTracker(itemStack, point, points, false);
+    }
+
+    private static void setTracker(ItemStack itemStack, PointComponent point, List<PointComponent> points, boolean skipPointCheck) {
         itemStack.set(
                 ModComponents.LODESTONE_POINT_COMPONENT,
-                new LodestonePointComponent(point, points)
+                new LodestonePointComponent(point, points, skipPointCheck)
         );
 
         itemStack.set(
