@@ -7,21 +7,33 @@ import me.kveex.bettercoordination.component.PointComponent;
 import me.kveex.bettercoordination.fun.RandomNullErrorPhrases;
 import me.kveex.bettercoordination.packet.*;
 import me.kveex.bettercoordination.registry.ModComponents;
+import me.kveex.bettercoordination.registry.ModItems;
 import me.kveex.bettercoordination.registry.ModNetworking;
 import me.kveex.bettercoordination.registry.ModTags;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureKeys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +46,75 @@ public class LocatorItem extends Item {
 
     @Override
     public boolean hasGlint(ItemStack stack) {
-        return !BetterCoordination.CONFIG.isLocatorGlintDisabled();
+        LodestonePointComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT);
+        if (component == null) return false;
+        return !component.points().isEmpty() && !BetterCoordination.CONFIG.isLocatorGlintDisabled();
     }
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         return useOnBlock(context.getPlayer(), context.getWorld(), context.getHand(), context.getBlockPos());
+    }
+
+    public static ItemStack locatorForTrade(ServerWorld world, Entity entity, Random random) {
+        int radiusInChunks = 32;
+        Optional<BlockPos> structurePos;
+        World structureWorld = world;
+        Text structureName;
+        BlockState state;
+
+        MinecraftServer server = world.getServer();
+        ItemStack playerLocator = ModItems.PLAYER_LOCATOR_ITEM.getDefaultStack();
+        if (server == null) return playerLocator;
+
+        if (world.getRegistryKey() == World.NETHER) {
+            ServerWorld netherWorld = server.getWorld(World.NETHER);
+            if (netherWorld == null) return playerLocator;
+            structureWorld = netherWorld;
+
+            int i = random.nextBetween(1, 2);
+            if (i == 1) {
+                structurePos = locate(world, StructureKeys.BASTION_REMNANT, entity.getBlockPos(), radiusInChunks);
+                state = Blocks.CHISELED_POLISHED_BLACKSTONE.getDefaultState();
+                structureName = Text.translatable("item.better_coordination.trade.bastion_remnant");
+            } else {
+                structurePos = locate(world, StructureKeys.FORTRESS, entity.getBlockPos(), radiusInChunks);
+                state = Blocks.CHISELED_NETHER_BRICKS.getDefaultState();
+                structureName = Text.translatable("item.better_coordination.trade.fortress");
+            }
+        } else {
+            structurePos = locate(world, StructureKeys.RUINED_PORTAL, entity.getBlockPos(), 32);
+            structureName = Text.translatable("item.better_coordination.trade.ruined_portal");
+            state = Blocks.OBSIDIAN.getDefaultState();
+        }
+
+        if (structurePos.isEmpty()) return playerLocator;
+
+        PointComponent currentPoint = new PointComponent(structureName.getString(), state, GlobalPos.create(structureWorld.getRegistryKey(), structurePos.get()));
+        List<PointComponent> points = List.of(currentPoint);
+
+        ItemStack locator = ModItems.LOCATOR_ITEM.getDefaultStack();
+
+        setTracker(locator, currentPoint, points);
+
+        return locator;
+    }
+
+    private static Optional<BlockPos> locate(ServerWorld world, RegistryKey<Structure> structureRegistryKey, BlockPos start, int chunkRadius) {
+        var registry = world.getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
+
+        RegistryEntry<Structure> entry = registry.getEntry(structureRegistryKey.getValue()).orElse(null);
+        if (entry == null) return Optional.empty();
+
+        var found = world.getChunkManager().getChunkGenerator().locateStructure(
+                world,
+                RegistryEntryList.of(entry),
+                start,
+                chunkRadius,
+                false
+        );
+
+        return found != null ? Optional.of(found.getFirst()) : Optional.empty();
     }
 
     public static ActionResult useOnBlock(PlayerEntity player, World world, Hand hand, HitResult hitResult) {
@@ -64,7 +139,6 @@ public class LocatorItem extends Item {
         Optional<PointComponent> foundTarget = component.getTargetByGlobalPos(globalPos);
 
         if (foundTarget.isPresent()) {
-//            player.sendMessage(Text.translatable("message.better_coordination.known_place", foundTarget.get().name()), true);
             setTracker(itemStack, foundTarget.get(), component.points());
             return ActionResult.PASS;
         } else {

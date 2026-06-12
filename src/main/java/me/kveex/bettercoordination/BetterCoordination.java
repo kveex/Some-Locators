@@ -20,6 +20,8 @@ public class BetterCoordination implements ModInitializer {
         ModEvents.init();
         ModNetworking.init();
         ModTags.init();
+        ModGroups.init();
+        ModVillagerTrades.init();
 
         ComponentTooltipAppenderRegistry.addAfter(DataComponentTypes.DAMAGE, ModComponents.LODESTONE_POINT_COMPONENT);
         ComponentTooltipAppenderRegistry.addAfter(DataComponentTypes.DAMAGE, ModComponents.ENTITY_TRACKER_COMPONENT);

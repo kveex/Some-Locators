@@ -34,10 +34,9 @@
 
                             <surface>
                                 <panel-with-inset>8</panel-with-inset>
-<!--                                <panel-inset>8</panel-inset>-->
                             </surface>
                             <sizing>
-                                <horizontal method="fixed">280</horizontal>
+                                <horizontal method="fixed">298</horizontal>
                                 <vertical method="fill">90</vertical>
                             </sizing>
                         </flow-layout>

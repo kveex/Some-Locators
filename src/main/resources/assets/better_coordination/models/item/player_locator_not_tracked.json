@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "better_coordination:item/entity_locator"
+    "layer0": "better_coordination:item/player_locator_data"
   }
 }

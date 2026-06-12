@@ -31,21 +31,6 @@ public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
 
     @Override
     protected void build(FlowLayout rootComponent) {
-        //Doing this, because I can't change state, while getting BlockComponent from XML
-//        FlowLayout blockLayout = rootComponent.childById(FlowLayout.class, "block_layout");
-//        BlockComponent block = renderBlock();
-//        blockLayout.child(block);
-//
-//        TextBoxComponent nameTextBox = rootComponent.childById(TextBoxComponent.class, "name_text_box");
-//
-//        ButtonComponent buttonComponent = rootComponent.childById(ButtonComponent.class, "create_button")
-//                .onPress(button -> {
-//                    SetLodestonePoint setLodestonePoint = new SetLodestonePoint(nameTextBox.getText(), globalPos, blockState);
-//                    ModNetworking.MOD_CHANNEL.clientHandle().send(setLodestonePoint);
-//                    this.close();
-//                });
-//
-//        nameTextBox.onChanged().subscribe(s -> buttonComponent.active(!s.isEmpty()));
 
     }
 
@@ -53,6 +38,11 @@ public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
     protected void init() {
         super.init();
         buildUi();
+    }
+
+    @Override
+    public boolean shouldPause() {
+        return false;
     }
 
     private void buildUi() {
@@ -66,6 +56,7 @@ public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
                         "point_settings_template",
                         Map.of(
                                 "state", Registries.BLOCK.getId(this.blockState.getBlock()).getPath(),
+                                "tooltip_block_text", this.blockState.getBlock().getTranslationKey(),
                                 "button_text", "ui.better_coordination.create_point"
                         )
                 )
@@ -82,11 +73,4 @@ public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
 
         nameTextBox.onChanged().subscribe(s -> buttonComponent.active(!s.isEmpty()));
     }
-
-//    private BlockComponent renderBlock() {
-//        BlockComponent block = UIComponents.block(blockState);
-//        block.sizing(Sizing.fixed(64));
-//        block.tooltip(Text.translatable(blockState.getBlock().getTranslationKey()));
-//        return block;
-//    }
 }

@@ -1,8 +1,7 @@
 {
   "values": [
     "minecraft:lodestone",
-    "minecraft:stripped_acacia_log",
-    "minecraft:hay_block",
-    "minecraft:bell"
+    "minecraft:bell",
+    "minecraft:reinforced_deepslate"
   ]
 }

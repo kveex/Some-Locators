@@ -36,6 +36,11 @@ public class LocatorMenuScreen extends BaseUIModelScreen<FlowLayout> {
         buildUi();
     }
 
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
+
     private void buildUi() {
         FlowLayout points_layout = this.uiAdapter.rootComponent.childById(FlowLayout.class, "points_layout");
 

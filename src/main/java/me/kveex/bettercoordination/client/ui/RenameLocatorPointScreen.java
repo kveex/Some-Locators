@@ -33,6 +33,11 @@ public class RenameLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
         buildUi();
     }
 
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
+
     private void buildUi() {
         FlowLayout flowLayout = this.uiAdapter.rootComponent;
 
@@ -44,6 +49,7 @@ public class RenameLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
                         "point_settings_template",
                         Map.of(
                                 "state", Registries.BLOCK.getId(this.oldPoint.blockState().getBlock()).getPath(),
+                                "tooltip_block_text", this.oldPoint.blockState().getBlock().getTranslationKey(),
                                 "button_text", "ui.better_coordination.rename_point"
                         )
                 )

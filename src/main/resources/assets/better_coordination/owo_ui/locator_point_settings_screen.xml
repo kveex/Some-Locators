@@ -25,6 +25,7 @@
                                 </sizing>
                             </block>
                         </children>
+                        <tooltip-text translate="true">{{tooltip_block_text}}</tooltip-text>
 
                         <horizontal-alignment>center</horizontal-alignment>
                         <vertical-alignment>center</vertical-alignment>
@@ -74,6 +75,9 @@
                                             <horizontal method="fixed">150</horizontal>
                                         </sizing>
                                         <active>false</active>
+                                        <margins>
+                                            <top>4</top>
+                                        </margins>
                                     </button>
                                 </children>
                             </flow-layout>

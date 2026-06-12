@@ -37,10 +37,10 @@ public class PlayerLocatorItem extends Item {
         if (component == null) return;
         if (!component.tracked()) return;
 
-        Optional<UUID> trackedPlayerUUID = component.trackedEntityUUID();
+        Optional<UUID> trackedPlayerUUID = component.trackedPlayerUUID();
         if (trackedPlayerUUID.isEmpty()) return;
 
-        Optional<Entity> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID.get());
+        Optional<PlayerEntity> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID.get());
 
         if (trackedPlayer.isEmpty()) {
             setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), PlayerDistance.NOT_FOUND, true, component.expiryTicks()));
@@ -51,11 +51,6 @@ public class PlayerLocatorItem extends Item {
 
         if (!isInSameDimension) {
             setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), PlayerDistance.IN_ANOTHER_DIMENSION, true, component.expiryTicks()));
-            return;
-        }
-
-        if (!BetterCoordination.CONFIG.canPlayerLocatorTracksAllEntities() && !(trackedPlayer.get() instanceof PlayerEntity)) {
-            stack.remove(ModComponents.ENTITY_TRACKER_COMPONENT);
             return;
         }
 
@@ -72,7 +67,7 @@ public class PlayerLocatorItem extends Item {
         setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), distanceForComponent, true, component.expiryTicks()));
     }
 
-    private Optional<Entity> locatePlayer(MinecraftServer server, UUID targetUUID) {
+    private Optional<PlayerEntity> locatePlayer(MinecraftServer server, UUID targetUUID) {
         return Optional.ofNullable(server.getPlayerManager().getPlayer(targetUUID));
     }
 
@@ -87,7 +82,7 @@ public class PlayerLocatorItem extends Item {
         return trySetTrackedPlayer(user, null, hand, entity, null);
     }
 
-    public static ActionResult trySetTrackedPlayer(PlayerEntity user, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
+    public static ActionResult trySetTrackedPlayer(PlayerEntity user, World ignoredWorld, Hand hand, Entity entity, EntityHitResult ignoredHitResult) {
         if (!(entity instanceof PlayerEntity victim)) return ActionResult.PASS;
 
         ItemStack itemStack = user.getStackInHand(hand);
@@ -120,9 +115,9 @@ public class PlayerLocatorItem extends Item {
         ItemStack stack = user.getStackInHand(hand);
         PlayerTrackerComponent component = stack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
         if (component == null) return ActionResult.PASS;
-        if (component.trackedEntityUUID().isEmpty()) return ActionResult.PASS;
+        if (component.trackedPlayerUUID().isEmpty()) return ActionResult.PASS;
 
-        if (component.tracked()) {
+        if (component.playerDistance().equals(PlayerDistance.NOT_FOUND)) {
             if (user.isSneaking()) {
                 removeEntityTracker(stack);
                 return ActionResult.SUCCESS;
@@ -130,10 +125,12 @@ public class PlayerLocatorItem extends Item {
             return ActionResult.PASS;
         }
 
+        if (component.tracked()) return ActionResult.PASS;
+
         long expiryTicks = world.getTime() + BetterCoordination.CONFIG.playerLocatorTrackingTime() * 20L;
 
         PlayerTrackerComponent newComponent = new PlayerTrackerComponent(
-                component.trackedEntityUUID().get(),
+                component.trackedPlayerUUID().get(),
                 component.playerDistance(),
                 true,
                 expiryTicks

@@ -14,19 +14,19 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public record PlayerTrackerComponent(Optional<String> trackedEntity, PlayerDistance playerDistance, boolean tracked, long expiryTicks) implements TooltipAppender {
-    public PlayerTrackerComponent(UUID trackedEntityUUID) {
-        this(Optional.of(trackedEntityUUID.toString()), PlayerDistance.NOT_TRACKED, false, 0);
+public record PlayerTrackerComponent(Optional<String> trackedPlayer, PlayerDistance playerDistance, boolean tracked, long expiryTicks) implements TooltipAppender {
+    public PlayerTrackerComponent(UUID trackedPlayerUUID) {
+        this(Optional.of(trackedPlayerUUID.toString()), PlayerDistance.NOT_TRACKED, false, 0);
     }
 
-    public PlayerTrackerComponent(UUID trackedEntityUUID, PlayerDistance playerDistance, boolean tracked, long expiryTicks) {
-        this(Optional.of(trackedEntityUUID.toString()), playerDistance, tracked, expiryTicks);
+    public PlayerTrackerComponent(UUID trackedPlayerUUID, PlayerDistance playerDistance, boolean tracked, long expiryTicks) {
+        this(Optional.of(trackedPlayerUUID.toString()), playerDistance, tracked, expiryTicks);
     }
 
     public static final Codec<PlayerTrackerComponent> CODEC = RecordCodecBuilder.create(
             builder -> builder.group(
-                    Codec.STRING.optionalFieldOf("tracker_entity_uuid").forGetter(PlayerTrackerComponent::trackedEntity),
-                    PlayerDistance.CODEC.fieldOf("entity_distance").forGetter(PlayerTrackerComponent::playerDistance),
+                    Codec.STRING.optionalFieldOf("tracker_player_uuid").forGetter(PlayerTrackerComponent::trackedPlayer),
+                    PlayerDistance.CODEC.fieldOf("player_distance").forGetter(PlayerTrackerComponent::playerDistance),
                     Codec.BOOL.fieldOf("tracked").forGetter(PlayerTrackerComponent::tracked),
                     Codec.LONG.fieldOf("expiry_ticks").forGetter(PlayerTrackerComponent::expiryTicks)
             ).apply(builder, PlayerTrackerComponent::new)
@@ -34,23 +34,17 @@ public record PlayerTrackerComponent(Optional<String> trackedEntity, PlayerDista
 
     @Override
     public void appendTooltip(Item.TooltipContext context, Consumer<Text> consumer, TooltipType type, ComponentsAccess components) {
-        if (trackedEntity.isPresent() && BetterCoordination.CONFIG.locatorShowsAdditionalInformation()) {
+        if (trackedPlayer.isPresent() && BetterCoordination.CONFIG.locatorShowsAdditionalInformation()) {
             Text playerDistanceText = Text.translatable("tooltip.better_coordination.player_distance")
                     .append(Text.literal(" ")).append(playerDistance.asText()).formatted(Formatting.DARK_GRAY);
 
-            Text entityDistanceText = Text.translatable("tooltip.better_coordination.entity_distance")
-                    .append(Text.literal(" ")).append(playerDistance.asText()).formatted(Formatting.DARK_GRAY);
+            consumer.accept(playerDistanceText);
 
-            Text distanceText = BetterCoordination.CONFIG.canPlayerLocatorTracksAllEntities() ?
-                    entityDistanceText : playerDistanceText;
-
-            consumer.accept(distanceText);
-
-            consumer.accept(Text.literal("UUID: " + trackedEntity.get()).formatted(Formatting.DARK_GRAY));
+            consumer.accept(Text.literal("UUID: " + trackedPlayer.get()).formatted(Formatting.DARK_GRAY));
         }
     }
 
-    public Optional<UUID> trackedEntityUUID() {
-        return trackedEntity.map(UUID::fromString);
+    public Optional<UUID> trackedPlayerUUID() {
+        return trackedPlayer.map(UUID::fromString);
     }
 }
