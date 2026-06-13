@@ -5,7 +5,9 @@
   "name": "Some Locators",
   "description": "This mod adds few things, that can help you stop using coordinated or something like that :)",
   "authors": ["kveex"],
-  "contact": {},
+  "contact": {
+    "sources": "https://github.com/kveex/Some-Locators"
+  },
   "license": "MIT",
   "icon": "assets/some_locators/icon.png",
   "environment": "*",
