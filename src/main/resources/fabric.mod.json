@@ -1,28 +1,26 @@
 {
   "schemaVersion": 1,
-  "id": "better_coordination",
+  "id": "some_locators",
   "version": "${version}",
-  "name": "BetterCoordination",
+  "name": "Some Locators",
   "description": "This mod adds few things, that can help you stop using coordinated or something like that :)",
-  "authors": [],
+  "authors": ["kveex"],
   "contact": {},
   "license": "MIT",
-  "icon": "assets/bettercoordination/icon.png",
+  "icon": "assets/some_locators/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "me.kveex.bettercoordination.client.BetterCoordinationClient"
+      "me.kveex.somelocators.client.SomeLocatorsClient"
     ],
     "main": [
-      "me.kveex.bettercoordination.BetterCoordination"
+      "me.kveex.somelocators.SomeLocators"
     ]
   },
-  "mixins": [
-    "bettercoordination.mixins.json"
-  ],
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
-    "minecraft": "${minecraft_version}"
+    "minecraft": "${minecraft_version}",
+    "owo-lib": ">=${owo_version}"
   }
 }

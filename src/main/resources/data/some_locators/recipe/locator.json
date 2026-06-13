@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "C": "minecraft:compass",
+    "R": "minecraft:comparator"
+  },
+  "pattern": [
+    " G ",
+    "GCG",
+    " R "
+  ],
+  "result": {
+    "count": 1,
+    "id": "some_locators:locator"
+  }
+}
