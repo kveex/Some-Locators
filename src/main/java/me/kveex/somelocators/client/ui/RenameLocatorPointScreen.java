@@ -42,13 +42,14 @@ public class RenameLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
         FlowLayout flowLayout = this.uiAdapter.rootComponent;
 
         flowLayout.clearChildren();
+        Identifier id = Registries.BLOCK.getId(this.oldPoint.blockState().getBlock());
 
         FlowLayout child = flowLayout.child(
                 this.model.expandTemplate(
                         FlowLayout.class,
                         "point_settings_template",
                         Map.of(
-                                "state", Registries.BLOCK.getId(this.oldPoint.blockState().getBlock()).getPath(),
+                                "state", id.toString(),
                                 "tooltip_block_text", this.oldPoint.blockState().getBlock().getTranslationKey(),
                                 "button_text", "ui.some_locators.rename_point"
                         )

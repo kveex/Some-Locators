@@ -46,12 +46,13 @@ public class LocatorMenuScreen extends BaseUIModelScreen<FlowLayout> {
         points_layout.clearChildren();
 
         for (PointComponent point : points) {
+            Identifier id = Registries.BLOCK.getId(point.blockState().getBlock());
             FlowLayout child = points_layout.child(
                     this.model.expandTemplate(
                             FlowLayout.class,
                             "template_point_info",
                             Map.of(
-                                    "state", Registries.BLOCK.getId(point.blockState().getBlock()).getPath(),
+                                    "state", id.toString(),
                                     "tooltip_text", point.blockState().getBlock().getTranslationKey(),
                                     "point_name", point.name()
                             )
