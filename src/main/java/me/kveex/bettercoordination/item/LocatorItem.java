@@ -52,8 +52,11 @@ public class LocatorItem extends Item {
         LodestonePointComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT);
         if (component == null) return;
         LodestonePointComponent component2 = component.forWorld(world);
-        if (component2 == component) return;
-        stack.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(Optional.empty(), true));
+        if (component2 != component || component2.currentPoint().isEmpty()) {
+            stack.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(Optional.empty(), true));
+        } else {
+            setTracker(stack, component2.currentPoint().get(), component2.points());
+        }
     }
 
     @Override
