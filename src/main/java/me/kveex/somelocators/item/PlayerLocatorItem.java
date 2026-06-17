@@ -4,21 +4,22 @@ import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.component.PlayerTrackerComponent;
 import me.kveex.somelocators.component.PlayerDistance;
 import me.kveex.somelocators.registry.ModComponents;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.CustomModelDataComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomModelData;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -26,13 +27,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerLocatorItem extends Item {
-    public PlayerLocatorItem(Settings settings) {
+    public PlayerLocatorItem(Properties settings) {
         super(settings);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
-        if (world.getServer() == null) return;
+    public void inventoryTick(ItemStack stack, @NonNull ServerLevel world, @NonNull Entity entity, @Nullable EquipmentSlot slot) {
         PlayerTrackerComponent component = stack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
         if (component == null) return;
         if (!component.tracked()) return;
@@ -40,24 +40,24 @@ public class PlayerLocatorItem extends Item {
         Optional<UUID> trackedPlayerUUID = component.trackedPlayerUUID();
         if (trackedPlayerUUID.isEmpty()) return;
 
-        Optional<PlayerEntity> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID.get());
+        Optional<Player> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID.get());
 
         if (trackedPlayer.isEmpty()) {
             setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), PlayerDistance.NOT_FOUND, true, component.expiryTicks()));
             return;
         }
 
-        boolean isInSameDimension = trackedPlayer.get().getEntityWorld().getRegistryKey().equals(world.getRegistryKey());
+        boolean isInSameDimension = trackedPlayer.get().level().dimension().equals(world.dimension());
 
         if (!isInSameDimension) {
             setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), PlayerDistance.IN_ANOTHER_DIMENSION, true, component.expiryTicks()));
             return;
         }
 
-        double calculatedDistance = entity.getEntityPos().distanceTo(trackedPlayer.get().getEntityPos());
+        double calculatedDistance = entity.position().distanceTo(trackedPlayer.get().position());
         PlayerDistance distanceForComponent = PlayerDistance.fromDistance(calculatedDistance);
 
-        if (world.getTime() > component.expiryTicks()) {
+        if (world.getGameTime() > component.expiryTicks()) {
             removeEntityTracker(stack);
             return;
         }
@@ -67,67 +67,67 @@ public class PlayerLocatorItem extends Item {
         setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), distanceForComponent, true, component.expiryTicks()));
     }
 
-    private Optional<PlayerEntity> locatePlayer(MinecraftServer server, UUID targetUUID) {
-        return Optional.ofNullable(server.getPlayerManager().getPlayer(targetUUID));
+    private Optional<Player> locatePlayer(MinecraftServer server, UUID targetUUID) {
+        return Optional.ofNullable(server.getPlayerList().getPlayer(targetUUID));
     }
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (user.getEntityWorld().isClient()) return ActionResult.SUCCESS;
+    public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
+        if (user.level().isClientSide()) return InteractionResult.SUCCESS;
 
         return trySetTrackedPlayer(user, hand, entity);
     }
 
-    private ActionResult trySetTrackedPlayer(PlayerEntity user, Hand hand, Entity entity) {
+    private InteractionResult trySetTrackedPlayer(Player user, InteractionHand hand, Entity entity) {
         return trySetTrackedPlayer(user, null, hand, entity, null);
     }
 
-    public static ActionResult trySetTrackedPlayer(PlayerEntity user, World ignoredWorld, Hand hand, Entity entity, EntityHitResult ignoredHitResult) {
-        if (!(entity instanceof PlayerEntity victim)) return ActionResult.PASS;
+    public static InteractionResult trySetTrackedPlayer(Player user, Level ignoredWorld, InteractionHand hand, Entity entity, EntityHitResult ignoredHitResult) {
+        if (!(entity instanceof Player victim)) return InteractionResult.PASS;
 
-        ItemStack itemStack = user.getStackInHand(hand);
-        if (!(itemStack.getItem() instanceof PlayerLocatorItem)) return ActionResult.PASS;
+        ItemStack itemStack = user.getItemInHand(hand);
+        if (!(itemStack.getItem() instanceof PlayerLocatorItem)) return InteractionResult.PASS;
 
-        if (!user.isSneaking()) {
-            user.sendMessage(Text.translatable("message.some_locators.sneak_to_set_target"), true);
-            return ActionResult.FAIL;
+        if (!user.isShiftKeyDown()) {
+            user.displayClientMessage(Component.translatable("message.some_locators.sneak_to_set_target"), true);
+            return InteractionResult.FAIL;
         }
 
 
         PlayerTrackerComponent component = itemStack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
         if (component != null && component.tracked()) {
-            user.sendMessage(Text.translatable("message.some_locators.player_locator_target_set_already"), true);
-            return ActionResult.FAIL;
+            user.displayClientMessage(Component.translatable("message.some_locators.player_locator_target_set_already"), true);
+            return InteractionResult.FAIL;
         }
 
-        UUID victimUuid = victim.getUuid();
+        UUID victimUuid = victim.getUUID();
 
         setPlayerTracker(
                 itemStack,
                 new PlayerTrackerComponent(victimUuid)
         );
 
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
+    public @NonNull InteractionResult use(@NonNull Level world, Player user, @NonNull InteractionHand hand) {
+        ItemStack stack = user.getItemInHand(hand);
         PlayerTrackerComponent component = stack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
-        if (component == null) return ActionResult.PASS;
-        if (component.trackedPlayerUUID().isEmpty()) return ActionResult.PASS;
+        if (component == null) return InteractionResult.PASS;
+        if (component.trackedPlayerUUID().isEmpty()) return InteractionResult.PASS;
 
         if (component.playerDistance().equals(PlayerDistance.NOT_FOUND)) {
-            if (user.isSneaking()) {
+            if (user.isShiftKeyDown()) {
                 removeEntityTracker(stack);
-                return ActionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }
 
-        if (component.tracked()) return ActionResult.PASS;
+        if (component.tracked()) return InteractionResult.PASS;
 
-        long expiryTicks = world.getTime() + SomeLocators.CONFIG.playerLocatorTrackingTime() * 20L;
+        long expiryTicks = world.getGameTime() + SomeLocators.CONFIG.playerLocatorTrackingTime() * 20L;
 
         PlayerTrackerComponent newComponent = new PlayerTrackerComponent(
                 component.trackedPlayerUUID().get(),
@@ -137,7 +137,7 @@ public class PlayerLocatorItem extends Item {
         );
 
         setPlayerTracker(stack, newComponent);
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     private static void setPlayerTracker(ItemStack stack, PlayerTrackerComponent playerTrackerComponent) {
@@ -147,11 +147,11 @@ public class PlayerLocatorItem extends Item {
         );
 
         stack.set(
-                DataComponentTypes.CUSTOM_MODEL_DATA,
-                new CustomModelDataComponent(
+                DataComponents.CUSTOM_MODEL_DATA,
+                new CustomModelData(
                         List.of(),
                         List.of(),
-                        List.of(playerTrackerComponent.playerDistance().asString()),
+                        List.of(playerTrackerComponent.playerDistance().getSerializedName()),
                         List.of()
                 )
         );
@@ -159,6 +159,6 @@ public class PlayerLocatorItem extends Item {
 
     private void removeEntityTracker(ItemStack stack) {
         stack.remove(ModComponents.ENTITY_TRACKER_COMPONENT);
-        stack.remove(DataComponentTypes.CUSTOM_MODEL_DATA);
+        stack.remove(DataComponents.CUSTOM_MODEL_DATA);
     }
 }

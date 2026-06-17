@@ -4,12 +4,12 @@ import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.item.LocatorItem;
 import me.kveex.somelocators.item.PlayerLocatorItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
 
 import java.util.function.Function;
 
@@ -17,24 +17,24 @@ public class ModItems {
     public static final Item LOCATOR_ITEM = registerItem(
             "locator",
             LocatorItem::new,
-            new Item.Settings().component(
+            new Item.Properties().component(
                     ModComponents.LODESTONE_POINT_COMPONENT,
                     LodestonePointComponent.DEFAULT
-            ).maxCount(1).group(ModGroups.GROUP)
+            ).stacksTo(1).group(ModGroups.GROUP)
     );
 
     public static final Item PLAYER_LOCATOR_ITEM = registerItem(
             "player_locator",
             PlayerLocatorItem::new,
-            new Item.Settings().maxCount(1).group(ModGroups.GROUP)
+            new Item.Properties().stacksTo(1).group(ModGroups.GROUP)
     );
 
-    private static  <T extends Item> T registerItem(String name, Function<Item.Settings, T> itemFactory, Item.Settings settings) {
-        RegistryKey<Item> itemKey = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(SomeLocators.MOD_ID, name));
+    private static  <T extends Item> T registerItem(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {
+        ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, name));
 
-        T item = itemFactory.apply(settings.registryKey(itemKey));
+        T item = itemFactory.apply(settings.setId(itemKey));
 
-        Registry.register(Registries.ITEM, itemKey, item);
+        Registry.register(BuiltInRegistries.ITEM, itemKey, item);
 
         return item;
     }

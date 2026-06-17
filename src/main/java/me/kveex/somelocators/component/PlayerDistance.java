@@ -1,10 +1,11 @@
 package me.kveex.somelocators.component;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.text.Text;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.StringRepresentable;
+import org.jspecify.annotations.NonNull;
 
-public enum PlayerDistance implements StringIdentifiable {
+public enum PlayerDistance implements StringRepresentable {
     NOT_FOUND("not_found", "distance.some_locators.not_found", 0),
     NOT_TRACKED("not_tracked", "distance.some_locators.not_tracked", 0),
     IN_ANOTHER_DIMENSION("in_another_dimension", "distance.some_locators.in_another_dimension", 0),
@@ -17,7 +18,7 @@ public enum PlayerDistance implements StringIdentifiable {
     private final String name;
     private final String translationKey;
     private final double maxDistance;
-    public static final Codec<PlayerDistance> CODEC = StringIdentifiable.createCodec(PlayerDistance::values, String::toLowerCase);
+    public static final Codec<PlayerDistance> CODEC = StringRepresentable.fromEnumWithMapping(PlayerDistance::values, String::toLowerCase);
 
     PlayerDistance(String componentName, String translationKey, double maxDistance) {
         this.name = componentName;
@@ -26,12 +27,12 @@ public enum PlayerDistance implements StringIdentifiable {
     }
 
     @Override
-    public String asString() {
+    public @NonNull String getSerializedName() {
         return name;
     }
 
-    public Text asText() {
-        return Text.translatable(translationKey);
+    public Component asText() {
+        return Component.translatable(translationKey);
     }
 
     public static PlayerDistance fromDistance(double distance) {

@@ -5,37 +5,38 @@ import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.component.PointComponent;
 import me.kveex.somelocators.fun.RandomNullErrorPhrases;
-import me.kveex.somelocators.packet.*;
+import me.kveex.somelocators.network.*;
 import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
-import me.kveex.somelocators.registry.ModNetworking;
 import me.kveex.somelocators.registry.ModTags;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LodestoneTrackerComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.LodestoneTracker;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.structure.Structure;
-import net.minecraft.world.gen.structure.StructureKeys;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -43,87 +44,86 @@ import java.util.List;
 import java.util.Optional;
 
 public class LocatorItem extends Item {
-    public LocatorItem(Settings settings) {
+    public LocatorItem(Properties settings) {
         super(settings);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
+    public void inventoryTick(ItemStack stack, @NonNull ServerLevel world, @NonNull Entity entity, @Nullable EquipmentSlot slot) {
         LodestonePointComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT);
         if (component == null) return;
         LodestonePointComponent component2 = component.forWorld(world);
         if (component2 != component || component2.currentPoint().isEmpty()) {
-            stack.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(Optional.empty(), true));
+            stack.set(DataComponents.LODESTONE_TRACKER, new LodestoneTracker(Optional.empty(), true));
         } else {
             setTracker(stack, component2.currentPoint().get(), component2.points(), component2.skipPointCheck());
         }
     }
 
     @Override
-    public boolean hasGlint(ItemStack stack) {
+    public boolean isFoil(ItemStack stack) {
         LodestonePointComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT);
         if (component == null) return false;
         return !component.points().isEmpty() && !SomeLocators.CONFIG.isLocatorGlintDisabled();
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
-        return useOnBlock(context.getPlayer(), context.getWorld(), context.getHand(), context.getBlockPos());
+    public @NonNull InteractionResult useOn(UseOnContext context) {
+        return useOnBlock(context.getPlayer(), context.getLevel(), context.getHand(), context.getClickedPos());
     }
 
-    public static ItemStack locatorForTrade(ServerWorld world, Entity entity, Random random) {
+    public static ItemStack locatorForTrade(ServerLevel world, Entity entity, RandomSource random) {
         int radiusInChunks = 32;
         Optional<BlockPos> structurePos;
-        World structureWorld = world;
-        Text structureName;
+        Level structureWorld = world;
+        Component structureName;
         BlockState state;
 
         MinecraftServer server = world.getServer();
-        ItemStack playerLocator = ModItems.PLAYER_LOCATOR_ITEM.getDefaultStack();
-        if (server == null) return playerLocator;
+        ItemStack playerLocator = ModItems.PLAYER_LOCATOR_ITEM.getDefaultInstance();
 
-        if (world.getRegistryKey() == World.NETHER) {
-            ServerWorld netherWorld = server.getWorld(World.NETHER);
+        if (world.dimension() == Level.NETHER) {
+            ServerLevel netherWorld = server.getLevel(Level.NETHER);
             if (netherWorld == null) return playerLocator;
             structureWorld = netherWorld;
 
-            int i = random.nextBetween(1, 2);
+            int i = random.nextIntBetweenInclusive(1, 2);
             if (i == 1) {
-                structurePos = locate(world, StructureKeys.BASTION_REMNANT, entity.getBlockPos(), radiusInChunks);
-                state = Blocks.CHISELED_POLISHED_BLACKSTONE.getDefaultState();
-                structureName = Text.translatable("item.some_locators.trade.bastion_remnant");
+                structurePos = locate(world, BuiltinStructures.BASTION_REMNANT, entity.blockPosition(), radiusInChunks);
+                state = Blocks.CHISELED_POLISHED_BLACKSTONE.defaultBlockState();
+                structureName = Component.translatable("item.some_locators.trade.bastion_remnant");
             } else {
-                structurePos = locate(world, StructureKeys.FORTRESS, entity.getBlockPos(), radiusInChunks);
-                state = Blocks.CHISELED_NETHER_BRICKS.getDefaultState();
-                structureName = Text.translatable("item.some_locators.trade.fortress");
+                structurePos = locate(world, BuiltinStructures.FORTRESS, entity.blockPosition(), radiusInChunks);
+                state = Blocks.CHISELED_NETHER_BRICKS.defaultBlockState();
+                structureName = Component.translatable("item.some_locators.trade.fortress");
             }
         } else {
-            structurePos = locate(world, StructureKeys.RUINED_PORTAL, entity.getBlockPos(), 32);
-            structureName = Text.translatable("item.some_locators.trade.ruined_portal");
-            state = Blocks.OBSIDIAN.getDefaultState();
+            structurePos = locate(world, BuiltinStructures.RUINED_PORTAL_STANDARD, entity.blockPosition(), 32);
+            structureName = Component.translatable("item.some_locators.trade.ruined_portal");
+            state = Blocks.OBSIDIAN.defaultBlockState();
         }
 
         if (structurePos.isEmpty()) return playerLocator;
 
-        PointComponent currentPoint = new PointComponent(structureName.getString(), state, GlobalPos.create(structureWorld.getRegistryKey(), structurePos.get()));
+        PointComponent currentPoint = new PointComponent(structureName.getString(), state, GlobalPos.of(structureWorld.dimension(), structurePos.get()));
         List<PointComponent> points = List.of(currentPoint);
 
-        ItemStack locator = ModItems.LOCATOR_ITEM.getDefaultStack();
+        ItemStack locator = ModItems.LOCATOR_ITEM.getDefaultInstance();
 
         setTracker(locator, currentPoint, points, true);
 
         return locator;
     }
 
-    private static Optional<BlockPos> locate(ServerWorld world, RegistryKey<Structure> structureRegistryKey, BlockPos start, int chunkRadius) {
-        var registry = world.getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
+    private static Optional<BlockPos> locate(ServerLevel world, ResourceKey<Structure> structureRegistryKey, BlockPos start, int chunkRadius) {
+        var registry = world.registryAccess().lookupOrThrow(Registries.STRUCTURE);
 
-        RegistryEntry<Structure> entry = registry.getEntry(structureRegistryKey.getValue()).orElse(null);
+        Holder<Structure> entry = registry.get(structureRegistryKey.identifier()).orElse(null);
         if (entry == null) return Optional.empty();
 
-        var found = world.getChunkManager().getChunkGenerator().locateStructure(
+        var found = world.getChunkSource().getGenerator().findNearestMapStructure(
                 world,
-                RegistryEntryList.of(entry),
+                HolderSet.direct(entry),
                 start,
                 chunkRadius,
                 false
@@ -132,45 +132,45 @@ public class LocatorItem extends Item {
         return found != null ? Optional.of(found.getFirst()) : Optional.empty();
     }
 
-    public static ActionResult useOnBlock(PlayerEntity player, World world, Hand hand, HitResult hitResult) {
-        return useOnBlock(player, world, hand, BlockPos.ofFloored(hitResult.getPos()));
+    public static InteractionResult useOnBlock(Player player, Level world, InteractionHand hand, HitResult hitResult) {
+        return useOnBlock(player, world, hand, BlockPos.containing(hitResult.getLocation()));
     }
 
-    private static ActionResult useOnBlock(PlayerEntity player, World world, Hand hand, BlockPos blockPos) {
-        if (world.isClient()) return ActionResult.PASS;
+    private static InteractionResult useOnBlock(Player player, Level world, InteractionHand hand, BlockPos blockPos) {
+        if (world.isClientSide()) return InteractionResult.PASS;
+        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.PASS;
 
         BlockState blockState = world.getBlockState(blockPos);
-        if (!blockState.isIn(ModTags.TRACKABLE_BLOCKS)) return ActionResult.PASS;
+        if (!blockState.is(ModTags.TRACKABLE_BLOCKS)) return InteractionResult.PASS;
 
-        GlobalPos globalPos = GlobalPos.create(world.getRegistryKey(), blockPos);
-        ItemStack itemStack = player.getStackInHand(hand);
+        GlobalPos globalPos = GlobalPos.of(world.dimension(), blockPos);
+        ItemStack itemStack = player.getItemInHand(hand);
 
-        if (!(itemStack.getItem() instanceof LocatorItem)) return ActionResult.PASS;
+        if (!(itemStack.getItem() instanceof LocatorItem)) return InteractionResult.PASS;
 
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
-        if (optional.isEmpty()) return ActionResult.PASS;
+        if (optional.isEmpty()) return InteractionResult.PASS;
         LodestonePointComponent component = optional.get();
 
         Optional<PointComponent> foundTarget = component.getTargetByGlobalPos(globalPos);
 
         if (foundTarget.isPresent()) {
             setTracker(itemStack, foundTarget.get(), component.points());
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         } else {
             if (component.points().size() >= SomeLocators.CONFIG.maxLocatorPointsAmount()) {
-                player.sendMessage(Text.translatable("message.some_locators.locator_points_limit_hit"), true);
-                return ActionResult.FAIL;
+                player.displayClientMessage(Component.translatable("message.some_locators.locator_points_limit_hit"), true);
+                return InteractionResult.FAIL;
             }
 
             CreateLodestonePoint tracker = new CreateLodestonePoint(globalPos, world.getBlockState(blockPos));
-            ModNetworking.MOD_CHANNEL.serverHandle(player).send(tracker);
-
-            return ActionResult.SUCCESS;
+            tracker.send(serverPlayer);
+            return InteractionResult.SUCCESS;
         }
     }
 
     public static void setTracker(SetLodestonePoint tracker, ServerAccess access) {
-        ItemStack itemStack = access.player().getMainHandStack();
+        ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
         LodestonePointComponent lodestonePointComponent = optional.get();
@@ -183,13 +183,13 @@ public class LocatorItem extends Item {
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity player, Hand hand) {
-        if (world.isClient()) return ActionResult.PASS;
-        return player.isSneaking() ? openLocatorMenu(player, hand) : ActionResult.PASS;
+    public @NonNull InteractionResult use(Level world, @NonNull Player player, @NonNull InteractionHand hand) {
+        if (world.isClientSide()) return InteractionResult.PASS;
+        return player.isShiftKeyDown() ? openLocatorMenu(player, hand) : InteractionResult.PASS;
     }
 
     public static void changeTargetedPoint(ChangeTargetPoint changeTargetPoint, ServerAccess access) {
-        ItemStack itemStack = access.player().getMainHandStack();
+        ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
         LodestonePointComponent lodestonePointComponent = optional.get();
@@ -198,7 +198,7 @@ public class LocatorItem extends Item {
     }
 
     public static void renamePoint(RenamePoint point, ServerAccess access) {
-        ItemStack itemStack = access.player().getMainHandStack();
+        ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
         LodestonePointComponent lodestonePointComponent = optional.get();
@@ -231,7 +231,7 @@ public class LocatorItem extends Item {
     }
 
     public static void removePoint(RemovePoint removePoint, ServerAccess access) {
-        ItemStack itemStack = access.player().getMainHandStack();
+        ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
         LodestonePointComponent lodestonePointComponent = optional.get();
@@ -256,13 +256,15 @@ public class LocatorItem extends Item {
         setTracker(itemStack, currentPoint, points);
     }
 
-    private static ActionResult openLocatorMenu(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    private static InteractionResult openLocatorMenu(Player player, InteractionHand hand) {
+        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.PASS;
+        ItemStack itemStack = player.getItemInHand(hand);
         LodestonePointComponent component = itemStack.get(ModComponents.LODESTONE_POINT_COMPONENT);
 
-        if (component == null) return ActionResult.PASS;
-        ModNetworking.MOD_CHANNEL.serverHandle(player).send(new OpenLocatorMenu(component));
-        return ActionResult.SUCCESS;
+        if (component == null) return InteractionResult.PASS;
+        OpenLocatorMenu openLocatorMenu = new OpenLocatorMenu(component);
+        openLocatorMenu.send(serverPlayer);
+        return InteractionResult.SUCCESS;
     }
 
     private static void setTracker(ItemStack itemStack, PointComponent point, List<PointComponent> points) {
@@ -276,14 +278,14 @@ public class LocatorItem extends Item {
         );
 
         itemStack.set(
-                DataComponentTypes.LODESTONE_TRACKER,
+                DataComponents.LODESTONE_TRACKER,
                 point.lodestoneTracker()
         );
     }
 
     private static void removeTracker(ItemStack itemStack) {
         itemStack.set(ModComponents.LODESTONE_POINT_COMPONENT, LodestonePointComponent.DEFAULT);
-        itemStack.remove(DataComponentTypes.LODESTONE_TRACKER);
+        itemStack.remove(DataComponents.LODESTONE_TRACKER);
     }
 
     private static Optional<LodestonePointComponent> getTracker(ItemStack itemStack) {
@@ -297,11 +299,11 @@ public class LocatorItem extends Item {
     }
 
     @Override
-    public Text getName(ItemStack stack) {
+    public @NonNull Component getName(ItemStack stack) {
         LodestonePointComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT);
         if (component == null || component.currentPoint().isEmpty()) {
-            return Text.translatable("item.some_locators.locator");
+            return Component.translatable("item.some_locators.locator");
         }
-        return Text.translatable("item.some_locators.locator_pointing", component.currentPoint().get().name());
+        return Component.translatable("item.some_locators.locator_pointing", component.currentPoint().get().name());
     }
 }

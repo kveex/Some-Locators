@@ -6,10 +6,9 @@ import io.wispforest.owo.ui.component.TextBoxComponent;
 import io.wispforest.owo.ui.container.FlowLayout;
 import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.component.PointComponent;
-import me.kveex.somelocators.packet.RenamePoint;
-import me.kveex.somelocators.registry.ModNetworking;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import me.kveex.somelocators.network.RenamePoint;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Map;
@@ -18,7 +17,7 @@ public class RenameLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
     private final PointComponent oldPoint;
 
     public RenameLocatorPointScreen(@UnknownNullability PointComponent oldPoint) {
-        super(FlowLayout.class, DataSource.asset(Identifier.of(SomeLocators.MOD_ID, "locator_point_settings_screen")));
+        super(FlowLayout.class, DataSource.asset(Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "locator_point_settings_screen")));
         this.oldPoint = oldPoint;
     }
 
@@ -34,7 +33,7 @@ public class RenameLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -42,7 +41,7 @@ public class RenameLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
         FlowLayout flowLayout = this.uiAdapter.rootComponent;
 
         flowLayout.clearChildren();
-        Identifier id = Registries.BLOCK.getId(this.oldPoint.blockState().getBlock());
+        Identifier id = BuiltInRegistries.BLOCK.getKey(this.oldPoint.blockState().getBlock());
 
         FlowLayout child = flowLayout.child(
                 this.model.expandTemplate(
@@ -50,7 +49,7 @@ public class RenameLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
                         "point_settings_template",
                         Map.of(
                                 "state", id.toString(),
-                                "tooltip_block_text", this.oldPoint.blockState().getBlock().getTranslationKey(),
+                                "tooltip_block_text", this.oldPoint.blockState().getBlock().getDescriptionId(),
                                 "button_text", "ui.some_locators.rename_point"
                         )
                 )
@@ -60,9 +59,9 @@ public class RenameLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
 
         ButtonComponent buttonComponent = child.childById(ButtonComponent.class, "create_button")
                 .onPress(button -> {
-                    RenamePoint renamePoint = new RenamePoint(nameTextBox.getText(), oldPoint);
-                    ModNetworking.MOD_CHANNEL.clientHandle().send(renamePoint);
-                    this.close();
+                    RenamePoint renamePoint = new RenamePoint(nameTextBox.getValue(), oldPoint);
+                    renamePoint.send();
+                    this.onClose();
                 });
 
         nameTextBox.onChanged().subscribe(s -> buttonComponent.active(!s.isEmpty()));

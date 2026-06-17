@@ -3,21 +3,21 @@ package me.kveex.somelocators.client;
 import me.kveex.somelocators.client.ui.LocatorMenuScreen;
 import me.kveex.somelocators.client.ui.NewLocatorPointScreen;
 import me.kveex.somelocators.component.LodestonePointComponent;
-import me.kveex.somelocators.packet.CreateLodestonePoint;
-import me.kveex.somelocators.packet.OpenLocatorMenu;
-import me.kveex.somelocators.registry.ModNetworking;
+import me.kveex.somelocators.network.CreateLodestonePoint;
+import me.kveex.somelocators.network.OpenLocatorMenu;
+import me.kveex.somelocators.network.util.Payloads;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class ModNetworkingClient {
     public static void init() {
-        ModNetworking.MOD_CHANNEL.registerClientbound(CreateLodestonePoint.class, (message, access) -> access.runtime().setScreen(new NewLocatorPointScreen(message)));
+        Payloads.registerS2C(CreateLodestonePoint.class, ((createLodestonePoint, clientAccess) -> clientAccess.runtime().setScreen(new NewLocatorPointScreen(createLodestonePoint))));
 
-        ModNetworking.MOD_CHANNEL.registerClientbound(OpenLocatorMenu.class, (message, access) -> {
-            LodestonePointComponent lodestonePointComponent = message.lodestonePointComponent();
+        Payloads.registerS2C(OpenLocatorMenu.class, ((openLocatorMenu, clientAccess) -> {
+            LodestonePointComponent lodestonePointComponent = openLocatorMenu.lodestonePointComponent();
             if (lodestonePointComponent.currentPoint().isEmpty()) return;
-            access.runtime().setScreen(new LocatorMenuScreen(lodestonePointComponent.currentPoint().get(), lodestonePointComponent.points()));
-        });
+            clientAccess.runtime().setScreen(new LocatorMenuScreen(lodestonePointComponent.currentPoint().get(), lodestonePointComponent.points()));
+        }));
     }
 }

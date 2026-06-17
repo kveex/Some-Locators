@@ -3,18 +3,19 @@ package me.kveex.somelocators.component;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.kveex.somelocators.SomeLocators;
-import net.minecraft.component.ComponentsAccess;
-import net.minecraft.item.Item;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.TooltipProvider;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public record PlayerTrackerComponent(Optional<String> trackedPlayer, PlayerDistance playerDistance, boolean tracked, long expiryTicks) implements TooltipAppender {
+public record PlayerTrackerComponent(Optional<String> trackedPlayer, PlayerDistance playerDistance, boolean tracked, long expiryTicks) implements TooltipProvider {
     public PlayerTrackerComponent(UUID trackedPlayerUUID) {
         this(Optional.of(trackedPlayerUUID.toString()), PlayerDistance.NOT_TRACKED, false, 0);
     }
@@ -33,14 +34,14 @@ public record PlayerTrackerComponent(Optional<String> trackedPlayer, PlayerDista
     );
 
     @Override
-    public void appendTooltip(Item.TooltipContext context, Consumer<Text> consumer, TooltipType type, ComponentsAccess components) {
+    public void addToTooltip(Item.@NonNull TooltipContext context, @NonNull Consumer<Component> consumer, @NonNull TooltipFlag type, @NonNull DataComponentGetter components) {
         if (trackedPlayer.isPresent() && SomeLocators.CONFIG.locatorShowsAdditionalInformation()) {
-            Text playerDistanceText = Text.translatable("tooltip.some_locators.player_distance")
-                    .append(Text.literal(" ")).append(playerDistance.asText()).formatted(Formatting.DARK_GRAY);
+            Component playerDistanceText = Component.translatable("tooltip.some_locators.player_distance")
+                    .append(Component.literal(" ")).append(playerDistance.asText()).withStyle(ChatFormatting.DARK_GRAY);
 
             consumer.accept(playerDistanceText);
 
-            consumer.accept(Text.literal("UUID: " + trackedPlayer.get()).formatted(Formatting.DARK_GRAY));
+            consumer.accept(Component.literal("UUID: " + trackedPlayer.get()).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 

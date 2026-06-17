@@ -2,23 +2,27 @@ package me.kveex.somelocators.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import me.kveex.somelocators.SomeLocators;
-import net.minecraft.component.ComponentsAccess;
-import net.minecraft.item.Item;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.TooltipProvider;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public record LodestonePointComponent(Optional<PointComponent> currentPoint, List<PointComponent> points, boolean skipPointCheck) implements TooltipAppender {
+public record LodestonePointComponent(Optional<PointComponent> currentPoint, List<PointComponent> points, boolean skipPointCheck) implements TooltipProvider {
     public static final LodestonePointComponent DEFAULT = new LodestonePointComponent(Optional.empty(), List.of(), false);
 
     public static final Codec<LodestonePointComponent> CODEC = RecordCodecBuilder.create(
@@ -28,6 +32,16 @@ public record LodestonePointComponent(Optional<PointComponent> currentPoint, Lis
                 Codec.BOOL.fieldOf("skip_check").forGetter(LodestonePointComponent::skipPointCheck)
     ).apply(builder, LodestonePointComponent::new));
 
+    public static final StreamCodec<ByteBuf, LodestonePointComponent> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.optional(PointComponent.STREAM_CODEC),
+            LodestonePointComponent::currentPoint,
+            ByteBufCodecs.collection(ArrayList::new, PointComponent.STREAM_CODEC),
+            LodestonePointComponent::points,
+            ByteBufCodecs.BOOL,
+            LodestonePointComponent::skipPointCheck,
+            LodestonePointComponent::new
+    );
+
     public LodestonePointComponent(PointComponent currentPoint, List<PointComponent> points, boolean skipPointCheck) {
         this(Optional.of(currentPoint), points, skipPointCheck);
     }
@@ -36,15 +50,15 @@ public record LodestonePointComponent(Optional<PointComponent> currentPoint, Lis
         return points.stream().filter(target -> target.target().equals(globalPos)).findFirst();
     }
 
-    public LodestonePointComponent forWorld(ServerWorld world) {
+    public LodestonePointComponent forWorld(ServerLevel world) {
         if (this.currentPoint.isPresent() && !this.skipPointCheck) {
-            if (this.currentPoint.get().target().dimension() != world.getRegistryKey()) {
+            if (this.currentPoint.get().target().dimension() != world.dimension()) {
                 return this;
             } else {
                 List<PointComponent> newPoints = new ArrayList<>(points);
                 newPoints.remove(this.currentPoint.get());
                 BlockPos blockPos = (this.currentPoint.get().target().pos());
-                return world.isInBuildLimit(blockPos) && world.getBlockState(blockPos).equals(currentPoint.get().blockState())
+                return world.isInWorldBounds(blockPos) && world.getBlockState(blockPos).equals(currentPoint.get().blockState())
                         ? this
                         : new LodestonePointComponent(Optional.empty(), newPoints, false);
             }
@@ -54,23 +68,23 @@ public record LodestonePointComponent(Optional<PointComponent> currentPoint, Lis
     }
 
     @Override
-    public void appendTooltip(Item.TooltipContext context, Consumer<Text> consumer, TooltipType type, ComponentsAccess components) {
+    public void addToTooltip(Item.@NonNull TooltipContext context, @NonNull Consumer<Component> consumer, @NonNull TooltipFlag type, @NonNull DataComponentGetter components) {
         if (currentPoint.isPresent() && SomeLocators.CONFIG.locatorShowsAdditionalInformation()) {
             BlockPos targetPos = currentPoint.get().target().pos();
-            String dimensionId = currentPoint.get().target().dimension().getValue().toString();
+            String dimensionId = currentPoint.get().target().dimension().identifier().toString();
 
             consumer.accept(
-                    Text.translatable("tooltip.some_locators.point_name",
-                    currentPoint.get().name()).formatted(Formatting.DARK_GRAY)
+                    Component.translatable("tooltip.some_locators.point_name",
+                    currentPoint.get().name()).withStyle(ChatFormatting.DARK_GRAY)
             );
 
-            consumer.accept(Text.translatable(
+            consumer.accept(Component.translatable(
                     "tooltip.some_locators.point_position",
                     targetPos.getX(),
                     targetPos.getY(),
                     targetPos.getZ(),
                     dimensionId
-            ).formatted(Formatting.DARK_GRAY));
+            ).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 }
