@@ -1,8 +1,8 @@
 package me.kveex.somelocators.item;
 
-import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.component.PlayerTrackerComponent;
 import me.kveex.somelocators.component.PlayerDistance;
+import me.kveex.somelocators.config.SomeLocatorsConfig;
 import me.kveex.somelocators.registry.ModComponents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.CustomModelData;
@@ -127,7 +127,7 @@ public class PlayerLocatorItem extends Item {
 
         if (component.tracked()) return InteractionResult.PASS;
 
-        long expiryTicks = world.getGameTime() + SomeLocators.CONFIG.playerLocatorTrackingTime() * 20L;
+        long expiryTicks = world.getGameTime() + /*SomeLocators.CONFIG.playerLocatorTrackingTime()*/ SomeLocatorsConfig.playerLocatorTrackingTime * 20L;
 
         PlayerTrackerComponent newComponent = new PlayerTrackerComponent(
                 component.trackedPlayerUUID().get(),

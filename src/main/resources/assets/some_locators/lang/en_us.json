@@ -18,7 +18,7 @@
   "distance.some_locators.in_another_dimension": "In another dimension",
   "distance.some_locators.not_found": "Not found",
   "message.some_locators.known_place": "You know this place, it's \"%1$s\"",
-  "message.some_locators.locator_points_limit_hit": "You've reached maximum amount of trackable places, maybe forget one or two",
+  "message.some_locators.locator_points_limit_hit": "Reached maximum amount of trackable points",
   "message.some_locators.player_locator_target_set_already": "You're already spying on someone else",
   "message.some_locators.sneak_to_set_target": "You need to sneak while using locator to set target",
   "ui.some_locators.create_point": "Create",

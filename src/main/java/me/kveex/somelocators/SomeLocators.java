@@ -1,6 +1,7 @@
 package me.kveex.somelocators;
 
-import me.kveex.somelocators.config.ModConfig;
+import eu.midnightdust.lib.config.MidnightConfig;
+import me.kveex.somelocators.config.SomeLocatorsConfig;
 import me.kveex.somelocators.network.*;
 import me.kveex.somelocators.network.util.Payloads;
 import me.kveex.somelocators.registry.*;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 public class SomeLocators implements ModInitializer {
     public static final String MOD_ID = "some_locators";
     public static final Logger LOGGER = LoggerFactory.getLogger(SomeLocators.class);
-    public static final ModConfig CONFIG = ModConfig.createAndLoad();
 
     @Override
     public void onInitialize() {
@@ -29,7 +29,7 @@ public class SomeLocators implements ModInitializer {
         ComponentTooltipAppenderRegistry.addAfter(DataComponents.DAMAGE, ModComponents.LODESTONE_POINT_COMPONENT);
         ComponentTooltipAppenderRegistry.addAfter(DataComponents.DAMAGE, ModComponents.ENTITY_TRACKER_COMPONENT);
 
-
+        MidnightConfig.init(MOD_ID, SomeLocatorsConfig.class);
     }
 
     private void registerPayloadTypes() {

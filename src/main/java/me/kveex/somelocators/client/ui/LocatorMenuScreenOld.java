@@ -13,11 +13,11 @@ import net.minecraft.resources.Identifier;
 import java.util.List;
 import java.util.Map;
 
-public class LocatorMenuScreen extends BaseUIModelScreen<FlowLayout> {
+public class LocatorMenuScreenOld extends BaseUIModelScreen<FlowLayout> {
     private PointComponent currentPoint;
     private final List<PointComponent> points;
     public static final String xml = "locator_points_screen";
-    public LocatorMenuScreen(PointComponent currentPoint, List<PointComponent> points) {
+    public LocatorMenuScreenOld(PointComponent currentPoint, List<PointComponent> points) {
         super(FlowLayout.class, DataSource.asset(Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, xml)));
         this.currentPoint = currentPoint;
         this.points = points;
@@ -58,7 +58,7 @@ public class LocatorMenuScreen extends BaseUIModelScreen<FlowLayout> {
                     )
             );
 
-            child.childById(ButtonComponent.class, "rename_point_button").onPress(buttonComponent -> this.minecraft.setScreen(new RenameLocatorPointScreen(point)));
+            child.childById(ButtonComponent.class, "rename_point_button").onPress(buttonComponent -> this.minecraft.setScreen(new RenameLocatorPointScreenOld(point)));
             child.childById(ButtonComponent.class, "remove_point_button").onPress(buttonComponent -> {
                 RemovePoint removePoint = new RemovePoint(point);
                 removePoint.send();

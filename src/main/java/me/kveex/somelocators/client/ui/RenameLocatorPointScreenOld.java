@@ -1,31 +1,24 @@
 package me.kveex.somelocators.client.ui;
 
-
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.TextBoxComponent;
 import io.wispforest.owo.ui.container.FlowLayout;
 import me.kveex.somelocators.SomeLocators;
-import me.kveex.somelocators.network.CreateLodestonePoint;
-import me.kveex.somelocators.network.SetLodestonePoint;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.world.level.block.state.BlockState;
+import me.kveex.somelocators.component.PointComponent;
+import me.kveex.somelocators.network.RenamePoint;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.core.GlobalPos;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Map;
 
-@Environment(EnvType.CLIENT)
-public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
-    private final GlobalPos globalPos;
-    private final BlockState blockState;
+public class RenameLocatorPointScreenOld extends BaseUIModelScreen<FlowLayout> {
+    private final PointComponent oldPoint;
 
-    public NewLocatorPointScreen(CreateLodestonePoint createLodestonePoint) {
+    public RenameLocatorPointScreenOld(@UnknownNullability PointComponent oldPoint) {
         super(FlowLayout.class, DataSource.asset(Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "locator_point_settings_screen")));
-        this.globalPos = createLodestonePoint.globalPos();
-        this.blockState = createLodestonePoint.blockState();
+        this.oldPoint = oldPoint;
     }
 
     @Override
@@ -48,7 +41,7 @@ public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
         FlowLayout flowLayout = this.uiAdapter.rootComponent;
 
         flowLayout.clearChildren();
-        Identifier id = BuiltInRegistries.BLOCK.getKey(this.blockState.getBlock());
+        Identifier id = BuiltInRegistries.BLOCK.getKey(this.oldPoint.blockState().getBlock());
 
         FlowLayout child = flowLayout.child(
                 this.model.expandTemplate(
@@ -56,8 +49,8 @@ public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
                         "point_settings_template",
                         Map.of(
                                 "state", id.toString(),
-                                "tooltip_block_text", this.blockState.getBlock().getDescriptionId(),
-                                "button_text", "ui.some_locators.create_point"
+                                "tooltip_block_text", this.oldPoint.blockState().getBlock().getDescriptionId(),
+                                "button_text", "ui.some_locators.rename_point"
                         )
                 )
         );
@@ -66,8 +59,8 @@ public class NewLocatorPointScreen extends BaseUIModelScreen<FlowLayout> {
 
         ButtonComponent buttonComponent = child.childById(ButtonComponent.class, "create_button")
                 .onPress(button -> {
-                    SetLodestonePoint setLodestonePoint = new SetLodestonePoint(nameTextBox.getValue(), globalPos, blockState);
-                    setLodestonePoint.send();
+                    RenamePoint renamePoint = new RenamePoint(nameTextBox.getValue(), oldPoint);
+                    renamePoint.send();
                     this.onClose();
                 });
 

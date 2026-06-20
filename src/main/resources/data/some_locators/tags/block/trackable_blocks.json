@@ -2,6 +2,11 @@
   "values": [
     "minecraft:lodestone",
     "minecraft:bell",
-    "minecraft:reinforced_deepslate"
+    "minecraft:reinforced_deepslate",
+    "minecraft:conduit",
+    "minecraft:beacon",
+    "minecraft:campfire",
+    "minecraft:chest",
+    "minecraft:furnace"
   ]
 }

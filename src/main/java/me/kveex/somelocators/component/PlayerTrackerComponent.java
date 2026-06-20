@@ -2,7 +2,7 @@ package me.kveex.somelocators.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.kveex.somelocators.SomeLocators;
+import me.kveex.somelocators.config.SomeLocatorsConfig;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.component.TooltipProvider;
@@ -35,7 +35,7 @@ public record PlayerTrackerComponent(Optional<String> trackedPlayer, PlayerDista
 
     @Override
     public void addToTooltip(Item.@NonNull TooltipContext context, @NonNull Consumer<Component> consumer, @NonNull TooltipFlag type, @NonNull DataComponentGetter components) {
-        if (trackedPlayer.isPresent() && SomeLocators.CONFIG.locatorShowsAdditionalInformation()) {
+        if (trackedPlayer.isPresent() && SomeLocatorsConfig.locatorShowsAdditionalInformation) {
             Component playerDistanceText = Component.translatable("tooltip.some_locators.player_distance")
                     .append(Component.literal(" ")).append(playerDistance.asText()).withStyle(ChatFormatting.DARK_GRAY);
 

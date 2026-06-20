@@ -2,13 +2,16 @@ package me.kveex.somelocators.item;
 
 import io.wispforest.owo.network.ServerAccess;
 import me.kveex.somelocators.SomeLocators;
+import me.kveex.somelocators.client.SomeLocatorsClient;
 import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.component.PointComponent;
+import me.kveex.somelocators.config.SomeLocatorsConfig;
 import me.kveex.somelocators.fun.RandomNullErrorPhrases;
 import me.kveex.somelocators.network.*;
 import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
 import me.kveex.somelocators.registry.ModTags;
+import net.minecraft.core.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
@@ -22,16 +25,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.GlobalPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -64,12 +62,22 @@ public class LocatorItem extends Item {
     public boolean isFoil(ItemStack stack) {
         LodestonePointComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT);
         if (component == null) return false;
-        return !component.points().isEmpty() && !SomeLocators.CONFIG.isLocatorGlintDisabled();
+        return !component.points().isEmpty() && !SomeLocatorsConfig.isLocatorGlintDisabled;
     }
 
     @Override
-    public @NonNull InteractionResult useOn(UseOnContext context) {
-        return useOnBlock(context.getPlayer(), context.getLevel(), context.getHand(), context.getClickedPos());
+    public @NonNull InteractionResult useOn(@NonNull UseOnContext context) {
+        Level world = context.getLevel();
+        if (world.isClientSide()) return InteractionResult.PASS;
+        if (!(context.getPlayer() instanceof ServerPlayer serverPlayer)) return InteractionResult.PASS;
+
+        ItemStack itemStack = context.getItemInHand();
+        if (!(itemStack.getItem() instanceof LocatorItem)) return InteractionResult.PASS;
+
+        BlockPos clickedPos = context.getClickedPos();
+        if (!world.getBlockState(clickedPos).is(ModTags.TRACKABLE_BLOCKS)) return InteractionResult.PASS;
+
+        return trySetTracker(world, serverPlayer, itemStack, clickedPos);
     }
 
     public static ItemStack locatorForTrade(ServerLevel world, Entity entity, RandomSource random) {
@@ -132,22 +140,8 @@ public class LocatorItem extends Item {
         return found != null ? Optional.of(found.getFirst()) : Optional.empty();
     }
 
-    public static InteractionResult useOnBlock(Player player, Level world, InteractionHand hand, HitResult hitResult) {
-        return useOnBlock(player, world, hand, BlockPos.containing(hitResult.getLocation()));
-    }
-
-    private static InteractionResult useOnBlock(Player player, Level world, InteractionHand hand, BlockPos blockPos) {
-        if (world.isClientSide()) return InteractionResult.PASS;
-        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.PASS;
-
-        BlockState blockState = world.getBlockState(blockPos);
-        if (!blockState.is(ModTags.TRACKABLE_BLOCKS)) return InteractionResult.PASS;
-
+    private static InteractionResult trySetTracker(Level world, ServerPlayer serverPlayer, ItemStack itemStack, BlockPos blockPos) {
         GlobalPos globalPos = GlobalPos.of(world.dimension(), blockPos);
-        ItemStack itemStack = player.getItemInHand(hand);
-
-        if (!(itemStack.getItem() instanceof LocatorItem)) return InteractionResult.PASS;
-
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return InteractionResult.PASS;
         LodestonePointComponent component = optional.get();
@@ -158,8 +152,8 @@ public class LocatorItem extends Item {
             setTracker(itemStack, foundTarget.get(), component.points());
             return InteractionResult.PASS;
         } else {
-            if (component.points().size() >= SomeLocators.CONFIG.maxLocatorPointsAmount()) {
-                player.displayClientMessage(Component.translatable("message.some_locators.locator_points_limit_hit"), true);
+            if (component.points().size() >= SomeLocatorsConfig.maxLocatorPointsAmount) {
+                serverPlayer.displayClientMessage(Component.translatable("message.some_locators.locator_points_limit_hit"), true);
                 return InteractionResult.FAIL;
             }
 
@@ -185,7 +179,7 @@ public class LocatorItem extends Item {
     @Override
     public @NonNull InteractionResult use(Level world, @NonNull Player player, @NonNull InteractionHand hand) {
         if (world.isClientSide()) return InteractionResult.PASS;
-        return player.isShiftKeyDown() ? openLocatorMenu(player, hand) : InteractionResult.PASS;
+        return SomeLocatorsClient.openLocatorPointsMenu.consumeClick() ? openLocatorMenu(player, hand) : InteractionResult.PASS;
     }
 
     public static void changeTargetedPoint(ChangeTargetPoint changeTargetPoint, ServerAccess access) {

@@ -3,7 +3,7 @@ package me.kveex.somelocators.component;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import me.kveex.somelocators.SomeLocators;
+import me.kveex.somelocators.config.SomeLocatorsConfig;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -69,7 +69,7 @@ public record LodestonePointComponent(Optional<PointComponent> currentPoint, Lis
 
     @Override
     public void addToTooltip(Item.@NonNull TooltipContext context, @NonNull Consumer<Component> consumer, @NonNull TooltipFlag type, @NonNull DataComponentGetter components) {
-        if (currentPoint.isPresent() && SomeLocators.CONFIG.locatorShowsAdditionalInformation()) {
+        if (currentPoint.isPresent() && SomeLocatorsConfig.locatorShowsAdditionalInformation) {
             BlockPos targetPos = currentPoint.get().target().pos();
             String dimensionId = currentPoint.get().target().dimension().identifier().toString();
 
