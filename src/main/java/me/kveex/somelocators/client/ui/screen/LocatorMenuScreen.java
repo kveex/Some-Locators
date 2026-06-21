@@ -52,19 +52,30 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
 
         int startIndex = currentPage * MAX_POINTS_ON_PAGE;
         int endIndex = Math.min(startIndex + MAX_POINTS_ON_PAGE, points.size());
+        int pointsOnPage = endIndex - startIndex;
 
-        for (int i = endIndex - 1; i >= startIndex; i--) {
-            PointComponent point = points.get(i);
-            int pointPlaceIndex = i + 1 - startIndex;
-            SomeLocators.LOGGER.info("Page: {} PointIndex: {}", startIndex, pointPlaceIndex);
-            PointPlace pointPlace = PointPlace.of(pointPlaceIndex);
+        int upCount = Math.min(4, pointsOnPage);
+        int downCount = pointsOnPage - upCount;
 
-            placePoint(point, pointPlace);
+        for (int slot = upCount; slot >= 1; slot--) {
+            int pointIndex = startIndex + slot - 1;
+            PointComponent point = points.get(pointIndex);
+            SomeLocators.LOGGER.info("Page: {} UpSlot: {}", currentPage, slot);
+            PointPlace pointPlace = PointPlace.of(slot);
+            drawPoint(point, pointPlace);
         }
 
+        for (int slot = 1; slot <= downCount; slot++) {
+            int pointIndex = startIndex + upCount + slot - 1;
+            PointComponent point = points.get(pointIndex);
+            int pointPlaceIndex = upCount + slot;
+            SomeLocators.LOGGER.info("Page: {} DownSlot: {}", currentPage, pointPlaceIndex);
+            PointPlace pointPlace = PointPlace.of(pointPlaceIndex);
+            drawPoint(point, pointPlace);
+        }
     }
 
-    private void placePoint(PointComponent point, PointPlace pointPlace) {
+    private void drawPoint(PointComponent point, PointPlace pointPlace) {
         var coords = getPointCoords(pointPlace);
         UiPointInfo uiPointInfo = new UiPointInfo(point).pos(coords.x(), coords.y());
         this.addRenderableWidget(uiPointInfo);
