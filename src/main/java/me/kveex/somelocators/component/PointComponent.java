@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.component.LodestoneTracker;
 import net.minecraft.core.GlobalPos;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public record PointComponent(String name, BlockState blockState, GlobalPos target, LodestoneTracker lodestoneTracker) {
@@ -33,4 +34,16 @@ public record PointComponent(String name, BlockState blockState, GlobalPos targe
             LodestoneTracker.STREAM_CODEC, PointComponent::lodestoneTracker,
             PointComponent::new
     );
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PointComponent that = (PointComponent) o;
+        return Objects.equals(target, that.target) && Objects.equals(blockState, that.blockState);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(blockState, target);
+    }
 }

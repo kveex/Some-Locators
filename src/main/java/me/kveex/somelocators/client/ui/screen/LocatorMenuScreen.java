@@ -25,7 +25,9 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
     @Override
     protected void init() {
         super.init();
+
         int pages = (int) Math.ceil((double) points.size() / MAX_POINTS_ON_PAGE);
+
         if (currentPage > 0) {
             Button previousButton = Button.builder(Component.literal("previous"), button -> {
                         currentPage--;
@@ -48,11 +50,12 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
             this.addRenderableWidget(nextButton);
         }
 
-        UiPointInfo.TooltipDrawer.setMoreThanOnePoint(this.points.size() > 1);
 
         int startIndex = currentPage * MAX_POINTS_ON_PAGE;
         int endIndex = Math.min(startIndex + MAX_POINTS_ON_PAGE, points.size());
         int pointsOnPage = endIndex - startIndex;
+
+        UiPointInfo.TooltipDrawer.setMoreThanOnePoint(pointsOnPage > 1);
 
         int upCount = Math.min(4, pointsOnPage);
         int downCount = pointsOnPage - upCount;
@@ -77,13 +80,13 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
 
     private void drawPoint(PointComponent point, PointPlace pointPlace) {
         var coords = getPointCoords(pointPlace);
-        UiPointInfo uiPointInfo = new UiPointInfo(point).pos(coords.x(), coords.y());
+        boolean isTracked = point.equals(this.currentPoint);
+        UiPointInfo uiPointInfo = new UiPointInfo(point, isTracked).pos(coords.x(), coords.y());
         this.addRenderableWidget(uiPointInfo);
     }
 
     private CoordsPair getPointCoords(PointPlace pointPlace) {
         var center = this.getLocatorCenter();
-        // 3 -> 1 | 2 -> 2 | 1 -> 3 | 8 -> 4
         return switch (pointPlace) {
             case FIRST -> new CoordsPair(center.x() - OFFSET_BIG - 24, center.y() - OFFSET_SMALL);
             case SECOND -> new CoordsPair(center.x() - OFFSET_SMALL, center.y() - OFFSET_BIG);

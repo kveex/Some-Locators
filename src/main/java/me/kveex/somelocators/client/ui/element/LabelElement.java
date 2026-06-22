@@ -30,6 +30,10 @@ public class LabelElement extends AbstractWidget {
     protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {
     }
 
+    public void render(@NonNull GuiGraphics graphics) {
+        this.render(graphics, 0, 0, 0);
+    }
+
     @Override
     public boolean mouseClicked(@NonNull MouseButtonEvent mouseButtonEvent, boolean bl) {
         return false;

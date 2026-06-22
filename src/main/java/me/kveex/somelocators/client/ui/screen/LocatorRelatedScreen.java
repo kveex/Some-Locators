@@ -10,7 +10,7 @@ import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
 public class LocatorRelatedScreen extends Screen {
-    public static final Identifier LOCATOR_BACK_TEXTURE = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "textures/ui/locator_back.png");
+    public static final Identifier LOCATOR_BACK_TEXTURE = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "textures/gui/locator_back.png");
     protected LocatorRelatedScreen() {
         super(Component.empty());
     }
