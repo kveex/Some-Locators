@@ -1,7 +1,7 @@
 package me.kveex.somelocators.client;
 
 import me.kveex.somelocators.client.ui.screen.LocatorMenuScreen;
-import me.kveex.somelocators.client.ui.screen.NewLocatorPointScreen;
+import me.kveex.somelocators.client.ui.screen.LocatorPointScreen;
 import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.CreateLodestonePoint;
 import me.kveex.somelocators.network.OpenLocatorMenu;
@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class ModNetworkingClient {
     public static void init() {
-        Payloads.registerS2C(CreateLodestonePoint.class, ((createLodestonePoint, clientAccess) -> clientAccess.runtime().setScreen(new NewLocatorPointScreen(createLodestonePoint))));
+        Payloads.registerS2C(CreateLodestonePoint.class, ((createLodestonePoint, clientAccess) -> clientAccess.runtime().setScreen(new LocatorPointScreen(createLodestonePoint))));
 
         Payloads.registerS2C(OpenLocatorMenu.class, ((openLocatorMenu, clientAccess) -> {
             LodestonePointComponent lodestonePointComponent = openLocatorMenu.lodestonePointComponent();

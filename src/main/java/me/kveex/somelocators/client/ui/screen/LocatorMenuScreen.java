@@ -22,6 +22,17 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         this.points = points;
     }
 
+    public void setCurrentPoint(PointComponent currentPoint) {
+        this.currentPoint = currentPoint;
+        this.rebuildWidgets();
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        UiPointInfo.TooltipDrawer.clearHoveredWidget();
+    }
+
     @Override
     protected void init() {
         super.init();
@@ -55,8 +66,6 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         int endIndex = Math.min(startIndex + MAX_POINTS_ON_PAGE, points.size());
         int pointsOnPage = endIndex - startIndex;
 
-        UiPointInfo.TooltipDrawer.setMoreThanOnePoint(pointsOnPage > 1);
-
         int upCount = Math.min(4, pointsOnPage);
         int downCount = pointsOnPage - upCount;
 
@@ -81,7 +90,7 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
     private void drawPoint(PointComponent point, PointPlace pointPlace) {
         var coords = getPointCoords(pointPlace);
         boolean isTracked = point.equals(this.currentPoint);
-        UiPointInfo uiPointInfo = new UiPointInfo(point, isTracked).pos(coords.x(), coords.y());
+        UiPointInfo uiPointInfo = new UiPointInfo(point, isTracked, this, coords);
         this.addRenderableWidget(uiPointInfo);
     }
 

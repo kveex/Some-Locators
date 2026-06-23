@@ -4,20 +4,32 @@ import me.kveex.somelocators.client.ui.element.BlockElement;
 import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.element.TextInputElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
+import me.kveex.somelocators.component.PointComponent;
 import me.kveex.somelocators.network.CreateLodestonePoint;
+import me.kveex.somelocators.network.RenamePoint;
 import me.kveex.somelocators.network.SetLodestonePoint;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.component.LodestoneTracker;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 
-public class NewLocatorPointScreen extends LocatorRelatedScreen {
+public class LocatorPointScreen extends LocatorRelatedScreen {
     private final GlobalPos globalPos;
     private final BlockState blockState;
+    @Nullable private final LodestoneTracker tracker;
 
-    public NewLocatorPointScreen(CreateLodestonePoint createLodestonePoint) {
+    public LocatorPointScreen(CreateLodestonePoint createLodestonePoint) {
         this.blockState = createLodestonePoint.blockState();
         this.globalPos = createLodestonePoint.globalPos();
+        this.tracker = null;
+    }
+
+    public LocatorPointScreen(PointComponent oldPoint) {
+        this.blockState = oldPoint.blockState();
+        this.globalPos = oldPoint.target();
+        this.tracker = oldPoint.lodestoneTracker();
     }
 
     @Override
@@ -47,10 +59,20 @@ public class NewLocatorPointScreen extends LocatorRelatedScreen {
         this.addRenderableWidget(nameTextBox);
 
         // Button
-        Button buttonWidget = Button.builder(Component.translatable("ui.some_locators.create_point"), (btn) -> {
+        boolean noTracker = this.tracker == null;
+        Component buttonText = noTracker ?
+                Component.translatable("ui.some_locators.create_point") :
+                Component.translatable("ui.some_locators.rename_point");
+
+        Button buttonWidget = Button.builder(buttonText, (btn) -> {
             String pointName = nameTextBox.getValue().isBlank() ? blockName.getString() : nameTextBox.getValue();
-            SetLodestonePoint setLodestonePoint = new SetLodestonePoint(pointName, globalPos, blockState);
-            setLodestonePoint.send();
+            if (noTracker) {
+                SetLodestonePoint setLodestonePoint = new SetLodestonePoint(pointName, globalPos, blockState);
+                setLodestonePoint.send();
+            } else {
+                RenamePoint renamePoint = new RenamePoint(pointName, new PointComponent("", blockState, globalPos, tracker));
+                renamePoint.send();
+            }
             this.onClose();
         }).bounds(textInputCenter.x(), textInputY + textInputHeight, textInputWidth, textInputHeight).build();
 
