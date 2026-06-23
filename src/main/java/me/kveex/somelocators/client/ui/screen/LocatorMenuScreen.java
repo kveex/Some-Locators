@@ -1,6 +1,5 @@
 package me.kveex.somelocators.client.ui.screen;
 
-import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.client.ui.component.UiPointInfo;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.component.PointComponent;
@@ -72,7 +71,6 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         for (int slot = upCount; slot >= 1; slot--) {
             int pointIndex = startIndex + slot - 1;
             PointComponent point = points.get(pointIndex);
-            SomeLocators.LOGGER.info("Page: {} UpSlot: {}", currentPage, slot);
             PointPlace pointPlace = PointPlace.of(slot);
             drawPoint(point, pointPlace);
         }
@@ -81,10 +79,19 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
             int pointIndex = startIndex + upCount + slot - 1;
             PointComponent point = points.get(pointIndex);
             int pointPlaceIndex = upCount + slot;
-            SomeLocators.LOGGER.info("Page: {} DownSlot: {}", currentPage, pointPlaceIndex);
             PointPlace pointPlace = PointPlace.of(pointPlaceIndex);
             drawPoint(point, pointPlace);
         }
+    }
+
+    public void removePoint(PointComponent point) {
+        this.points.removeIf(p -> p.target().equals(point.target()));
+
+        if (currentPoint != null && currentPoint.target().equals(point.target())) {
+            currentPoint = points.isEmpty() ? null : points.getFirst();
+        }
+
+        this.rebuildWidgets();
     }
 
     private void drawPoint(PointComponent point, PointPlace pointPlace) {
