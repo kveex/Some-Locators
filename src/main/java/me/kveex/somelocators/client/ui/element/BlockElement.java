@@ -74,10 +74,6 @@ public class BlockElement extends AbstractWidget {
         return false;
     }
 
-    @Override
-    public boolean onMouseDown(MouseButtonEvent click, boolean doubled) {
-        return false;
-    }
 
     public void setTooltip(Component tooltip) {
         this.tooltip = tooltip;

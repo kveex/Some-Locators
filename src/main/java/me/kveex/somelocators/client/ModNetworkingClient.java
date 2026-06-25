@@ -12,12 +12,12 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class ModNetworkingClient {
     public static void init() {
-        Payloads.registerS2C(CreateLodestonePoint.class, ((createLodestonePoint, clientAccess) -> clientAccess.runtime().setScreen(new LocatorPointScreen(createLodestonePoint))));
+        Payloads.registerS2C(CreateLodestonePoint.class, ((createLodestonePoint, clientAccess) -> clientAccess.client().setScreen(new LocatorPointScreen(createLodestonePoint))));
 
         Payloads.registerS2C(OpenLocatorMenu.class, ((openLocatorMenu, clientAccess) -> {
             LodestonePointComponent lodestonePointComponent = openLocatorMenu.lodestonePointComponent();
             if (lodestonePointComponent.currentPoint().isEmpty()) return;
-            clientAccess.runtime().setScreen(new LocatorMenuScreen(lodestonePointComponent.currentPoint().get(), lodestonePointComponent.points()));
+            clientAccess.client().setScreen(new LocatorMenuScreen(lodestonePointComponent.currentPoint().get(), lodestonePointComponent.points()));
         }));
     }
 }

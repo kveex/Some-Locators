@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 
 public class LocatorRelatedScreen extends Screen {
     public static final Identifier LOCATOR_BACK_TEXTURE = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "textures/gui/locator_back.png");
+    private CoordsPair locatorCenter = null;
     protected LocatorRelatedScreen() {
         super(Component.empty());
     }
@@ -31,7 +32,10 @@ public class LocatorRelatedScreen extends Screen {
     }
 
     protected CoordsPair getLocatorCenter() {
-        return new CoordsPair(this.width / 2, this.height / 2 - 24);
+        if (locatorCenter == null) {
+            locatorCenter = new CoordsPair(this.width / 2, this.height / 2 - 24);
+        }
+        return locatorCenter;
     }
 
     @Override

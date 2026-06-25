@@ -22,7 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
-public class UiPointInfo extends AbstractWidget {
+public class PointInfoElement extends AbstractWidget {
     private Button renameButton;
     private Button removeButton;
     private boolean blockElementHoveredFirst = false;
@@ -38,7 +38,7 @@ public class UiPointInfo extends AbstractWidget {
     private static final Identifier TOOLTIP_SPRITE = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "locator_point");
     private static final Font font = Minecraft.getInstance().font;
 
-    public UiPointInfo(PointComponent pointComponent, boolean isTracked, LocatorMenuScreen parent, CoordsPair startPos) {
+    public PointInfoElement(PointComponent pointComponent, boolean isTracked, LocatorMenuScreen parent, CoordsPair startPos) {
         super(startPos.x(), startPos.y(), fullWidth, fullHeight, Component.empty());
         this.parent = parent;
         this.point = pointComponent;
@@ -176,13 +176,13 @@ public class UiPointInfo extends AbstractWidget {
     }
 
     public static class TooltipDrawer {
-        private static UiPointInfo hoveredWidget = null;
+        private static PointInfoElement hoveredWidget = null;
 
-        public static void setHoveredWidget(UiPointInfo pointInfo) {
+        public static void setHoveredWidget(PointInfoElement pointInfo) {
             hoveredWidget = pointInfo;
         }
 
-        public static boolean isHoveredWidget(UiPointInfo pointInfo) {
+        public static boolean isHoveredWidget(PointInfoElement pointInfo) {
             return hoveredWidget == pointInfo;
         }
 
@@ -190,7 +190,7 @@ public class UiPointInfo extends AbstractWidget {
             hoveredWidget = null;
         }
 
-        public static boolean canClaim(UiPointInfo pointInfo) {
+        public static boolean canClaim(PointInfoElement pointInfo) {
             return hoveredWidget == null || hoveredWidget == pointInfo;
         }
     }

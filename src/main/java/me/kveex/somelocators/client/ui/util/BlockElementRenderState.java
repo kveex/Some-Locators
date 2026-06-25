@@ -1,6 +1,5 @@
 package me.kveex.somelocators.client.ui.util;
 
-import blue.endless.jankson.annotation.Nullable;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -16,6 +15,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 //Code from owo lib, hope it's okay if I grab it
 public record BlockElementRenderState(

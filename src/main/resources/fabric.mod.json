@@ -23,6 +23,6 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
-    "owo-lib": ">=${owo_version}"
+    "midnightlib" : ">=${midnightlib_version}"
   }
 }

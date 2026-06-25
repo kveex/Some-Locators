@@ -20,13 +20,13 @@ public class ModItems {
             new Item.Properties().component(
                     ModComponents.LODESTONE_POINT_COMPONENT,
                     LodestonePointComponent.DEFAULT
-            ).stacksTo(1).group(ModGroups.GROUP)
+            ).stacksTo(1)
     );
 
     public static final Item PLAYER_LOCATOR_ITEM = registerItem(
             "player_locator",
             PlayerLocatorItem::new,
-            new Item.Properties().stacksTo(1).group(ModGroups.GROUP)
+            new Item.Properties().stacksTo(1)
     );
 
     private static  <T extends Item> T registerItem(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {

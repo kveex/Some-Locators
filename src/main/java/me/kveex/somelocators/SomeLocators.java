@@ -19,6 +19,7 @@ public class SomeLocators implements ModInitializer {
     public void onInitialize() {
         ModItems.init();
         ModComponents.init();
+        ModBlocks.init();
         ModEvents.init();
         registerPayloadTypes();
         ModNetworking.init();

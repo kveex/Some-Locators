@@ -1,10 +1,10 @@
 package me.kveex.somelocators.client.ui.screen;
 
-import me.kveex.somelocators.client.ui.component.UiPointInfo;
+import me.kveex.somelocators.SomeLocators;
+import me.kveex.somelocators.client.ui.component.PageSwitchElement;
+import me.kveex.somelocators.client.ui.component.PointInfoElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.component.PointComponent;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -15,6 +15,8 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
     public static final int MAX_POINTS_ON_PAGE = 8;
     public static final int OFFSET_SMALL = 48;
     public static final int OFFSET_BIG = 72;
+    private int pagesAmount;
+    private PageSwitchElement pageSwitch;
 
     public LocatorMenuScreen(PointComponent currentPoint, List<PointComponent> points) {
         this.currentPoint = currentPoint;
@@ -29,37 +31,21 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
     @Override
     public void onClose() {
         super.onClose();
-        UiPointInfo.TooltipDrawer.clearHoveredWidget();
+        PointInfoElement.TooltipDrawer.clearHoveredWidget();
     }
 
     @Override
     protected void init() {
         super.init();
 
-        int pages = (int) Math.ceil((double) points.size() / MAX_POINTS_ON_PAGE);
+        this.pagesAmount = (int) Math.ceil((double) points.size() / MAX_POINTS_ON_PAGE);
 
-        if (currentPage > 0) {
-            Button previousButton = Button.builder(Component.literal("previous"), button -> {
-                        currentPage--;
-                        this.rebuildWidgets();
-                    })
-                    .pos(300, this.height - 24)
-                    .size(120, 20)
-                    .build();
-            this.addRenderableWidget(previousButton);
+        CoordsPair locatorCenter = this.getLocatorCenter();
+        if (this.pageSwitch == null) {
+            System.out.println("null");
+            this.pageSwitch = new PageSwitchElement(locatorCenter.x() - 45, locatorCenter.y() + 80, this);
         }
-
-        if (currentPage < pages - 1) {
-            Button nextButton = Button.builder(Component.literal("next"), button -> {
-                        currentPage++;
-                        this.rebuildWidgets();
-                    })
-                    .pos(200, this.height - 24)
-                    .size(120, 20)
-                    .build();
-            this.addRenderableWidget(nextButton);
-        }
-
+        this.addRenderableWidget(this.pageSwitch);
 
         int startIndex = currentPage * MAX_POINTS_ON_PAGE;
         int endIndex = Math.min(startIndex + MAX_POINTS_ON_PAGE, points.size());
@@ -91,13 +77,17 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
             currentPoint = points.isEmpty() ? null : points.getFirst();
         }
 
+        if (this.points.isEmpty()) {
+            this.onClose();
+        }
+
         this.rebuildWidgets();
     }
 
     private void drawPoint(PointComponent point, PointPlace pointPlace) {
         var coords = getPointCoords(pointPlace);
         boolean isTracked = point.equals(this.currentPoint);
-        UiPointInfo uiPointInfo = new UiPointInfo(point, isTracked, this, coords);
+        PointInfoElement uiPointInfo = new PointInfoElement(point, isTracked, this, coords);
         this.addRenderableWidget(uiPointInfo);
     }
 
@@ -123,5 +113,17 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
             PointPlace[] values = values();
             return (value >= 1 && value <= values.length) ? values[value - 1] : MISS;
         }
+    }
+
+    public int getPagesAmount() {
+        return this.pagesAmount;
+    }
+
+    public void setCurrentPage(int pageNumber) {
+        int pageNum = Math.min(pageNumber, pagesAmount - 1);
+        if (pageNumber < 0) pageNum = 0;
+        this.currentPage = pageNum;
+        SomeLocators.LOGGER.info("Raw page number: {} Final page number: {}", pageNumber, pageNum);
+        this.rebuildWidgets();
     }
 }

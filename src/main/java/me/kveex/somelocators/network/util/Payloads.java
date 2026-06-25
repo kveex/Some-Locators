@@ -1,7 +1,5 @@
 package me.kveex.somelocators.network.util;
 
-import io.wispforest.owo.network.ClientAccess;
-import io.wispforest.owo.network.ServerAccess;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -28,7 +26,7 @@ public final class Payloads {
 
     public static <T extends ClientPayload<T>> void registerC2S(
             Class<T> clazz,
-            BiConsumer<T, ServerAccess> handler) {
+            BiConsumer<T, ServerPlayNetworking.Context> handler) {
 
         CustomPacketPayload.Type<T> type = Payload.getType(clazz);
         PayloadDirection direction = getDirection(clazz);
@@ -37,14 +35,12 @@ public final class Payloads {
             throw new RuntimeException("Cannot register C2S payload with S2C direction");
         }
 
-        ServerPlayNetworking.registerGlobalReceiver(type, (payload, context) ->
-                handler.accept(payload, new ServerAccess(context.player()))
-        );
+        ServerPlayNetworking.registerGlobalReceiver(type, handler::accept);
     }
 
     public static <T extends ServerPayload<T>> void registerS2C(
             Class<T> clazz,
-            BiConsumer<T, ClientAccess> handler) {
+            BiConsumer<T, ClientPlayNetworking.Context> handler) {
         CustomPacketPayload.Type<T> type = Payload.getType(clazz);
         PayloadDirection direction = getDirection(clazz);
 
@@ -52,9 +48,7 @@ public final class Payloads {
             throw new RuntimeException("Cannot register S2C payload with C2S direction");
         }
 
-        ClientPlayNetworking.registerGlobalReceiver(type, (payload, context) ->
-                handler.accept(payload, new ClientAccess(context.player().connection))
-        );
+        ClientPlayNetworking.registerGlobalReceiver(type, handler::accept);
     }
 
     private static <T extends Payload<T>> PayloadDirection getDirection(Class<T> clazz) {

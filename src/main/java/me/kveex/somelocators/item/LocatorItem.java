@@ -1,6 +1,5 @@
 package me.kveex.somelocators.item;
 
-import io.wispforest.owo.network.ServerAccess;
 import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.client.SomeLocatorsClient;
 import me.kveex.somelocators.component.LodestonePointComponent;
@@ -11,6 +10,7 @@ import me.kveex.somelocators.network.*;
 import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
 import me.kveex.somelocators.registry.ModTags;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
@@ -163,7 +163,7 @@ public class LocatorItem extends Item {
         }
     }
 
-    public static void setTracker(SetLodestonePoint tracker, ServerAccess access) {
+    public static void setTracker(SetLodestonePoint tracker, ServerPlayNetworking.Context access) {
         ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
@@ -182,7 +182,7 @@ public class LocatorItem extends Item {
         return SomeLocatorsClient.openLocatorPointsMenu.consumeClick() ? openLocatorMenu(player, hand) : InteractionResult.PASS;
     }
 
-    public static void changeTargetedPoint(ChangeTargetPoint changeTargetPoint, ServerAccess access) {
+    public static void changeTargetedPoint(ChangeTargetPoint changeTargetPoint, ServerPlayNetworking.Context access) {
         ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
@@ -191,7 +191,7 @@ public class LocatorItem extends Item {
         setTracker(itemStack, changeTargetPoint.newTarget(), lodestonePointComponent.points());
     }
 
-    public static void renamePoint(RenamePoint point, ServerAccess access) {
+    public static void renamePoint(RenamePoint point, ServerPlayNetworking.Context access) {
         ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
@@ -218,13 +218,22 @@ public class LocatorItem extends Item {
                     currentPoint = optionalCurrentPoint.orElse(replacement);
                 }
 
+                if (lodestonePointComponent.currentPoint().isPresent()) {
+                    if (lodestonePointComponent.currentPoint().get().target().equals(currentPoint.target())) {
+                        itemStack.set(
+                                DataComponents.ITEM_NAME,
+                                Component.translatable("item.some_locators.locator_pointing", currentPoint.name())
+                        );
+                    }
+                }
+
                 setTracker(itemStack, currentPoint, points);
                 return;
             }
         }
     }
 
-    public static void removePoint(RemovePoint removePoint, ServerAccess access) {
+    public static void removePoint(RemovePoint removePoint, ServerPlayNetworking.Context access) {
         ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
