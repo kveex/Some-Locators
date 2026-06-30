@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "mode=empty,facing=north": {
+      "model": "some_locators:block/locator_inspector_empty"
+    },
+    "mode=inspect,facing=north": {
+      "model": "some_locators:block/locator_inspector_inspect"
+    },
+    "mode=copy,facing=north": {
+      "model": "some_locators:block/locator_inspector_copy"
+    },
+    "mode=empty,facing=east": {
+      "model": "some_locators:block/locator_inspector_empty",
+      "y": 90
+    },
+    "mode=inspect,facing=east": {
+      "model": "some_locators:block/locator_inspector_inspect",
+      "y": 90
+    },
+    "mode=copy,facing=east": {
+      "model": "some_locators:block/locator_inspector_copy",
+      "y": 90
+    },
+    "mode=empty,facing=south": {
+      "model": "some_locators:block/locator_inspector_empty",
+      "y": 180
+    },
+    "mode=inspect,facing=south": {
+      "model": "some_locators:block/locator_inspector_inspect",
+      "y": 180
+    },
+    "mode=copy,facing=south": {
+      "model": "some_locators:block/locator_inspector_copy",
+      "y": 180
+    },
+    "mode=empty,facing=west": {
+      "model": "some_locators:block/locator_inspector_empty",
+      "y": 270
+    },
+    "mode=inspect,facing=west": {
+      "model": "some_locators:block/locator_inspector_inspect",
+      "y": 270
+    },
+    "mode=copy,facing=west": {
+      "model": "some_locators:block/locator_inspector_copy",
+      "y": 270
+    }
+  }
+}

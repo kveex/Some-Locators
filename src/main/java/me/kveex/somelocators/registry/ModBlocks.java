@@ -1,6 +1,7 @@
 package me.kveex.somelocators.registry;
 
 import me.kveex.somelocators.SomeLocators;
+import me.kveex.somelocators.block.LocatorInspectorBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -15,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.function.Function;
 
 public class ModBlocks {
-    public static final Block LOCATOR_INSPECTOR = register("locator_inspector", Block::new, BlockBehaviour.Properties.of().sound(SoundType.METAL));
+    public static final Block LOCATOR_INSPECTOR = register("locator_inspector", LocatorInspectorBlock::new, BlockBehaviour.Properties.of().sound(SoundType.METAL));
 
     private static Block register(String name, Function<BlockBehaviour.Properties, Block> blockFactory, BlockBehaviour.Properties settings) {
         ResourceKey<Block> blockKey = keyOfBlock(name);

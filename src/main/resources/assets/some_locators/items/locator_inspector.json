@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "some_locators:block/locator_inspector_copy"
+  }
+}
