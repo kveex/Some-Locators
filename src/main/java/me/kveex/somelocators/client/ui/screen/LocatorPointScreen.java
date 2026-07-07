@@ -5,9 +5,9 @@ import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.element.TextInputElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.component.PointComponent;
-import me.kveex.somelocators.network.CreateLodestonePoint;
-import me.kveex.somelocators.network.RenamePoint;
-import me.kveex.somelocators.network.SetLodestonePoint;
+import me.kveex.somelocators.network.CreateLodestonePointPayload;
+import me.kveex.somelocators.network.RenamePointPayload;
+import me.kveex.somelocators.network.SetLodestonePointPayload;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
@@ -20,7 +20,7 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
     private final BlockState blockState;
     @Nullable private final LodestoneTracker tracker;
 
-    public LocatorPointScreen(CreateLodestonePoint createLodestonePoint) {
+    public LocatorPointScreen(CreateLodestonePointPayload createLodestonePoint) {
         this.blockState = createLodestonePoint.blockState();
         this.globalPos = createLodestonePoint.globalPos();
         this.tracker = null;
@@ -39,8 +39,7 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
         var blockCenter = CoordsPair.create(this.width, this.height, blockSize);
         int blockOffset = 24, blockY = blockCenter.y() - blockOffset;
 
-        BlockElement blockElement = new BlockElement(blockCenter.x(), blockY, blockSize, this.blockState);
-        blockElement.setTooltip(Component.translatable(this.blockState.getBlock().getDescriptionId()));
+        BlockElement blockElement = new BlockElement(blockCenter.x(), blockY, blockSize, this.blockState, true);
 
         this.addRenderableWidget(blockElement);
 
@@ -67,10 +66,10 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
         Button buttonWidget = Button.builder(buttonText, (btn) -> {
             String pointName = nameTextBox.getValue().isBlank() ? blockName.getString() : nameTextBox.getValue();
             if (noTracker) {
-                SetLodestonePoint setLodestonePoint = new SetLodestonePoint(pointName, globalPos, blockState);
+                SetLodestonePointPayload setLodestonePoint = new SetLodestonePointPayload(pointName, globalPos, blockState);
                 setLodestonePoint.send();
             } else {
-                RenamePoint renamePoint = new RenamePoint(pointName, new PointComponent("", blockState, globalPos, tracker));
+                RenamePointPayload renamePoint = new RenamePointPayload(pointName, new PointComponent("", blockState, globalPos, tracker));
                 renamePoint.send();
             }
             this.onClose();

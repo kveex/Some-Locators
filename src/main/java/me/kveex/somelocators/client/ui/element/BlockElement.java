@@ -22,11 +22,19 @@ public class BlockElement extends AbstractWidget {
     public static final Minecraft client = Minecraft.getInstance();
     private final BlockState blockState;
 
-    private Component tooltip = Component.empty();
+    private final boolean showBlockNameOnHover;
 
     public BlockElement(int x, int y, int size, BlockState blockState) {
         super(x, y, size, size, Component.empty());
         this.blockState = blockState;
+        this.active = false;
+        this.showBlockNameOnHover = false;
+    }
+
+    public BlockElement(int x, int y, int size, BlockState blockState, boolean showBlockNameOnHover) {
+        super(x, y, size, size, Component.empty());
+        this.blockState = blockState;
+        this.showBlockNameOnHover = showBlockNameOnHover;
         this.active = false;
     }
 
@@ -59,8 +67,9 @@ public class BlockElement extends AbstractWidget {
                 )
         );
 
-        if (this.isHovered() && !tooltip.equals(Component.empty())) {
-            graphics.setComponentTooltipForNextFrame(client.font, Collections.singletonList(tooltip), mouseX, mouseY);
+        if (this.isHovered() && this.showBlockNameOnHover) {
+            Component blockName = Component.translatable(this.blockState.getBlock().getDescriptionId());
+            graphics.setComponentTooltipForNextFrame(client.font, Collections.singletonList(blockName), mouseX, mouseY);
         }
     }
 
@@ -72,10 +81,5 @@ public class BlockElement extends AbstractWidget {
     @Override
     public boolean mouseClicked(@NonNull MouseButtonEvent mouseButtonEvent, boolean bl) {
         return false;
-    }
-
-
-    public void setTooltip(Component tooltip) {
-        this.tooltip = tooltip;
     }
 }

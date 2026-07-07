@@ -6,16 +6,16 @@ import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.screen.LocatorMenuScreen;
 import me.kveex.somelocators.client.ui.screen.LocatorPointScreen;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
+import me.kveex.somelocators.client.ui.util.TooltipDrawer;
 import me.kveex.somelocators.component.PointComponent;
-import me.kveex.somelocators.network.ChangeTargetPoint;
-import me.kveex.somelocators.network.RemovePoint;
+import me.kveex.somelocators.network.ChangeTargetPointPayload;
+import me.kveex.somelocators.network.RemovePointPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -35,7 +35,6 @@ public class PointInfoElement extends AbstractWidget {
     private static final int fullWidth = 120;
     private static final int fullHeight = 62;
     private static final Identifier TARGETED_FRAME_SPRITE = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "textures/gui/targeted_point_frame.png");
-    private static final Identifier TOOLTIP_SPRITE = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "locator_point");
     private static final Font font = Minecraft.getInstance().font;
 
     public PointInfoElement(PointComponent pointComponent, boolean isTracked, LocatorMenuScreen parent, CoordsPair startPos) {
@@ -78,7 +77,7 @@ public class PointInfoElement extends AbstractWidget {
 
     private void showTooltip(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         // Tooltip
-        renderTooltipBackground(graphics);
+        TooltipDrawer.renderTooltipBackground(graphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
         // Label
         int labelMargin = 4;
@@ -105,7 +104,7 @@ public class PointInfoElement extends AbstractWidget {
         if (this.removeButton == null) {
             this.removeButton = Button.builder(Component.translatable("ui.some_locators.remove_point"), button -> {
                 TooltipDrawer.clearHoveredWidget();
-                RemovePoint removePoint = new RemovePoint(this.point);
+                RemovePointPayload removePoint = new RemovePointPayload(this.point);
                 removePoint.send();
 
                 this.parent.removePoint(this.point);
@@ -153,7 +152,7 @@ public class PointInfoElement extends AbstractWidget {
         int mouseY = (int) event.y();
         if (!isMouseOverBlock(mouseX, mouseY)) return false;
 
-        ChangeTargetPoint changeTargetPoint = new ChangeTargetPoint(this.point);
+        ChangeTargetPointPayload changeTargetPoint = new ChangeTargetPointPayload(this.point);
         changeTargetPoint.send();
 
         this.parent.setCurrentPoint(this.point);
@@ -163,9 +162,7 @@ public class PointInfoElement extends AbstractWidget {
         return super.mouseClicked(event, doubleClicked);
     }
 
-    private void renderTooltipBackground(@NonNull GuiGraphics graphics) {
-        TooltipRenderUtil.renderTooltipBackground(graphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), TOOLTIP_SPRITE);
-    }
+
 
     private void renderTrackedPointFrame(@NonNull GuiGraphics graphics) {
         int u = 0, v = 0;
@@ -175,23 +172,5 @@ public class PointInfoElement extends AbstractWidget {
         graphics.blit(RenderPipelines.GUI_TEXTURED, TARGETED_FRAME_SPRITE, x, y, u, v, width, height, width, height);
     }
 
-    public static class TooltipDrawer {
-        private static PointInfoElement hoveredWidget = null;
 
-        public static void setHoveredWidget(PointInfoElement pointInfo) {
-            hoveredWidget = pointInfo;
-        }
-
-        public static boolean isHoveredWidget(PointInfoElement pointInfo) {
-            return hoveredWidget == pointInfo;
-        }
-
-        public static void clearHoveredWidget() {
-            hoveredWidget = null;
-        }
-
-        public static boolean canClaim(PointInfoElement pointInfo) {
-            return hoveredWidget == null || hoveredWidget == pointInfo;
-        }
-    }
 }

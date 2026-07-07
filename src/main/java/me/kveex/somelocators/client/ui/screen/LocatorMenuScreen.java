@@ -4,6 +4,7 @@ import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.client.ui.component.PageSwitchElement;
 import me.kveex.somelocators.client.ui.component.PointInfoElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
+import me.kveex.somelocators.client.ui.util.TooltipDrawer;
 import me.kveex.somelocators.component.PointComponent;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
     @Override
     public void onClose() {
         super.onClose();
-        PointInfoElement.TooltipDrawer.clearHoveredWidget();
+        TooltipDrawer.clearHoveredWidget();
     }
 
     @Override
@@ -123,6 +124,7 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         int pageNum = Math.min(pageNumber, pagesAmount - 1);
         if (pageNumber < 0) pageNum = 0;
         this.currentPage = pageNum;
+        TooltipDrawer.clearHoveredWidget();
         SomeLocators.LOGGER.info("Raw page number: {} Final page number: {}", pageNumber, pageNum);
         this.rebuildWidgets();
     }

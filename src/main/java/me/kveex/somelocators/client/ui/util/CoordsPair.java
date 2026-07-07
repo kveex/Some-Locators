@@ -27,4 +27,15 @@ public record CoordsPair(int x, int y) {
 
         return new CoordsPair(centerX, centerY);
     }
+
+    public static CoordsPair createCentered(int startX, int startY, int screenWidth, int screenHeight, int widgetWidth, int widgetHeight) {
+        int centerX = screenWidth / 2 - widgetWidth / 2;
+        int centerY = screenHeight / 2 - widgetHeight / 2;
+
+        return new CoordsPair(centerX + startX, centerY + startY);
+    }
+
+    public static CoordsPair createCentered(CoordsPair startPair, int screenWidth, int screenHeight, int widgetWidth, int widgetHeight) {
+        return createCentered(startPair.x(), startPair.y(), screenWidth, screenHeight, widgetWidth, widgetHeight);
+    }
 }

@@ -9,16 +9,16 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.GlobalPos;
 
-public record SetLodestonePoint(
+public record SetLodestonePointPayload(
         String name,
         GlobalPos globalPos,
         BlockState blockState
-) implements ClientPayload<SetLodestonePoint> {
-    public static final StreamCodec<RegistryFriendlyByteBuf, SetLodestonePoint> CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, SetLodestonePoint::name,
-            GlobalPos.STREAM_CODEC, SetLodestonePoint::globalPos,
-            ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY), SetLodestonePoint::blockState,
-            SetLodestonePoint::new
+) implements ClientPayload<SetLodestonePointPayload> {
+    public static final StreamCodec<RegistryFriendlyByteBuf, SetLodestonePointPayload> CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, SetLodestonePointPayload::name,
+            GlobalPos.STREAM_CODEC, SetLodestonePointPayload::globalPos,
+            ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY), SetLodestonePointPayload::blockState,
+            SetLodestonePointPayload::new
     );
 
     public PointComponent toPointComponent() {
@@ -26,7 +26,7 @@ public record SetLodestonePoint(
     }
 
     @Override
-    public StreamCodec<RegistryFriendlyByteBuf, SetLodestonePoint> codec() {
+    public StreamCodec<RegistryFriendlyByteBuf, SetLodestonePointPayload> codec() {
         return CODEC;
     }
 }

@@ -15,6 +15,8 @@ import org.jspecify.annotations.NonNull;
 
 public class LocatorInspectorBlockEntity extends BlockEntity implements ImplementedContainer {
     private final NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
+    private boolean currentlyUsed = false;
+
     public LocatorInspectorBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.LOCATOR_INSPECTOR_BLOCK_ENTITY, pos, blockState);
     }
@@ -46,6 +48,26 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
         if (slot < 0) return ItemStack.EMPTY;
 
         return this.getItem(slot);
+    }
+
+    public ItemStack getFirstItem() {
+        return this.getItem(0);
+    }
+
+    public ItemStack getSecondItem() {
+        return this.getItem(1);
+    }
+
+    public boolean isCurrentlyUsed() {
+        return this.currentlyUsed;
+    }
+
+    public void setCurrentlyUsed() {
+        this.currentlyUsed = true;
+    }
+
+    public void unsetCurrentlyUsed() {
+        this.currentlyUsed = false;
     }
 
     @Override

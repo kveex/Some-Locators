@@ -35,11 +35,13 @@ public class SomeLocators implements ModInitializer {
     }
 
     private void registerPayloadTypes() {
-        Payloads.registerType(ChangeTargetPoint.class);
-        Payloads.registerType(CreateLodestonePoint.class);
-        Payloads.registerType(OpenLocatorMenu.class);
-        Payloads.registerType(RemovePoint.class);
-        Payloads.registerType(RenamePoint.class);
-        Payloads.registerType(SetLodestonePoint.class);
+        Payloads.registerType(ChangeTargetPointPayload.class);
+        Payloads.registerType(CreateLodestonePointPayload.class);
+        Payloads.registerType(OpenLocatorMenuPayload.class);
+        Payloads.registerType(OpenLocatorInspectorMenuPayload.class);
+        Payloads.registerType(RemovePointPayload.class);
+        Payloads.registerType(RenamePointPayload.class);
+        Payloads.registerType(SetLodestonePointPayload.class);
+        Payloads.registerType(SetLocatorInspectorUnused.class);
     }
 }

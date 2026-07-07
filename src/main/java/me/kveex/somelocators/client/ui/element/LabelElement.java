@@ -13,17 +13,29 @@ public class LabelElement extends AbstractWidget {
     private final Component text;
     private static final Font font = Minecraft.getInstance().font;
     private int color = 0xFFFFFFFF;
+    private final boolean scrollable;
 
     public LabelElement(int x, int y, Component text) {
         super(x, y, 0, 0, Component.empty());
         this.width = font.width(text);
         this.height = font.lineHeight;
         this.text = text;
+        this.scrollable = false;
+    }
+
+    public LabelElement(int x, int y, int width, Component text) {
+        super(x, y, width, font.lineHeight, Component.empty());
+        this.text = text;
+        this.scrollable = true;
     }
 
     @Override
     protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        graphics.drawString(font, this.text, getX(), getY(), color, true);
+        if (this.scrollable) {
+            this.renderScrollingStringOverContents(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE), this.text, 2);
+        } else {
+            graphics.drawString(font, this.text, getX(), getY(), color, true);
+        }
     }
 
     @Override

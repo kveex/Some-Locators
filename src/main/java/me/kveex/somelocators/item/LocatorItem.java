@@ -157,13 +157,13 @@ public class LocatorItem extends Item {
                 return InteractionResult.FAIL;
             }
 
-            CreateLodestonePoint tracker = new CreateLodestonePoint(globalPos, world.getBlockState(blockPos));
+            CreateLodestonePointPayload tracker = new CreateLodestonePointPayload(globalPos, world.getBlockState(blockPos));
             tracker.send(serverPlayer);
             return InteractionResult.SUCCESS;
         }
     }
 
-    public static void setTracker(SetLodestonePoint tracker, ServerPlayNetworking.Context access) {
+    public static void setTracker(SetLodestonePointPayload tracker, ServerPlayNetworking.Context access) {
         ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
@@ -182,7 +182,7 @@ public class LocatorItem extends Item {
         return SomeLocatorsClient.openLocatorPointsMenu.consumeClick() ? openLocatorMenu(player, hand) : InteractionResult.PASS;
     }
 
-    public static void changeTargetedPoint(ChangeTargetPoint changeTargetPoint, ServerPlayNetworking.Context access) {
+    public static void changeTargetedPoint(ChangeTargetPointPayload changeTargetPoint, ServerPlayNetworking.Context access) {
         ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
@@ -191,7 +191,7 @@ public class LocatorItem extends Item {
         setTracker(itemStack, changeTargetPoint.newTarget(), lodestonePointComponent.points());
     }
 
-    public static void renamePoint(RenamePoint point, ServerPlayNetworking.Context access) {
+    public static void renamePoint(RenamePointPayload point, ServerPlayNetworking.Context access) {
         ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
@@ -233,7 +233,7 @@ public class LocatorItem extends Item {
         }
     }
 
-    public static void removePoint(RemovePoint removePoint, ServerPlayNetworking.Context access) {
+    public static void removePoint(RemovePointPayload removePoint, ServerPlayNetworking.Context access) {
         ItemStack itemStack = access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
@@ -265,7 +265,7 @@ public class LocatorItem extends Item {
         LodestonePointComponent component = itemStack.get(ModComponents.LODESTONE_POINT_COMPONENT);
 
         if (component == null) return InteractionResult.PASS;
-        OpenLocatorMenu openLocatorMenu = new OpenLocatorMenu(component);
+        OpenLocatorMenuPayload openLocatorMenu = new OpenLocatorMenuPayload(component);
         openLocatorMenu.send(serverPlayer);
         return InteractionResult.SUCCESS;
     }
