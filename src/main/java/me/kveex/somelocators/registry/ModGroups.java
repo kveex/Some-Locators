@@ -22,6 +22,7 @@ public class ModGroups {
                output.accept(ModItems.LOCATOR_ITEM);
                output.accept(ModItems.PLAYER_LOCATOR_ITEM);
                output.accept(ModBlocks.LOCATOR_INSPECTOR);
+               output.accept(ModItems.PUNCH_CARD_ITEM);
             })
             .build();
 

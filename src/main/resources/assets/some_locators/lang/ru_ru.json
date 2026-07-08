@@ -5,6 +5,7 @@
   "item.some_locators.trade.fortress": "Крепость Незера",
   "item.some_locators.trade.bastion_remnant": "Бастион",
   "item.some_locators.trade.ruined_portal": "Разрушенный Портал",
+  "item.some_locators.punch_card": "Перфокарта",
   "itemGroup.some_locators.item_group": "Какие-то Локаторы",
   "tooltip.some_locators.point_name": "Имя точки: %1$s",
   "tooltip.some_locators.player_distance": "Игрок",

@@ -4,8 +4,10 @@ import com.mojang.serialization.MapCodec;
 import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.block.entity.LocatorInspectorBlockEntity;
 import me.kveex.somelocators.block.properties.LocatorInspectorMode;
+import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.OpenLocatorInspectorMenuPayload;
 import me.kveex.somelocators.network.SetLocatorInspectorUnused;
+import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
@@ -62,6 +64,9 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
             level.setBlockAndUpdate(pos, state.setValue(MODE, mode.getNextMode()));
             level.playSound(player, pos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.0F);
 
+            return InteractionResult.SUCCESS;
+        } else if (stack.is(ModItems.PUNCH_CARD_ITEM)) {
+            stack.set(ModComponents.LODESTONE_POINT_COMPONENT, LodestonePointComponent.DEFAULT);
             return InteractionResult.SUCCESS;
         } else if (stack.isEmpty()) {
             if (player.isShiftKeyDown()) {

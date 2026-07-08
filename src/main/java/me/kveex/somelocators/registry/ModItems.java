@@ -26,7 +26,13 @@ public class ModItems {
     public static final Item PLAYER_LOCATOR_ITEM = registerItem(
             "player_locator",
             PlayerLocatorItem::new,
-            new Item.Properties().stacksTo(1)
+            new Item.Properties().stacksTo(64)
+    );
+
+    public static final Item PUNCH_CARD_ITEM = registerItem(
+            "punch_card",
+            Item::new,
+            new Item.Properties().stacksTo(16)
     );
 
     private static  <T extends Item> T registerItem(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {

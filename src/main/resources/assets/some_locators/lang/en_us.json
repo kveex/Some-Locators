@@ -5,6 +5,7 @@
   "item.some_locators.trade.fortress": "Nether Fortress",
   "item.some_locators.trade.bastion_remnant": "Bastion Remnant",
   "item.some_locators.trade.ruined_portal": "Ruined Portal",
+  "item.some_locators.punch_card": "Punch Card",
   "itemGroup.some_locators.item_group": "Some Locators",
   "tooltip.some_locators.point_name": "Point name: %1$s",
   "tooltip.some_locators.player_distance": "Player is",
