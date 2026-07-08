@@ -112,21 +112,25 @@ public class LocatorInspectorScreen extends Screen {
         // Current Point Label
         if (component.currentPoint().isPresent()) {
             Component currentText = Component.translatable(
-                    "ui.some_locators.locator_inspector_current_name",
+                    "ui.some_locators.locator_inspector_current_name"
+            ).withStyle(ChatFormatting.DARK_GRAY);
+
+            Component currentName = Component.literal(
                     component.currentPoint().get().name()
             ).withStyle(ChatFormatting.DARK_GRAY);
 
             int currentLabelY = infoLabelY + elementMargin;
-            LabelElement currentLabel = new LabelElement(labelCenter.x(), currentLabelY, maxLabelWidth, currentText);
+            LabelElement currentLabel = new LabelElement(labelCenter.x(), currentLabelY, maxLabelWidth, currentText, currentName);
 
             this.addRenderableWidget(currentLabel);
         }
 
-        int scrollAreaY = uiStartCoords.y() + itemSize + elementMargin;
+        int listX = uiStartCoords.x() + borderMargin * 2, listY = uiStartCoords.y() + itemSize;
+        int listWidth = uiWidth - borderMargin * 4, listHeight = 132 - borderMargin * 2 + elementMargin;
 
         PointInfoList list = new PointInfoList(
-                uiStartCoords.x() + borderMargin * 3, scrollAreaY,
-                uiWidth - borderMargin * 6, 132 - borderMargin,
+                listX, listY,
+                listWidth, listHeight,
                 component.points()
         );
 

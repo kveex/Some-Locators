@@ -13,26 +13,28 @@ import java.util.List;
 public class PointInfoList extends AbstractWidget {
     private final List<PointComponent> points;
     private double scrollOffset;
-    private static final int PADDING = 8;
-    private static final int TOOLTIP_PADDING = 9;
-    private static final int POINT_INFO_ELEMENT_HEIGHT = 32;
+    private static final int POINT_INFO_ELEMENT_HEIGHT = 40;
+    private final List<ExtendedPointInfoElement> elements;
     public PointInfoList(int x, int y, int width, int height, List<PointComponent> points) {
         super(x, y, width, height, Component.empty());
         this.points = points;
+        this.elements = points.stream()
+                .map(point -> new ExtendedPointInfoElement(this.getX(), 0, this.getWidth(), POINT_INFO_ELEMENT_HEIGHT, point))
+                .toList();
     }
 
     @Override
     protected void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.enableScissor(this.getX() - TOOLTIP_PADDING, this.getY() - TOOLTIP_PADDING, this.getX() + this.getWidth() + TOOLTIP_PADDING, this.getY() + this.getHeight());
+        graphics.enableScissor(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight());
 
         double yOffset = this.getY() - scrollOffset;
 
-        for (PointComponent pointComponent : this.points) {
-            ExtendedPointInfoElement element = new ExtendedPointInfoElement(this.getX(), (int) yOffset, this.getWidth(), POINT_INFO_ELEMENT_HEIGHT, pointComponent);
+        for (ExtendedPointInfoElement element : this.elements) {
             if (yOffset + element.getHeight() > this.getY() && yOffset < this.getY() + this.getHeight()) {
+                element.setY((int) yOffset);
                 element.render(graphics, mouseX, mouseY, partialTick);
             }
-            yOffset += element.getHeight() + PADDING;
+            yOffset += element.getHeight();
         }
 
         graphics.disableScissor();
@@ -40,12 +42,13 @@ public class PointInfoList extends AbstractWidget {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (points.size() <= 3) return false;
-        scrollOffset += -scrollY * 10;
+        int totalContentHeight = POINT_INFO_ELEMENT_HEIGHT * this.points.size();
+        int maxScroll = Math.max(0, totalContentHeight - this.getHeight());
+//        if (points.size() <= 3) return false;
 
-        int emptyPointOffset = POINT_INFO_ELEMENT_HEIGHT + PADDING;
-        int maxScroll = Math.max(0, points.size() * POINT_INFO_ELEMENT_HEIGHT - emptyPointOffset);
+        scrollOffset += -scrollY * 10;
         scrollOffset = Math.clamp(scrollOffset, 0, maxScroll);
+
         SomeLocators.LOGGER.info("Scroll offset: {}", scrollOffset);
         return true;
     }

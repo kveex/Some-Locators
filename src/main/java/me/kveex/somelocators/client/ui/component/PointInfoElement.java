@@ -85,7 +85,6 @@ public class PointInfoElement extends AbstractWidget {
         LabelElement labelElement = new LabelElement(this.getX() + labelCenter.x() + blockSize + labelMargin, this.getY() + labelMargin, Component.literal(point.name()));
         labelElement.render(graphics);
 
-
         int buttonWidth = 80, buttonHeight = 20, buttonMargin = 2;
         CoordsPair buttonCenter = CoordsPair.create(this.getWidth() + blockSize + labelMargin, 0, buttonWidth, buttonHeight);
         int buttonX = this.getX() + buttonCenter.x(), renameButtonY = labelElement.getY() + MARGIN * 2;

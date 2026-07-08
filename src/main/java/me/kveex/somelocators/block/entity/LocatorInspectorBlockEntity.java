@@ -14,6 +14,11 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.NonNull;
 
 public class LocatorInspectorBlockEntity extends BlockEntity implements ImplementedContainer {
+    //TODO: Переделать блок так, чтобы он принимал один локатор и одну специальную панч карту, в которую записаны
+    // точки, копированные с другой карты.
+    // Игрок кладёт просто локатор, чтобы посмотреть точки в нём.
+    // Игрок кладёт локатор и пустую панч карту, что позволит ему скопировать точки на панч карту
+    // Игрок кладёт локатор и заполненную панч карту, что позволит ему перенести точки на локатор
     private final NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
     private boolean currentlyUsed = false;
 
