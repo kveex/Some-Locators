@@ -22,6 +22,7 @@
   "message.some_locators.player_locator_target_set_already": "You're already spying on someone else",
   "message.some_locators.sneak_to_set_target": "You need to sneak while using locator to set target",
   "message.some_locators.locator_inspector_empty": "You need to insert at least one Locator",
+  "message.some_locators.locator_inspector_contains": "This item is already inserted",
   "ui.some_locators.create_point": "Create",
   "ui.some_locators.text_box_tooltip": "Name this place :)",
   "ui.some_locators.new_point_label": "Point name:",

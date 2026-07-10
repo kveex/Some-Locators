@@ -22,6 +22,7 @@
   "message.some_locators.player_locator_target_set_already": "Ты уже за кем-то следишь",
   "message.some_locators.sneak_to_set_target": "Тебе нужно пригнуться, используя Локатор, чтобы установить цель",
   "message.some_locators.locator_inspector_empty": "Тебе нужно вложить хотя бы один Локатор",
+  "message.some_locators.locator_inspector_contains": "Этот предмет уже вложен",
   "ui.some_locators.create_point": "Создать",
   "ui.some_locators.text_box_tooltip": "Дай имя этому местечку :)",
   "ui.some_locators.new_point_label": "Имя этой точки:",

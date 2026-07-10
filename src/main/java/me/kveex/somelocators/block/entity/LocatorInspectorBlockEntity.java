@@ -1,9 +1,8 @@
 package me.kveex.somelocators.block.entity;
 
 import me.kveex.somelocators.block.entity.util.ImplementedContainer;
-import me.kveex.somelocators.block.properties.LocatorInspectorMode;
+import me.kveex.somelocators.block.entity.util.InsertResult;
 import me.kveex.somelocators.registry.ModBlockEntities;
-import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.core.BlockPos;
@@ -15,7 +14,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -26,11 +24,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class LocatorInspectorBlockEntity extends BlockEntity implements ImplementedContainer {
-    //TODO: Переделать блок так, чтобы он принимал один локатор и одну специальную панч карту, в которую записаны
-    // точки, копированные с другой карты.
-    // Игрок кладёт просто локатор, чтобы посмотреть точки в нём.
-    // Игрок кладёт локатор и пустую панч карту, что позволит ему скопировать точки на панч карту
-    // Игрок кладёт локатор и заполненную панч карту, что позволит ему перенести точки на локатор
     private static final int LOCATOR = 0;
     private static final int PUNCH_CARD = 1;
     private final NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
@@ -46,16 +39,18 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
         return items;
     }
 
-    public boolean tryInsertItem(ItemStack stack) {
+    public InsertResult tryInsertItem(ItemStack stack) {
         if (ACCEPTABLE_LOCATOR.contains(stack.getItem())) {
+            if (!this.getLocatorItem().isEmpty()) return InsertResult.CONTAINS;
             this.setItem(LOCATOR, stack);
             setChanged();
-            return true;
+            return InsertResult.SUCCESS;
         } else if (stack.is(ModItems.PUNCH_CARD_ITEM)) {
+            if (!this.getPunchCard().isEmpty()) return InsertResult.CONTAINS;
             this.setItem(PUNCH_CARD, stack);
             setChanged();
-            return true;
-        } else return false;
+            return InsertResult.SUCCESS;
+        } else return InsertResult.FAIL;
     }
 
     public ItemStack getLocatorItem() {
@@ -65,14 +60,6 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
     public ItemStack getPunchCard() {
         return this.getItem(PUNCH_CARD);
     }
-
-//    private ItemStack takeLocatorItem() {
-//        return this.removeItem(LOCATOR, 1);
-//    }
-//
-//    private ItemStack takePunchCard() {
-//        return this.removeItem(PUNCH_CARD, 1);
-//    }
 
     private ItemStack takeLocatorItem() {
         ItemStack item = getLocatorItem();
@@ -106,21 +93,6 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
         this.currentlyUsed = false;
     }
 
-    public LocatorInspectorMode getMode() {
-        ItemStack locator = this.getLocatorItem();
-        ItemStack punchCard = this.getPunchCard();
-
-        if (locator.isEmpty() && punchCard.isEmpty()) {
-            return LocatorInspectorMode.EMPTY;
-        } else if (!locator.isEmpty() && punchCard.isEmpty()) {
-            return LocatorInspectorMode.INSPECT_LOCATOR;
-        } else if (locator.isEmpty()) {
-            return !punchCard.has(ModComponents.LODESTONE_POINT_COMPONENT) ? LocatorInspectorMode.INSPECT_PUNCH_CARD_CLEAN : LocatorInspectorMode.INSPECT_PUNCH_CARD_WRITTEN;
-        } else {
-            return !punchCard.has(ModComponents.LODESTONE_POINT_COMPONENT) ? LocatorInspectorMode.COPY_ON_CARD : LocatorInspectorMode.COPY_OFF_CARD;
-        }
-    }
-
     @Override
     protected void loadAdditional(@NonNull ValueInput input) {
         super.loadAdditional(input);
@@ -147,16 +119,7 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
     @Override
     public void setChanged() {
         super.setChanged();
-//        if (this.level != null && !this.level.isClientSide()) {
-//            this.level.sendBlockUpdated(
-//                    this.worldPosition,
-//                    this.getBlockState(),
-//                    this.getBlockState(),
-//                    Block.UPDATE_ALL
-//            );
-//        }
-        if (this.level instanceof ServerLevel serverLevel) {
-            // Явно отправляем пакет всем игрокам рядом с блоком
+        if (this.level instanceof ServerLevel) {
             ClientboundBlockEntityDataPacket packet = this.getUpdatePacket();
             if (packet != null) {
                 PlayerLookup.tracking(this).forEach(p -> p.connection.send(packet));

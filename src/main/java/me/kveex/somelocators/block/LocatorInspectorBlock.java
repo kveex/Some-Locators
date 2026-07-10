@@ -3,8 +3,8 @@ package me.kveex.somelocators.block;
 import com.mojang.serialization.MapCodec;
 import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.block.entity.LocatorInspectorBlockEntity;
+import me.kveex.somelocators.block.entity.util.InsertResult;
 import me.kveex.somelocators.block.properties.LocatorInspectorHalf;
-import me.kveex.somelocators.block.properties.LocatorInspectorMode;
 import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.OpenLocatorInspectorMenuPayload;
 import me.kveex.somelocators.network.SetLocatorInspectorUnused;
@@ -45,14 +45,14 @@ import java.util.Map;
 
 public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public static final EnumProperty<LocatorInspectorHalf> HALF = EnumProperty.create("half", LocatorInspectorHalf.class);
-    public static final EnumProperty<LocatorInspectorMode> MODE = EnumProperty.create("mode", LocatorInspectorMode.class);
     private static final Map<Direction, VoxelShape> SHAPES = Shapes.rotateHorizontal(Block.boxZ(16.0, 8.0, 16.0));
 
     public LocatorInspectorBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(
                 this.defaultBlockState()
-                        .setValue(MODE, LocatorInspectorMode.EMPTY)
+                        .setValue(HALF, LocatorInspectorHalf.BOTTOM)
+                        .setValue(FACING, Direction.NORTH)
         );
     }
 
@@ -82,7 +82,6 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
         if (blockEntity.isCurrentlyUsed()) return InteractionResult.FAIL;
 
         if (half == LocatorInspectorHalf.TOP) {
-            SomeLocators.LOGGER.info("Top Half");
             if (stack.is(ModItems.PUNCH_CARD_ITEM)) {
                 stack.set(ModComponents.LODESTONE_POINT_COMPONENT, LodestonePointComponent.DEFAULT);
                 return InteractionResult.SUCCESS;
@@ -100,38 +99,32 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
             blockEntity.setCurrentlyUsed();
 
         } else if (half == LocatorInspectorHalf.BOTTOM) {
-            SomeLocators.LOGGER.info("Bottom Half");
             if (stack.isEmpty()) {
-                SomeLocators.LOGGER.info("Empty stack");
                 ItemStack newStack = blockEntity.takeItem();
                 player.addItem(newStack);
 
-                level.setBlockAndUpdate(blockEntityPos, state.setValue(MODE, blockEntity.getMode()));
                 level.playSound(player, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 0.85F);
                 level.playSound(player, blockEntityPos, SoundEvents.BUNDLE_INSERT, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             } else {
-                boolean insertResult = blockEntity.tryInsertItem(stack.copyWithCount(1));
-                SomeLocators.LOGGER.info("Insert Result: {}", insertResult);
-                SomeLocators.LOGGER.info("Mode serialized name: {}", LocatorInspectorMode.INSPECT_PUNCH_CARD_CLEAN.getSerializedName());
-                if (!insertResult) return InteractionResult.FAIL;
+                InsertResult insertResult = blockEntity.tryInsertItem(stack.copyWithCount(1));
+                if (insertResult == InsertResult.CONTAINS) {
+                    serverPlayer.displayClientMessage(Component.translatable("message.some_locators.locator_inspector_contains"), true);
+                    return InteractionResult.FAIL;
+                }
 
                 player.getItemInHand(mainHand).consume(1, player);
 
-                LocatorInspectorMode mode = blockEntity.getMode();
-                SomeLocators.LOGGER.info("Mode: {}", mode);
-
-                level.setBlockAndUpdate(blockEntityPos, state.setValue(MODE, mode));
                 level.playSound(player, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             }
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResult.CONSUME;
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(MODE, HALF, FACING);
+        builder.add(HALF, FACING);
     }
 
     @Override

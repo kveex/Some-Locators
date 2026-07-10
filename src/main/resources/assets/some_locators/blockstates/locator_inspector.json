@@ -1,108 +1,33 @@
 {
   "variants": {
-    "half=top,mode=empty,facing=north": {
+    "half=top,facing=north": {
       "model": "some_locators:block/locator_inspector_top"
     },
-    "half=top,mode=empty,facing=east": {
+    "half=bottom,facing=north": {
+      "model": "some_locators:block/locator_inspector_bottom"
+    },
+    "half=top,facing=east": {
       "model": "some_locators:block/locator_inspector_top",
       "y": 90
     },
-    "half=top,mode=empty,facing=south": {
+    "half=bottom,facing=east": {
+      "model": "some_locators:block/locator_inspector_bottom",
+      "y": 90
+    },
+    "half=top,facing=south": {
       "model": "some_locators:block/locator_inspector_top",
       "y": 180
     },
-    "half=top,mode=empty,facing=west": {
+    "half=bottom,facing=south": {
+      "model": "some_locators:block/locator_inspector_bottom",
+      "y": 180
+    },
+    "half=top,facing=west": {
       "model": "some_locators:block/locator_inspector_top",
       "y": 270
     },
-    "half=bottom,mode=empty,facing=north": {
-      "model": "some_locators:block/locator_inspector_bottom_empty"
-    },
-    "half=bottom,mode=inspect_locator,facing=north": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator"
-    },
-    "half=bottom,mode=inspect_punch_card_clean,facing=north": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator"
-    },
-    "half=bottom,mode=inspect_punch_card_written,facing=north": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator"
-    },
-    "half=bottom,mode=copy_on_card,facing=north": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator"
-    },
-    "half=bottom,mode=copy_off_card,facing=north": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator"
-    },
-    "half=bottom,mode=empty,facing=east": {
-      "model": "some_locators:block/locator_inspector_bottom_empty",
-      "y": 90
-    },
-    "half=bottom,mode=inspect_locator,facing=east": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 90
-    },
-    "half=bottom,mode=inspect_punch_card_clean,facing=east": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 90
-    },
-    "half=bottom,mode=inspect_punch_card_written,facing=east": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 90
-    },
-    "half=bottom,mode=copy_on_card,facing=east": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 90
-    },
-    "half=bottom,mode=copy_off_card,facing=east": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 90
-    },
-    "half=bottom,mode=empty,facing=south": {
-      "model": "some_locators:block/locator_inspector_bottom_empty",
-      "y": 180
-    },
-    "half=bottom,mode=inspect_locator,facing=south": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 180
-    },
-    "half=bottom,mode=inspect_punch_card_clean,facing=south": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 180
-    },
-    "half=bottom,mode=inspect_punch_card_written,facing=south": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 180
-    },
-    "half=bottom,mode=copy_on_card,facing=south": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 180
-    },
-    "half=bottom,mode=copy_off_card,facing=south": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 180
-    },
-    "half=bottom,mode=empty,facing=west": {
-      "model": "some_locators:block/locator_inspector_bottom_empty",
-      "y": 270
-    },
-    "half=bottom,mode=inspect_locator,facing=west": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 270
-    },
-    "half=bottom,mode=inspect_punch_card_clean,facing=west": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 270
-    },
-    "half=bottom,mode=inspect_punch_card_written,facing=west": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 270
-    },
-    "half=bottom,mode=copy_on_card,facing=west": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
-      "y": 270
-    },
-    "half=bottom,mode=copy_off_card,facing=west": {
-      "model": "some_locators:block/locator_inspector_bottom_inspect_locator",
+    "half=bottom,facing=west": {
+      "model": "some_locators:block/locator_inspector_bottom",
       "y": 270
     }
   }
