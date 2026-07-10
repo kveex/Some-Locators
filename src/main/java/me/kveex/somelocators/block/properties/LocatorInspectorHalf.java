@@ -5,20 +5,16 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
 
-public enum LocatorInspectorMode implements StringRepresentable {
-    EMPTY,
-    INSPECT_LOCATOR,
-    INSPECT_PUNCH_CARD_CLEAN,
-    INSPECT_PUNCH_CARD_WRITTEN,
-    COPY_ON_CARD,
-    COPY_OFF_CARD;
+public enum LocatorInspectorHalf implements StringRepresentable {
+    TOP,
+    BOTTOM;
+
+    public LocatorInspectorHalf getOpposite() {
+        return this == TOP ? BOTTOM : TOP;
+    }
 
     @Override
     public @NonNull String getSerializedName() {
         return this.toString().toLowerCase(Locale.ROOT);
-    }
-
-    public static LocatorInspectorMode getVisualMode() {
-        return INSPECT_LOCATOR;
     }
 }

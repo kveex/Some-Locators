@@ -7,14 +7,14 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
 public record OpenLocatorInspectorMenuPayload(
-        ItemStack firstLocator,
-        ItemStack secondLocator,
+        ItemStack locator,
+        ItemStack punchCard,
         BlockPos pos
 ) implements ServerPayload<OpenLocatorInspectorMenuPayload>
 {
     public static final StreamCodec<RegistryFriendlyByteBuf, OpenLocatorInspectorMenuPayload> CODEC = StreamCodec.composite(
-            ItemStack.OPTIONAL_STREAM_CODEC, OpenLocatorInspectorMenuPayload::firstLocator,
-            ItemStack.OPTIONAL_STREAM_CODEC, OpenLocatorInspectorMenuPayload::secondLocator,
+            ItemStack.OPTIONAL_STREAM_CODEC, OpenLocatorInspectorMenuPayload::locator,
+            ItemStack.OPTIONAL_STREAM_CODEC, OpenLocatorInspectorMenuPayload::punchCard,
             BlockPos.STREAM_CODEC, OpenLocatorInspectorMenuPayload::pos,
             OpenLocatorInspectorMenuPayload::new
     );

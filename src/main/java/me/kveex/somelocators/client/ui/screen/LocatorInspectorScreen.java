@@ -37,8 +37,8 @@ public class LocatorInspectorScreen extends Screen {
     public LocatorInspectorScreen(OpenLocatorInspectorMenuPayload payload) {
         super(Component.empty());
         blockPos = payload.pos();
-        firstLocator = payload.firstLocator();
-        secondLocator = payload.secondLocator();
+        firstLocator = payload.locator();
+        secondLocator = payload.punchCard();
     }
 
     @Override
