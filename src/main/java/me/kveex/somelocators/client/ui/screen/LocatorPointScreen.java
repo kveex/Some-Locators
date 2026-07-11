@@ -78,13 +78,10 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
         this.addRenderableWidget(buttonWidget);
 
         // Label
-        Component text = Component.translatable("ui.some_locators.new_point_label");
+        Component text = Component.translatable("ui.some_locators.point_name");
         int labelOffset = 12, labelY = textInputY - labelOffset;
 
-        LabelElement pointLabelElement = new LabelElement(
-                textInputCenter.x(), labelY,
-                text
-        );
+        LabelElement pointLabelElement = LabelElement.builder(textInputCenter.x(), labelY, text).build();
 
         this.addRenderableWidget(pointLabelElement);
     }

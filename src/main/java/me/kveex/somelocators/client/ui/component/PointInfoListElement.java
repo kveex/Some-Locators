@@ -1,6 +1,5 @@
 package me.kveex.somelocators.client.ui.component;
 
-import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.component.PointComponent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -10,12 +9,13 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
-public class PointInfoList extends AbstractWidget {
+public class PointInfoListElement extends AbstractWidget {
     private final List<PointComponent> points;
     private double scrollOffset;
     private static final int POINT_INFO_ELEMENT_HEIGHT = 40;
     private final List<ExtendedPointInfoElement> elements;
-    public PointInfoList(int x, int y, int width, int height, List<PointComponent> points) {
+
+    public PointInfoListElement(int x, int y, int width, int height, List<PointComponent> points) {
         super(x, y, width, height, Component.empty());
         this.points = points;
         this.elements = points.stream()
@@ -44,12 +44,10 @@ public class PointInfoList extends AbstractWidget {
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         int totalContentHeight = POINT_INFO_ELEMENT_HEIGHT * this.points.size();
         int maxScroll = Math.max(0, totalContentHeight - this.getHeight());
-//        if (points.size() <= 3) return false;
 
         scrollOffset += -scrollY * 10;
         scrollOffset = Math.clamp(scrollOffset, 0, maxScroll);
 
-        SomeLocators.LOGGER.info("Scroll offset: {}", scrollOffset);
         return true;
     }
 

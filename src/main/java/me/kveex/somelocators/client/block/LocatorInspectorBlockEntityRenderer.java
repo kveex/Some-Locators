@@ -95,12 +95,10 @@ public class LocatorInspectorBlockEntityRenderer implements BlockEntityRenderer<
     private void renderPunchCard(PoseStack matrices, LocatorInspectorRenderState state, SubmitNodeCollector queue, float rotation) {
         matrices.pushPose();
 
-
         matrices.translate(0.5D, 0.5D, 0.5D);
         matrices.mulPose(Axis.YP.rotationDegrees(rotation));
 
         matrices.scale(0.8f, 0.8f, 0.8f);
-
 
         matrices.translate(0.37D, 0.37D, -0.1D);
 

@@ -86,7 +86,7 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
                 stack.set(ModComponents.LODESTONE_POINT_COMPONENT, LodestonePointComponent.DEFAULT);
                 return InteractionResult.SUCCESS;
             }
-            if (blockEntity.getLocatorItem().isEmpty()) {
+            if (blockEntity.isEmpty()) {
                 player.displayClientMessage(Component.translatable("message.some_locators.locator_inspector_empty"), true);
                 return InteractionResult.FAIL;
             }

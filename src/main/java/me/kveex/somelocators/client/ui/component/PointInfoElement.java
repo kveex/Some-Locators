@@ -11,7 +11,6 @@ import me.kveex.somelocators.component.PointComponent;
 import me.kveex.somelocators.network.ChangeTargetPointPayload;
 import me.kveex.somelocators.network.RemovePointPayload;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -35,7 +34,6 @@ public class PointInfoElement extends AbstractWidget {
     private static final int fullWidth = 120;
     private static final int fullHeight = 62;
     private static final Identifier TARGETED_FRAME_SPRITE = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "textures/gui/targeted_point_frame.png");
-    private static final Font font = Minecraft.getInstance().font;
 
     public PointInfoElement(PointComponent pointComponent, boolean isTracked, LocatorMenuScreen parent, CoordsPair startPos) {
         super(startPos.x(), startPos.y(), fullWidth, fullHeight, Component.empty());
@@ -44,9 +42,6 @@ public class PointInfoElement extends AbstractWidget {
         this.isTracked = isTracked;
         this.blockElement = new BlockElement(startPos.x(), startPos.y(), blockSize, point.blockState());
         this.active = false;
-        int textWidth = font.width(point.name());
-        int adaptedWidgetWidth = Math.max(blockSize + textWidth + MARGIN, fullWidth);
-        this.setWidth(adaptedWidgetWidth);
     }
 
     @Override
@@ -81,8 +76,13 @@ public class PointInfoElement extends AbstractWidget {
 
         // Label
         int labelMargin = 4;
-        CoordsPair labelCenter = CoordsPair.create(this.getWidth() - blockSize - labelMargin, 0, font.width(point.name()), font.lineHeight);
-        LabelElement labelElement = new LabelElement(this.getX() + labelCenter.x() + blockSize + labelMargin, this.getY() + labelMargin, Component.literal(point.name()));
+        int labelX = this.getX() + blockSize + labelMargin, labelY = this.getY() + labelMargin;
+        int labelWidth = fullWidth - blockSize - labelMargin;
+        LabelElement labelElement = LabelElement.builder(labelX, labelY, Component.literal(point.name()))
+                .width(labelWidth)
+                .centered(true)
+                .build();
+
         labelElement.render(graphics);
 
         int buttonWidth = 80, buttonHeight = 20, buttonMargin = 2;
@@ -160,8 +160,6 @@ public class PointInfoElement extends AbstractWidget {
 
         return super.mouseClicked(event, doubleClicked);
     }
-
-
 
     private void renderTrackedPointFrame(@NonNull GuiGraphics graphics) {
         int u = 0, v = 0;

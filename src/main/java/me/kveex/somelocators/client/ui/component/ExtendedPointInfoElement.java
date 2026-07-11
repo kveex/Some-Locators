@@ -2,7 +2,6 @@ package me.kveex.somelocators.client.ui.component;
 
 import me.kveex.somelocators.client.ui.element.BlockElement;
 import me.kveex.somelocators.client.ui.element.LabelElement;
-import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.client.ui.util.TooltipDrawer;
 import me.kveex.somelocators.component.PointComponent;
 import net.minecraft.ChatFormatting;
@@ -31,33 +30,32 @@ public class ExtendedPointInfoElement extends AbstractWidget {
         blockElement.render(graphics, mouseX, mouseY, partialTick);
 
         // Point Name
-        int labelX = blockElement.getWidth() - BLOCK_MARGIN + TOOLTIP_PADDING;
-        LabelElement pointName = new LabelElement(0, 0, this.getWidth() - (labelX + TOOLTIP_PADDING) * 2, Component.translatable("ui.some_locators.point_name"), Component.literal(pointComponent.name()));
-        CoordsPair labelCentered = CoordsPair.createCentered(this.getX() + labelX, blockElement.getY(), this.getWidth(), this.getHeight(), pointName.getWidth(), pointName.getHeight());
-        pointName.setPosition(labelCentered.x(), this.getY() + TOOLTIP_PADDING);
+        int pointNameX = blockElement.getX() + blockElement.getWidth() + TOOLTIP_PADDING;
+        LabelElement pointName = LabelElement.builder(pointNameX, this.getY() + TOOLTIP_PADDING + 1, Component.literal(pointComponent.name()))
+                .width(this.getWidth() - BLOCK_MARGIN * 3)
+                .staticText(Component.translatable("ui.some_locators.point_name"))
+                .build();
         pointName.render(graphics);
 
         // Point Target
         BlockPos pos = pointComponent.target().pos();
-        LabelElement pointPosition = new LabelElement(labelCentered.x(), pointName.getY() + LABEL_MARGIN, pointName.getWidth(),
-                Component.translatable(
-                        "ui.some_locators.point_position",
-                        pos.getX(),
-                        pos.getY(),
-                        pos.getZ()
-                ).withStyle(ChatFormatting.DARK_GRAY)
-        );
+        Component pointPositionText = Component.translatable("ui.some_locators.point_position", pos.getX(), pos.getY(), pos.getZ())
+                .withStyle(ChatFormatting.DARK_GRAY);
+
+        LabelElement pointPosition = LabelElement.builder(pointName.getX(), pointName.getY() + LABEL_MARGIN, pointPositionText)
+                .width(pointName.getWidth())
+                .build();
 
         pointPosition.render(graphics);
 
-        LabelElement pointDimension = new LabelElement(labelCentered.x(), pointPosition.getY() + LABEL_MARGIN - 2, pointName.getWidth(),
-                Component.translatable(
-                        "ui.some_locators.point_dimension"
-                ).withStyle(ChatFormatting.DARK_GRAY),
-                Component.literal(
-                        pointComponent.target().dimension().identifier().toString()
-                ).withStyle(ChatFormatting.DARK_GRAY)
-        );
+        Component dimensionText = Component.translatable("ui.some_locators.point_dimension").withStyle(ChatFormatting.DARK_GRAY);
+        Component dimensionIdentifier = Component.literal(pointComponent.target().dimension().identifier().toString())
+                .withStyle(ChatFormatting.DARK_GRAY);
+
+        LabelElement pointDimension = LabelElement.builder(pointName.getX(), pointPosition.getY() + LABEL_MARGIN - 2, dimensionIdentifier)
+                .staticText(dimensionText)
+                .width(pointName.getWidth())
+                .build();
 
         pointDimension.render(graphics);
     }
