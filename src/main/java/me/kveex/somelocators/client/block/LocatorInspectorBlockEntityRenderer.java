@@ -18,6 +18,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class LocatorInspectorBlockEntityRenderer implements BlockEntityRenderer<LocatorInspectorBlockEntity, LocatorInspectorRenderState> {
+    private static final int outlineColor = 0x00000000;
     private final ItemModelResolver itemModelResolver;
     public LocatorInspectorBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.itemModelResolver = context.itemModelResolver();
@@ -61,17 +62,27 @@ public class LocatorInspectorBlockEntityRenderer implements BlockEntityRenderer<
 
     @Override
     public void submit(LocatorInspectorRenderState state, @NonNull PoseStack matrices, @NonNull SubmitNodeCollector queue, @NonNull CameraRenderState cameraState) {
-        int outlineColor = 0x00000000;
+        float rotation = switch (state.facing) {
+            case NORTH -> 180.0f;
+            case EAST -> 90.0f;
+            case WEST -> 270.0f;
+            default -> 0.0f;
+        };
 
+        renderLocator(matrices, state, queue, rotation);
+        renderPunchCard(matrices, state, queue, rotation);
+    }
+
+    private void renderLocator(PoseStack matrices, LocatorInspectorRenderState state, SubmitNodeCollector queue, float rotation) {
         matrices.pushPose();
 
-        matrices.translate(0.79D, 0.8D, 0.5D);
-        matrices.scale(0.8f, 0.8f, 0.8f);
+        matrices.translate(0.5D, 0.5D, 0.5D);
+        matrices.mulPose(Axis.YP.rotationDegrees(rotation));
+        matrices.scale(0.6f, 0.6f, 0.6f);
+        matrices.translate(-0.36D, 0.40D, 0.135D);
+        matrices.mulPose(Axis.XN.rotationDegrees(22.0f));
 
-        matrices.mulPose(Axis.XP.rotationDegrees(90.0f));
-        matrices.mulPose(Axis.ZP.rotationDegrees(45.0f));
-
-        state.punchCardRenderState.submit(
+        state.locatorRenderState.submit(
                 matrices, queue,
                 state.lightCoords,
                 OverlayTexture.NO_OVERLAY,
@@ -79,18 +90,28 @@ public class LocatorInspectorBlockEntityRenderer implements BlockEntityRenderer<
         );
 
         matrices.popPose();
+    }
 
+    private void renderPunchCard(PoseStack matrices, LocatorInspectorRenderState state, SubmitNodeCollector queue, float rotation) {
         matrices.pushPose();
 
-        matrices.translate(0.282D, 0.74D, 0.58D);
-        matrices.mulPose(Axis.XN.rotationDegrees(22.0f));
-        matrices.scale(0.6f, 0.6f, 0.6f);
 
-        state.locatorRenderState.submit(
-                matrices, queue,
-                state.lightCoords,
-                OverlayTexture.NO_OVERLAY,
-                outlineColor
+        matrices.translate(0.5D, 0.5D, 0.5D);
+        matrices.mulPose(Axis.YP.rotationDegrees(rotation));
+
+        matrices.scale(0.8f, 0.8f, 0.8f);
+
+
+        matrices.translate(0.37D, 0.37D, -0.1D);
+
+        matrices.mulPose(Axis.XP.rotationDegrees(90.0f));
+        matrices.mulPose(Axis.ZP.rotationDegrees(45.0f));
+
+        state.punchCardRenderState.submit(
+            matrices, queue,
+            state.lightCoords,
+            OverlayTexture.NO_OVERLAY,
+            outlineColor
         );
 
         matrices.popPose();
