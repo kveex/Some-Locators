@@ -8,6 +8,7 @@ import me.kveex.somelocators.block.properties.LocatorInspectorHalf;
 import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.OpenLocatorInspectorMenuPayload;
 import me.kveex.somelocators.network.SetLocatorInspectorUnused;
+import me.kveex.somelocators.network.WritePunchCardPayload;
 import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -178,5 +179,16 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
             return;
         }
         blockEntity.unsetCurrentlyUsed();
+    }
+
+    public static void writePunchCard(WritePunchCardPayload payload, ServerPlayNetworking.Context access) {
+        ServerLevel level = access.player().level();
+        BlockEntity block = level.getBlockEntity(payload.locatorInspectorBlockPos());
+        if (!(block instanceof LocatorInspectorBlockEntity blockEntity)) {
+            SomeLocators.LOGGER.error("Couldn't replace punch card in Locator Inspector!");
+            return;
+        }
+
+        blockEntity.setPunchCard(payload.punchCard());
     }
 }

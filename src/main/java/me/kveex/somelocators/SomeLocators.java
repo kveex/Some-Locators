@@ -43,5 +43,6 @@ public class SomeLocators implements ModInitializer {
         Payloads.registerType(RenamePointPayload.class);
         Payloads.registerType(SetLodestonePointPayload.class);
         Payloads.registerType(SetLocatorInspectorUnused.class);
+        Payloads.registerType(WritePunchCardPayload.class);
     }
 }

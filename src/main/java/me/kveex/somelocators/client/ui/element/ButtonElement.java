@@ -3,6 +3,7 @@ package me.kveex.somelocators.client.ui.element;
 import me.kveex.somelocators.SomeLocators;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -16,6 +17,9 @@ import org.jspecify.annotations.NonNull;
 public class ButtonElement extends AbstractButton {
     private boolean isPressed;
     private final OnPress onPress;
+    private final LabelElement buttonText;
+    private int buttonTextOffset = 2;
+    private static final int buttonTextMargin = 2;
     private static final Identifier BUTTON = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "widget/redstone_button");
     private static final Identifier BUTTON_DISABLED = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "widget/redstone_button_disabled");
     private static final Identifier BUTTON_HOVERED = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "widget/redstone_button_hover");
@@ -24,10 +28,10 @@ public class ButtonElement extends AbstractButton {
     public ButtonElement(int x, int y, int width, int height, Component message, OnPress onPress) {
         super(x, y, width, height, message);
         this.onPress = onPress;
-    }
-
-    public ButtonElement(int x, int y, int width, int height, String message, OnPress onPress) {
-        this(x, y, width, height, Component.literal(message), onPress);
+        this.buttonText = LabelElement.builder(this.getX() + buttonTextMargin, 0, this.getMessage())
+                .centered()
+                .width(width - buttonTextMargin * 2)
+                .build();
     }
 
     private Identifier resolveSprite() {
@@ -40,12 +44,14 @@ public class ButtonElement extends AbstractButton {
     @Override
     public void onPress(@NonNull InputWithModifiers input) {
         this.isPressed = true;
+        this.buttonTextOffset = 0;
         this.onPress.onPress(this);
     }
 
     @Override
     public void onRelease(@NonNull MouseButtonEvent event) {
         this.isPressed = false;
+        this.buttonTextOffset = 2;
     }
 
     @Override
@@ -64,7 +70,14 @@ public class ButtonElement extends AbstractButton {
                 this.getWidth(),
                 this.getHeight()
         );
-        this.renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+//        this.renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+        int buttonTextY = this.getY() + (this.getHeight() / 2 - Minecraft.getInstance().font.lineHeight / 2) - buttonTextOffset;
+        buttonText.setY(buttonTextY);
+        buttonText.render(graphics);
+    }
+
+    public void active(boolean active) {
+        this.active = active;
     }
 
     public static Builder builder(Component text, ButtonElement.OnPress onPress) {

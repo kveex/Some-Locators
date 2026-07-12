@@ -78,4 +78,8 @@ public class LocatorInspectorRelatedScreen extends Screen {
     public int getUiWidth() {
         return uiWidth;
     }
+
+    public BlockPos getBlockPos() {
+        return this.blockPos;
+    }
 }

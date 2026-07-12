@@ -13,5 +13,6 @@ public class ModNetworking {
         Payloads.registerC2S(RemovePointPayload.class, LocatorItem::removePoint);
         Payloads.registerC2S(RenamePointPayload.class, LocatorItem::renamePoint);
         Payloads.registerC2S(SetLocatorInspectorUnused.class, LocatorInspectorBlock::setUnused);
+        Payloads.registerC2S(WritePunchCardPayload.class, LocatorInspectorBlock::writePunchCard);
     }
 }

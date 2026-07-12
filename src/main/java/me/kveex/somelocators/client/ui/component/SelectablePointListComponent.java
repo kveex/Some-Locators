@@ -4,6 +4,8 @@ import me.kveex.somelocators.client.ui.element.BlockElement;
 import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.util.TooltipDrawer;
 import me.kveex.somelocators.component.PointComponent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -18,17 +20,19 @@ import java.util.List;
 public class SelectablePointListComponent extends AbstractWidget {
     private static final int FONT_HEIGHT = Minecraft.getInstance().font.lineHeight;
     private static final int ELEMENT_HEIGHT = 32;
+    private final OnPress onPress;
     private double selectableScrollOffset;
     private double selectedScrollOffset;
     private final List<SelectablePointInfoElement> selectable;
     private final List<SelectablePointInfoElement> selected;
 
-    public SelectablePointListComponent(int x, int y, int width, int height, List<PointComponent> points) {
+    public SelectablePointListComponent(int x, int y, int width, int height, List<PointComponent> points, OnPress onPress) {
         super(x, y, width, height, Component.empty());
         this.selectable = new ArrayList<>(points.stream()
                 .map(point -> new SelectablePointInfoElement(x, 0, width / 2, ELEMENT_HEIGHT, point))
                 .toList());
         this.selected = new ArrayList<>();
+        this.onPress = onPress;
     }
 
     @Override
@@ -101,6 +105,7 @@ public class SelectablePointListComponent extends AbstractWidget {
 
         if (index >= 0 && index < list.size()) {
             moveToOtherList(side, index);
+            this.onPress.onPress(this);
         }
 
         return true;
@@ -123,6 +128,20 @@ public class SelectablePointListComponent extends AbstractWidget {
                         this.selectedScrollOffset, 0, this.selected.size());
             }
         }
+    }
+
+    public void moveAllToSelected() {
+        this.selected.addAll(this.selectable);
+        this.selectable.clear();
+        this.selectableScrollOffset = 0;
+        this.onPress.onPress(this);
+    }
+
+    public void moveAllToSelectable() {
+        this.selectable.addAll(this.selected);
+        this.selected.clear();
+        this.selectedScrollOffset = 0;
+        this.onPress.onPress(this);
     }
 
     @Override
@@ -185,5 +204,10 @@ public class SelectablePointListComponent extends AbstractWidget {
         public PointComponent getPoint() {
             return point;
         }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public interface OnPress {
+        void onPress(SelectablePointListComponent component);
     }
 }

@@ -3,6 +3,7 @@ package me.kveex.somelocators.block.entity;
 import me.kveex.somelocators.block.entity.util.ImplementedContainer;
 import me.kveex.somelocators.block.entity.util.InsertResult;
 import me.kveex.somelocators.registry.ModBlockEntities;
+import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.core.BlockPos;
@@ -51,6 +52,13 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
             setChanged();
             return InsertResult.SUCCESS;
         } else return InsertResult.FAIL;
+    }
+
+    public void setPunchCard(ItemStack stack) {
+        if (!stack.has(ModComponents.LODESTONE_POINT_COMPONENT)) return;
+
+        this.setItem(PUNCH_CARD, stack);
+        setChanged();
     }
 
     public ItemStack getLocatorItem() {
