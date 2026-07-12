@@ -21,7 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
-public class PointInfoElement extends AbstractWidget {
+public class PointInfoComponent extends AbstractWidget {
     private Button renameButton;
     private Button removeButton;
     private boolean blockElementHoveredFirst = false;
@@ -35,7 +35,7 @@ public class PointInfoElement extends AbstractWidget {
     private static final int fullHeight = 62;
     private static final Identifier TARGETED_FRAME_SPRITE = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "textures/gui/targeted_point_frame.png");
 
-    public PointInfoElement(PointComponent pointComponent, boolean isTracked, LocatorMenuScreen parent, CoordsPair startPos) {
+    public PointInfoComponent(PointComponent pointComponent, boolean isTracked, LocatorMenuScreen parent, CoordsPair startPos) {
         super(startPos.x(), startPos.y(), fullWidth, fullHeight, Component.empty());
         this.parent = parent;
         this.point = pointComponent;
@@ -80,7 +80,7 @@ public class PointInfoElement extends AbstractWidget {
         int labelWidth = fullWidth - blockSize - labelMargin;
         LabelElement labelElement = LabelElement.builder(labelX, labelY, Component.literal(point.name()))
                 .width(labelWidth)
-                .centered(true)
+                .centered()
                 .build();
 
         labelElement.render(graphics);

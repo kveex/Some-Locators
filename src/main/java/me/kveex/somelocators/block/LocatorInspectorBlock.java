@@ -103,8 +103,8 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
                 ItemStack newStack = blockEntity.takeItem();
                 player.addItem(newStack);
 
-                level.playSound(player, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 0.85F);
-                level.playSound(player, blockEntityPos, SoundEvents.BUNDLE_INSERT, SoundSource.BLOCKS, 1.0F, 1.0F);
+                level.playSound(serverPlayer, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 0.85F);
+                level.playSound(serverPlayer, blockEntityPos, SoundEvents.BUNDLE_INSERT, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             } else {
                 InsertResult insertResult = blockEntity.tryInsertItem(stack.copyWithCount(1));
@@ -115,7 +115,7 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
 
                 player.getItemInHand(mainHand).consume(1, player);
 
-                level.playSound(player, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.0F);
+                level.playSound(serverPlayer, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             }
         }

@@ -1,8 +1,8 @@
 package me.kveex.somelocators.client.ui.screen;
 
 import me.kveex.somelocators.SomeLocators;
-import me.kveex.somelocators.client.ui.component.PageSwitchElement;
-import me.kveex.somelocators.client.ui.component.PointInfoElement;
+import me.kveex.somelocators.client.ui.component.PageSwitchComponent;
+import me.kveex.somelocators.client.ui.component.PointInfoComponent;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.client.ui.util.TooltipDrawer;
 import me.kveex.somelocators.component.PointComponent;
@@ -17,7 +17,7 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
     public static final int OFFSET_SMALL = 48;
     public static final int OFFSET_BIG = 72;
     private int pagesAmount;
-    private PageSwitchElement pageSwitch;
+    private PageSwitchComponent pageSwitch;
 
     public LocatorMenuScreen(PointComponent currentPoint, List<PointComponent> points) {
         this.currentPoint = currentPoint;
@@ -44,7 +44,7 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         CoordsPair locatorCenter = this.getLocatorCenter();
         if (this.pageSwitch == null) {
             System.out.println("null");
-            this.pageSwitch = new PageSwitchElement(locatorCenter.x() - 45, locatorCenter.y() + 80, this);
+            this.pageSwitch = new PageSwitchComponent(locatorCenter.x() - 45, locatorCenter.y() + 80, this);
         }
         this.addRenderableWidget(this.pageSwitch);
 
@@ -88,7 +88,7 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
     private void drawPoint(PointComponent point, PointPlace pointPlace) {
         var coords = getPointCoords(pointPlace);
         boolean isTracked = point.equals(this.currentPoint);
-        PointInfoElement uiPointInfo = new PointInfoElement(point, isTracked, this, coords);
+        PointInfoComponent uiPointInfo = new PointInfoComponent(point, isTracked, this, coords);
         this.addRenderableWidget(uiPointInfo);
     }
 

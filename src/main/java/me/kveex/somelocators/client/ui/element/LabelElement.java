@@ -88,8 +88,8 @@ public class LabelElement extends AbstractWidget {
             return this;
         }
 
-        public Builder centered(boolean centered) {
-            this.centered = centered;
+        public Builder centered() {
+            this.centered = true;
             return this;
         }
 

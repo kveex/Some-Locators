@@ -10,14 +10,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
-public class PageSwitchElement extends AbstractWidget {
+public class PageSwitchComponent extends AbstractWidget {
     private final LocatorMenuScreen parent;
     public final int startSwitchLimit;
     public final int endSwitchLimit;
     private static final Identifier REDSTONE_TORCH_SPRITE = Identifier.withDefaultNamespace("textures/block/redstone_torch_off.png");
     private final SwitchWidget switchWidget;
 
-    public PageSwitchElement(int x, int y, LocatorMenuScreen parent) {
+    public PageSwitchComponent(int x, int y, LocatorMenuScreen parent) {
         super(x, y, 90, 36, Component.empty());
         this.parent = parent;
         startSwitchLimit = x;

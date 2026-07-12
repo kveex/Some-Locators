@@ -1,6 +1,6 @@
 package me.kveex.somelocators.client.ui.screen;
 
-import me.kveex.somelocators.client.ui.component.PointInfoListElement;
+import me.kveex.somelocators.client.ui.component.ExtendedPointInfoListComponent;
 import me.kveex.somelocators.client.ui.element.ItemElement;
 import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
@@ -40,7 +40,7 @@ public class LocatorInspectorInspectScreen extends LocatorInspectorRelatedScreen
             Component text = Component.translatable("ui.some_locators.locator_inspector_inspect_error");
             LabelElement errorLabel = LabelElement.builder(uiStartCoords.x() + borderMargin + 1, uiWidth / 2 - font.lineHeight, text)
                     .width(uiWidth - 10)
-                    .centered(true)
+                    .centered()
                     .build();
 
             this.addRenderableWidget(errorLabel);
@@ -104,7 +104,7 @@ public class LocatorInspectorInspectScreen extends LocatorInspectorRelatedScreen
         int listX = uiStartCoords.x() + borderMargin * 2, listY = uiStartCoords.y() + itemSize;
         int listWidth = uiWidth - borderMargin * 4, listHeight = 132 - borderMargin * 2 + elementMargin;
 
-        PointInfoListElement list = new PointInfoListElement(
+        ExtendedPointInfoListComponent list = new ExtendedPointInfoListComponent(
                 listX, listY,
                 listWidth, listHeight,
                 component.points()
