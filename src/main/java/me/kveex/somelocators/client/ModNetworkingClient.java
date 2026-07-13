@@ -1,9 +1,6 @@
 package me.kveex.somelocators.client;
 
-import me.kveex.somelocators.client.ui.screen.LocatorInspectorCopyScreen;
-import me.kveex.somelocators.client.ui.screen.LocatorInspectorInspectScreen;
-import me.kveex.somelocators.client.ui.screen.LocatorMenuScreen;
-import me.kveex.somelocators.client.ui.screen.LocatorPointScreen;
+import me.kveex.somelocators.client.ui.screen.*;
 import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.CreateLodestonePointPayload;
 import me.kveex.somelocators.network.OpenLocatorInspectorMenuPayload;

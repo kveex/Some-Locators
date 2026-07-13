@@ -187,13 +187,12 @@ public class SelectablePointListComponent extends AbstractWidget {
                     this.getHeight() - TOOLTIP_PADDING * 2
             );
 
-            block.setX(this.getX() + TOOLTIP_PADDING);
-            block.setY(this.getY() + TOOLTIP_PADDING);
+            block.setPosition(this.getX() + TOOLTIP_PADDING, this.getY() + TOOLTIP_PADDING);
             block.render(graphics, mouseX, mouseY, partialTick);
 
             pointName.setPosition(
                     block.getX() + block.getWidth() + TOOLTIP_PADDING,
-                    this.getY() + this.getHeight() / 2 - FONT_HEIGHT
+                    this.getY() + this.getHeight() / 2 - FONT_HEIGHT / 2
             );
             pointName.render(graphics);
         }

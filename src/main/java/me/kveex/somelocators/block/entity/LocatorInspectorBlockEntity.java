@@ -54,11 +54,16 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
         } else return InsertResult.FAIL;
     }
 
-    public void setPunchCard(ItemStack stack) {
+    public void setWrittenStack(ItemStack stack) {
         if (!stack.has(ModComponents.LODESTONE_POINT_COMPONENT)) return;
 
-        this.setItem(PUNCH_CARD, stack);
-        setChanged();
+        if (stack.is(ModItems.LOCATOR_ITEM)) {
+            this.setItem(LOCATOR, stack);
+            setChanged();
+        } else if (stack.is(ModItems.PUNCH_CARD_ITEM)) {
+            this.setItem(PUNCH_CARD, stack);
+            setChanged();
+        }
     }
 
     public ItemStack getLocatorItem() {
