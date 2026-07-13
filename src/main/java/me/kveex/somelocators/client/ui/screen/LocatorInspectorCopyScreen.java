@@ -9,6 +9,7 @@ import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.OpenLocatorInspectorMenuPayload;
 import me.kveex.somelocators.network.WriteLodestoneComponentPayload;
 import me.kveex.somelocators.registry.ModComponents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -39,9 +40,9 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
     private void initUI(ItemStack stackFrom, ItemStack stackTo, boolean showRewriteWarning) {
         CoordsPair uiStartCoords = getUiStartCoords();
         int uiWidth = getUiWidth();
-        int margin = 8;
+        int margin = 8, buttonMargin = 2;
         int itemScale = 3, itemSize = 16 * itemScale;
-        int buttonPressTicks = showRewriteWarning ? 60 : 0;
+        int buttonPressTicks = showRewriteWarning ? 40 : 0;
 
         int itemY = uiStartCoords.y() + margin, screenWidth = uiWidth / 2;
 
@@ -61,7 +62,7 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
                 .width(labelWidth)
                 .build();
 
-        LabelElement itemToName = LabelElement.builder(uiStartCoords.x() + uiWidth / 2 + margin, fromItemElement.getY() + itemSize, stackTo.getHoverName())
+        LabelElement itemToName = LabelElement.builder(uiStartCoords.x() + uiWidth / 2 + margin / 2, fromItemElement.getY() + itemSize, stackTo.getHoverName())
                 .centered()
                 .width(labelWidth)
                 .build();
@@ -88,10 +89,24 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
         this.addRenderableWidget(list);
 
         int buttonY = list.getY() + list.getHeight() + margin;
-        int buttonWidth = 75;
-        this.copyButton = ButtonElement.builder(Component.literal("Copy"), button -> {
+        int buttonWidth = 80;
+
+        int deselectAllButtonX = uiStartCoords.x() + buttonMargin * 3;
+        this.deselectAllButton = ButtonElement.builder(Component.translatable("ui.some_locators.locator_inspector_deselect_all_button"), button -> list.moveAllToSelectable())
+                .width(buttonWidth)
+                .pos(deselectAllButtonX, buttonY)
+                .build();
+
+        Component copButtonText = showRewriteWarning
+                ? Component.translatable("ui.some_locators.locator_inspector_overwrite_button")
+                : Component.translatable("ui.some_locators.locator_inspector_copy_button");
+        int copyButtonX = deselectAllButtonX + buttonWidth + buttonMargin;
+        this.copyButton = ButtonElement.builder(copButtonText, button -> {
             var selectedPoints = list.getSelectedPoints();
             stackTo.set(ModComponents.LODESTONE_POINT_COMPONENT, new LodestonePointComponent(selectedPoints.getFirst(), selectedPoints, false));
+            if (stackFrom.getCustomName() != null) {
+                stackTo.set(DataComponents.CUSTOM_NAME, stackFrom.getCustomName());
+            }
             WriteLodestoneComponentPayload payload = new WriteLodestoneComponentPayload(stackTo, this.getBlockPos());
             payload.send();
             list.active = false;
@@ -99,17 +114,11 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
             button.active(false);
             this.deselectAllButton.active(false);
             this.selectAllButton.active(false);
-        }).pos(uiStartCoords.x() + screenWidth - buttonWidth / 2, buttonY).width(buttonWidth).ticksAmountForPress(buttonPressTicks).build();
+        }).pos(copyButtonX, buttonY).width(buttonWidth).ticksAmountForPress(buttonPressTicks).build();
         this.copyButton.active(false);
 
-        int deselectAllButtonX = uiStartCoords.x() + margin;
-        this.deselectAllButton = ButtonElement.builder(Component.literal("Unselect All"), button -> list.moveAllToSelectable())
-                .width(buttonWidth)
-                .pos(deselectAllButtonX, buttonY)
-                .build();
-
-        int selectAllButtonX = deselectAllButton.getX() + (deselectAllButton.getWidth() + margin) * 2;
-        this.selectAllButton = ButtonElement.builder(Component.literal("Select All"), button -> list.moveAllToSelected())
+        int selectAllButtonX = copyButtonX + buttonWidth + buttonMargin;
+        this.selectAllButton = ButtonElement.builder(Component.translatable("ui.some_locators.locator_inspector_select_all_button"), button -> list.moveAllToSelected())
                 .width(buttonWidth)
                 .pos(selectAllButtonX, buttonY)
                 .build();
@@ -117,5 +126,16 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
         this.addRenderableWidget(deselectAllButton);
         this.addRenderableWidget(copyButton);
         this.addRenderableWidget(selectAllButton);
+
+        if (showRewriteWarning) {
+            int overwriteWarningY = this.height - margin - this.font.lineHeight;
+            LabelElement overwriteWarningLabel = LabelElement.builder(margin, overwriteWarningY, Component.translatable("ui.some_locators.locator_inspector_overwrite_warning"))
+                    .width(this.width - margin)
+                    .centered()
+                    .build();
+
+            this.addRenderableWidget(overwriteWarningLabel);
+        }
+
     }
 }

@@ -5,12 +5,9 @@ import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.block.entity.LocatorInspectorBlockEntity;
 import me.kveex.somelocators.block.entity.util.InsertResult;
 import me.kveex.somelocators.block.properties.LocatorInspectorHalf;
-import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.OpenLocatorInspectorMenuPayload;
 import me.kveex.somelocators.network.SetLocatorInspectorUnused;
 import me.kveex.somelocators.network.WriteLodestoneComponentPayload;
-import me.kveex.somelocators.registry.ModComponents;
-import me.kveex.somelocators.registry.ModItems;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -83,10 +80,6 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
         if (blockEntity.isCurrentlyUsed()) return InteractionResult.FAIL;
 
         if (half == LocatorInspectorHalf.TOP) {
-            if (stack.is(ModItems.PUNCH_CARD_ITEM)) {
-                stack.set(ModComponents.LODESTONE_POINT_COMPONENT, LodestonePointComponent.DEFAULT);
-                return InteractionResult.SUCCESS;
-            }
             if (blockEntity.isEmpty()) {
                 player.displayClientMessage(Component.translatable("message.some_locators.locator_inspector_empty"), true);
                 return InteractionResult.FAIL;

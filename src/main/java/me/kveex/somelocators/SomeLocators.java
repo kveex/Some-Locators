@@ -29,7 +29,7 @@ public class SomeLocators implements ModInitializer {
         ModVillagerTrades.init();
 
         ComponentTooltipAppenderRegistry.addAfter(DataComponents.DAMAGE, ModComponents.LODESTONE_POINT_COMPONENT);
-        ComponentTooltipAppenderRegistry.addAfter(DataComponents.DAMAGE, ModComponents.ENTITY_TRACKER_COMPONENT);
+        ComponentTooltipAppenderRegistry.addAfter(DataComponents.DAMAGE, ModComponents.PLAYER_TRACKER_COMPONENT);
 
         MidnightConfig.init(MOD_ID, SomeLocatorsConfig.class);
     }

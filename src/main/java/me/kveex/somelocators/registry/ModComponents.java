@@ -15,8 +15,8 @@ public class ModComponents {
             LodestonePointComponent.CODEC
     );
 
-    public static final DataComponentType<PlayerTrackerComponent> ENTITY_TRACKER_COMPONENT = register(
-            "entity_tracker_component",
+    public static final DataComponentType<PlayerTrackerComponent> PLAYER_TRACKER_COMPONENT = register(
+            "player_tracker_component",
             PlayerTrackerComponent.CODEC
     );
 

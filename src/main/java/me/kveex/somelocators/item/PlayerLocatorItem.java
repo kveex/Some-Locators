@@ -33,7 +33,7 @@ public class PlayerLocatorItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack stack, @NonNull ServerLevel world, @NonNull Entity entity, @Nullable EquipmentSlot slot) {
-        PlayerTrackerComponent component = stack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
+        PlayerTrackerComponent component = stack.get(ModComponents.PLAYER_TRACKER_COMPONENT);
         if (component == null) return;
         if (!component.tracked()) return;
 
@@ -94,7 +94,7 @@ public class PlayerLocatorItem extends Item {
         }
 
 
-        PlayerTrackerComponent component = itemStack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
+        PlayerTrackerComponent component = itemStack.get(ModComponents.PLAYER_TRACKER_COMPONENT);
         if (component != null && component.tracked()) {
             user.displayClientMessage(Component.translatable("message.some_locators.player_locator_target_set_already"), true);
             return InteractionResult.FAIL;
@@ -113,7 +113,7 @@ public class PlayerLocatorItem extends Item {
     @Override
     public @NonNull InteractionResult use(@NonNull Level world, Player user, @NonNull InteractionHand hand) {
         ItemStack stack = user.getItemInHand(hand);
-        PlayerTrackerComponent component = stack.get(ModComponents.ENTITY_TRACKER_COMPONENT);
+        PlayerTrackerComponent component = stack.get(ModComponents.PLAYER_TRACKER_COMPONENT);
         if (component == null) return InteractionResult.PASS;
         if (component.trackedPlayerUUID().isEmpty()) return InteractionResult.PASS;
 
@@ -142,7 +142,7 @@ public class PlayerLocatorItem extends Item {
 
     private static void setPlayerTracker(ItemStack stack, PlayerTrackerComponent playerTrackerComponent) {
         stack.set(
-                ModComponents.ENTITY_TRACKER_COMPONENT,
+                ModComponents.PLAYER_TRACKER_COMPONENT,
                 playerTrackerComponent
         );
 
@@ -158,7 +158,7 @@ public class PlayerLocatorItem extends Item {
     }
 
     private void removeEntityTracker(ItemStack stack) {
-        stack.remove(ModComponents.ENTITY_TRACKER_COMPONENT);
+        stack.remove(ModComponents.PLAYER_TRACKER_COMPONENT);
         stack.remove(DataComponents.CUSTOM_MODEL_DATA);
     }
 }
