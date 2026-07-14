@@ -1,4 +1,4 @@
-package me.kveex.somelocators.network;
+package me.kveex.somelocators.network.locatorinspector;
 
 import me.kveex.somelocators.network.util.ClientPayload;
 import net.minecraft.core.BlockPos;

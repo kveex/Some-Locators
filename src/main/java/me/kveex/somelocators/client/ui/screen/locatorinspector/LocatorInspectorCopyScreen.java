@@ -1,4 +1,4 @@
-package me.kveex.somelocators.client.ui.screen;
+package me.kveex.somelocators.client.ui.screen.locatorinspector;
 
 import me.kveex.somelocators.client.ui.component.SelectablePointListComponent;
 import me.kveex.somelocators.client.ui.element.ButtonElement;
@@ -6,8 +6,8 @@ import me.kveex.somelocators.client.ui.element.ItemElement;
 import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.component.LodestonePointComponent;
-import me.kveex.somelocators.network.OpenLocatorInspectorMenuPayload;
-import me.kveex.somelocators.network.WriteLodestoneComponentPayload;
+import me.kveex.somelocators.network.locatorinspector.OpenCopyScreenPayload;
+import me.kveex.somelocators.network.locatorinspector.WriteLodestoneComponentPayload;
 import me.kveex.somelocators.registry.ModComponents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -21,7 +21,7 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
     private ButtonElement selectAllButton;
     private boolean buttonDisabled = false;
 
-    public LocatorInspectorCopyScreen(OpenLocatorInspectorMenuPayload payload) {
+    public LocatorInspectorCopyScreen(OpenCopyScreenPayload payload) {
         super(payload.pos());
         this.locator = payload.locator();
         this.punchCard = payload.punchCard();
@@ -39,7 +39,6 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
 
     private void initUI(ItemStack stackFrom, ItemStack stackTo, boolean showRewriteWarning) {
         CoordsPair uiStartCoords = getUiStartCoords();
-        int uiWidth = getUiWidth();
         int margin = 8, buttonMargin = 2;
         int itemScale = 3, itemSize = 16 * itemScale;
         int buttonPressTicks = showRewriteWarning ? 40 : 0;

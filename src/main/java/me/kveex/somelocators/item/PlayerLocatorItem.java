@@ -37,20 +37,19 @@ public class PlayerLocatorItem extends Item {
         if (component == null) return;
         if (!component.tracked()) return;
 
-        Optional<UUID> trackedPlayerUUID = component.trackedPlayerUUID();
-        if (trackedPlayerUUID.isEmpty()) return;
+        UUID trackedPlayerUUID = component.trackedPlayerUUID();
 
-        Optional<Player> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID.get());
+        Optional<Player> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID);
 
         if (trackedPlayer.isEmpty()) {
-            setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), PlayerDistance.NOT_FOUND, true, component.expiryTicks()));
+            setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID, PlayerDistance.NOT_FOUND, true, component.expiryTicks() + 1));
             return;
         }
 
         boolean isInSameDimension = trackedPlayer.get().level().dimension().equals(world.dimension());
 
         if (!isInSameDimension) {
-            setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), PlayerDistance.IN_ANOTHER_DIMENSION, true, component.expiryTicks()));
+            setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID, PlayerDistance.IN_ANOTHER_DIMENSION, true, component.expiryTicks()));
             return;
         }
 
@@ -64,7 +63,7 @@ public class PlayerLocatorItem extends Item {
 
         if (distanceForComponent.equals(component.playerDistance())) return;
 
-        setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID.get(), distanceForComponent, true, component.expiryTicks()));
+        setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID, distanceForComponent, true, component.expiryTicks()));
     }
 
     private Optional<Player> locatePlayer(MinecraftServer server, UUID targetUUID) {
@@ -115,7 +114,6 @@ public class PlayerLocatorItem extends Item {
         ItemStack stack = user.getItemInHand(hand);
         PlayerTrackerComponent component = stack.get(ModComponents.PLAYER_TRACKER_COMPONENT);
         if (component == null) return InteractionResult.PASS;
-        if (component.trackedPlayerUUID().isEmpty()) return InteractionResult.PASS;
 
         if (component.playerDistance().equals(PlayerDistance.NOT_FOUND)) {
             if (user.isShiftKeyDown()) {
@@ -127,10 +125,10 @@ public class PlayerLocatorItem extends Item {
 
         if (component.tracked()) return InteractionResult.PASS;
 
-        long expiryTicks = world.getGameTime() + /*SomeLocators.CONFIG.playerLocatorTrackingTime()*/ SomeLocatorsConfig.playerLocatorTrackingTime * 20L;
+        long expiryTicks = world.getGameTime() + SomeLocatorsConfig.playerLocatorTrackingTime * 20L;
 
         PlayerTrackerComponent newComponent = new PlayerTrackerComponent(
-                component.trackedPlayerUUID().get(),
+                component.trackedPlayerUUID(),
                 component.playerDistance(),
                 true,
                 expiryTicks

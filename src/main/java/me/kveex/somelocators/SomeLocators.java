@@ -2,7 +2,11 @@ package me.kveex.somelocators;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 import me.kveex.somelocators.config.SomeLocatorsConfig;
-import me.kveex.somelocators.network.*;
+import me.kveex.somelocators.network.locator.*;
+import me.kveex.somelocators.network.locatorinspector.OpenCopyScreenPayload;
+import me.kveex.somelocators.network.locatorinspector.OpenInspectScreenPayload;
+import me.kveex.somelocators.network.locatorinspector.SetUnusedPayload;
+import me.kveex.somelocators.network.locatorinspector.WriteLodestoneComponentPayload;
 import me.kveex.somelocators.network.util.Payloads;
 import me.kveex.somelocators.registry.*;
 import net.fabricmc.api.ModInitializer;
@@ -38,11 +42,12 @@ public class SomeLocators implements ModInitializer {
         Payloads.registerType(ChangeTargetPointPayload.class);
         Payloads.registerType(CreateLodestonePointPayload.class);
         Payloads.registerType(OpenLocatorMenuPayload.class);
-        Payloads.registerType(OpenLocatorInspectorMenuPayload.class);
+        Payloads.registerType(OpenInspectScreenPayload.class);
         Payloads.registerType(RemovePointPayload.class);
         Payloads.registerType(RenamePointPayload.class);
         Payloads.registerType(SetLodestonePointPayload.class);
-        Payloads.registerType(SetLocatorInspectorUnused.class);
+        Payloads.registerType(SetUnusedPayload.class);
+        Payloads.registerType(OpenCopyScreenPayload.class);
         Payloads.registerType(WriteLodestoneComponentPayload.class);
     }
 }

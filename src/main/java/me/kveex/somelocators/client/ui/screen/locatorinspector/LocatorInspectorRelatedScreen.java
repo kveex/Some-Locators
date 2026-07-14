@@ -1,8 +1,8 @@
-package me.kveex.somelocators.client.ui.screen;
+package me.kveex.somelocators.client.ui.screen.locatorinspector;
 
 import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
-import me.kveex.somelocators.network.SetLocatorInspectorUnused;
+import me.kveex.somelocators.network.locatorinspector.SetUnusedPayload;
 import me.kveex.somelocators.registry.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,7 +17,7 @@ import org.jspecify.annotations.NonNull;
 
 public class LocatorInspectorRelatedScreen extends Screen {
     private CoordsPair uiStartCoords;
-    private static final int uiWidth = 256, uiHeight = 192;
+    public static final int uiWidth = 256, uiHeight = 192;
     private static final Identifier FRAME = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "locator_inspector_frame");
     private final BlockPos blockPos;
     private boolean blockMoved = false;
@@ -66,17 +66,13 @@ public class LocatorInspectorRelatedScreen extends Screen {
 
     @Override
     public void onClose() {
-        SetLocatorInspectorUnused unused = new SetLocatorInspectorUnused(blockPos, blockMoved);
+        SetUnusedPayload unused = new SetUnusedPayload(blockPos, blockMoved);
         unused.send();
         super.onClose();
     }
 
     public CoordsPair getUiStartCoords() {
         return this.uiStartCoords;
-    }
-
-    public int getUiWidth() {
-        return uiWidth;
     }
 
     public BlockPos getBlockPos() {

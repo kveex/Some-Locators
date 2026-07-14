@@ -1,6 +1,6 @@
 package me.kveex.somelocators.client.ui.component;
 
-import me.kveex.somelocators.client.ui.screen.LocatorMenuScreen;
+import me.kveex.somelocators.client.ui.screen.locator.LocatorMenuScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;

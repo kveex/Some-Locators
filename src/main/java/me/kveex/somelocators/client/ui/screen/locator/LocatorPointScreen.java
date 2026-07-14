@@ -1,13 +1,13 @@
-package me.kveex.somelocators.client.ui.screen;
+package me.kveex.somelocators.client.ui.screen.locator;
 
 import me.kveex.somelocators.client.ui.element.BlockElement;
 import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.element.TextInputElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.component.PointComponent;
-import me.kveex.somelocators.network.CreateLodestonePointPayload;
-import me.kveex.somelocators.network.RenamePointPayload;
-import me.kveex.somelocators.network.SetLodestonePointPayload;
+import me.kveex.somelocators.network.locator.CreateLodestonePointPayload;
+import me.kveex.somelocators.network.locator.RenamePointPayload;
+import me.kveex.somelocators.network.locator.SetLodestonePointPayload;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;

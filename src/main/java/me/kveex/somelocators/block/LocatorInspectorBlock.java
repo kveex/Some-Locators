@@ -5,9 +5,8 @@ import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.block.entity.LocatorInspectorBlockEntity;
 import me.kveex.somelocators.block.entity.util.InsertResult;
 import me.kveex.somelocators.block.properties.LocatorInspectorHalf;
-import me.kveex.somelocators.network.OpenLocatorInspectorMenuPayload;
-import me.kveex.somelocators.network.SetLocatorInspectorUnused;
-import me.kveex.somelocators.network.WriteLodestoneComponentPayload;
+import me.kveex.somelocators.network.locatorinspector.SetUnusedPayload;
+import me.kveex.somelocators.network.locatorinspector.WriteLodestoneComponentPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -84,14 +83,8 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
                 player.displayClientMessage(Component.translatable("message.some_locators.locator_inspector_empty"), true);
                 return InteractionResult.FAIL;
             }
-            OpenLocatorInspectorMenuPayload openLocatorInspectorMenu = new OpenLocatorInspectorMenuPayload(
-                    blockEntity.getLocatorItem(),
-                    blockEntity.getPunchCard(),
-                    blockEntityPos
-            );
-            openLocatorInspectorMenu.send(serverPlayer);
-            blockEntity.setCurrentlyUsed();
 
+            blockEntity.openScreen(serverPlayer);
         } else if (half == LocatorInspectorHalf.BOTTOM) {
             if (stack.isEmpty()) {
                 ItemStack newStack = blockEntity.takeItem();
@@ -163,7 +156,7 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
         level.setBlock(pos.above(), state.setValue(HALF, LocatorInspectorHalf.TOP), 2);
     }
 
-    public static void setUnused(SetLocatorInspectorUnused payload, ServerPlayNetworking.Context access) {
+    public static void setUnused(SetUnusedPayload payload, ServerPlayNetworking.Context access) {
         if (payload.blockMoved()) return;
         ServerLevel level = access.player().level();
         BlockEntity block = level.getBlockEntity(payload.pos());

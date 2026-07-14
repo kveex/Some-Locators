@@ -1,4 +1,4 @@
-package me.kveex.somelocators.network;
+package me.kveex.somelocators.network.locator;
 
 import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.util.ServerPayload;

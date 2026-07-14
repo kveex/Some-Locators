@@ -11,22 +11,21 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public record PlayerTrackerComponent(Optional<String> trackedPlayer, PlayerDistance playerDistance, boolean tracked, long expiryTicks) implements TooltipProvider {
+public record PlayerTrackerComponent(String trackedPlayer, PlayerDistance playerDistance, boolean tracked, long expiryTicks) implements TooltipProvider {
     public PlayerTrackerComponent(UUID trackedPlayerUUID) {
-        this(Optional.of(trackedPlayerUUID.toString()), PlayerDistance.NOT_TRACKED, false, 0);
+        this(trackedPlayerUUID.toString(), PlayerDistance.NOT_TRACKED, false, 0);
     }
 
     public PlayerTrackerComponent(UUID trackedPlayerUUID, PlayerDistance playerDistance, boolean tracked, long expiryTicks) {
-        this(Optional.of(trackedPlayerUUID.toString()), playerDistance, tracked, expiryTicks);
+        this(trackedPlayerUUID.toString(), playerDistance, tracked, expiryTicks);
     }
 
     public static final Codec<PlayerTrackerComponent> CODEC = RecordCodecBuilder.create(
             builder -> builder.group(
-                    Codec.STRING.optionalFieldOf("tracker_player_uuid").forGetter(PlayerTrackerComponent::trackedPlayer),
+                    Codec.STRING.fieldOf("tracker_player_uuid").forGetter(PlayerTrackerComponent::trackedPlayer),
                     PlayerDistance.CODEC.fieldOf("player_distance").forGetter(PlayerTrackerComponent::playerDistance),
                     Codec.BOOL.fieldOf("tracked").forGetter(PlayerTrackerComponent::tracked),
                     Codec.LONG.fieldOf("expiry_ticks").forGetter(PlayerTrackerComponent::expiryTicks)
@@ -35,17 +34,17 @@ public record PlayerTrackerComponent(Optional<String> trackedPlayer, PlayerDista
 
     @Override
     public void addToTooltip(Item.@NonNull TooltipContext context, @NonNull Consumer<Component> consumer, @NonNull TooltipFlag type, @NonNull DataComponentGetter components) {
-        if (trackedPlayer.isPresent() && SomeLocatorsConfig.locatorShowsAdditionalInformation) {
+        if (SomeLocatorsConfig.locatorShowsAdditionalInformation) {
             Component playerDistanceText = Component.translatable("tooltip.some_locators.player_distance")
                     .append(Component.literal(" ")).append(playerDistance.asText()).withStyle(ChatFormatting.DARK_GRAY);
 
             consumer.accept(playerDistanceText);
 
-            consumer.accept(Component.literal("UUID: " + trackedPlayer.get()).withStyle(ChatFormatting.DARK_GRAY));
+            consumer.accept(Component.literal("UUID: " + trackedPlayer).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 
-    public Optional<UUID> trackedPlayerUUID() {
-        return trackedPlayer.map(UUID::fromString);
+    public UUID trackedPlayerUUID() {
+        return UUID.fromString(trackedPlayer);
     }
 }

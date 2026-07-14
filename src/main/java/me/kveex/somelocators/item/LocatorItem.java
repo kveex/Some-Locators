@@ -6,7 +6,7 @@ import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.component.PointComponent;
 import me.kveex.somelocators.config.SomeLocatorsConfig;
 import me.kveex.somelocators.fun.RandomNullErrorPhrases;
-import me.kveex.somelocators.network.*;
+import me.kveex.somelocators.network.locator.*;
 import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
 import me.kveex.somelocators.registry.ModTags;
@@ -164,7 +164,7 @@ public class LocatorItem extends Item {
     }
 
     public static void setTracker(SetLodestonePointPayload tracker, ServerPlayNetworking.Context access) {
-        ItemStack itemStack = access.player().getMainHandItem();
+        ItemStack itemStack = access.player().getMainHandItem().isEmpty() ? access.player().getOffhandItem() : access.player().getMainHandItem();
         Optional<LodestonePointComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
         LodestonePointComponent lodestonePointComponent = optional.get();

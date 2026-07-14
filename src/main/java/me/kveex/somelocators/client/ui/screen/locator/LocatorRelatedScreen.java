@@ -1,4 +1,4 @@
-package me.kveex.somelocators.client.ui.screen;
+package me.kveex.somelocators.client.ui.screen.locator;
 
 import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.client.ui.util.CoordsPair;

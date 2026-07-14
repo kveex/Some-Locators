@@ -2,7 +2,12 @@ package me.kveex.somelocators.registry;
 
 import me.kveex.somelocators.block.LocatorInspectorBlock;
 import me.kveex.somelocators.item.LocatorItem;
-import me.kveex.somelocators.network.*;
+import me.kveex.somelocators.network.locator.ChangeTargetPointPayload;
+import me.kveex.somelocators.network.locator.RemovePointPayload;
+import me.kveex.somelocators.network.locator.RenamePointPayload;
+import me.kveex.somelocators.network.locator.SetLodestonePointPayload;
+import me.kveex.somelocators.network.locatorinspector.SetUnusedPayload;
+import me.kveex.somelocators.network.locatorinspector.WriteLodestoneComponentPayload;
 import me.kveex.somelocators.network.util.Payloads;
 
 public class ModNetworking {
@@ -12,7 +17,7 @@ public class ModNetworking {
         Payloads.registerC2S(ChangeTargetPointPayload.class, LocatorItem::changeTargetedPoint);
         Payloads.registerC2S(RemovePointPayload.class, LocatorItem::removePoint);
         Payloads.registerC2S(RenamePointPayload.class, LocatorItem::renamePoint);
-        Payloads.registerC2S(SetLocatorInspectorUnused.class, LocatorInspectorBlock::setUnused);
+        Payloads.registerC2S(SetUnusedPayload.class, LocatorInspectorBlock::setUnused);
         Payloads.registerC2S(WriteLodestoneComponentPayload.class, LocatorInspectorBlock::writePunchCard);
     }
 }
