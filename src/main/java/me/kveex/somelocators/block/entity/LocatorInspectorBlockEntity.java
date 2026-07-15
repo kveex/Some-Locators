@@ -1,9 +1,7 @@
 package me.kveex.somelocators.block.entity;
 
-import com.mojang.authlib.GameProfile;
 import me.kveex.somelocators.block.entity.util.ImplementedContainer;
 import me.kveex.somelocators.block.entity.util.InsertResult;
-import me.kveex.somelocators.component.PlayerTrackerComponent;
 import me.kveex.somelocators.network.locatorinspector.OpenCopyScreenPayload;
 import me.kveex.somelocators.network.locatorinspector.OpenInspectScreenPayload;
 import me.kveex.somelocators.registry.ModBlockEntities;
@@ -18,7 +16,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -29,7 +26,6 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class LocatorInspectorBlockEntity extends BlockEntity implements ImplementedContainer {
     private static final int LOCATOR = 0;
@@ -122,19 +118,8 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
             openCopyScreenPayload.send(player);
         } else {
             ItemStack inspectedStack = locator.isEmpty() ? punchCard : locator;
-            Optional<GameProfile> optionalGameProfile = Optional.empty();
-            PlayerTrackerComponent playerTrackerComponent = inspectedStack.get(ModComponents.PLAYER_TRACKER_COMPONENT);
-
-            if (playerTrackerComponent != null) {
-                Player trackedPlayer = player.level().getPlayerInAnyDimension(playerTrackerComponent.trackedPlayerUUID());
-                if (trackedPlayer != null) {
-                    optionalGameProfile = Optional.of(trackedPlayer.getGameProfile());
-                }
-            }
-
             OpenInspectScreenPayload openInspectScreenPayload = new OpenInspectScreenPayload(
-                    this.getBlockPos(), inspectedStack,
-                    optionalGameProfile
+                    this.getBlockPos(), inspectedStack
             );
             openInspectScreenPayload.send(player);
         }

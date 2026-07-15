@@ -9,8 +9,10 @@ import me.kveex.somelocators.component.LodestonePointComponent;
 import me.kveex.somelocators.network.locatorinspector.OpenCopyScreenPayload;
 import me.kveex.somelocators.network.locatorinspector.WriteLodestoneComponentPayload;
 import me.kveex.somelocators.registry.ModComponents;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
 
 public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
@@ -45,11 +47,11 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
 
         int itemY = uiStartCoords.y() + margin, screenWidth = uiWidth / 2;
 
-        CoordsPair itemFromCentered = CoordsPair.createCentered(uiStartCoords, screenWidth, itemY, itemSize, itemSize);
-        CoordsPair itemToCentered = CoordsPair.createCentered(uiStartCoords.x() + screenWidth, 0, screenWidth, itemY, itemSize, itemSize);
+        int itemFromCentered = CoordsPair.centeredX(uiStartCoords.x(), screenWidth, itemSize);
+        int itemToCentered = CoordsPair.centeredX(uiStartCoords.x() + screenWidth, screenWidth, itemSize);
 
-        ItemElement fromItemElement = new ItemElement(itemFromCentered.x(), itemY, itemScale, stackFrom);
-        ItemElement toItemElement = new ItemElement(itemToCentered.x(), itemY, itemScale, stackTo);
+        ItemElement fromItemElement = new ItemElement(itemFromCentered, itemY, itemScale, stackFrom);
+        ItemElement toItemElement = new ItemElement(itemToCentered, itemY, itemScale, stackTo);
 
         this.addRenderableWidget(fromItemElement);
         this.addRenderableWidget(toItemElement);
@@ -101,6 +103,7 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
                 : Component.translatable("ui.some_locators.locator_inspector_copy_button");
         int copyButtonX = deselectAllButtonX + buttonWidth + buttonMargin;
         this.copyButton = ButtonElement.builder(copButtonText, button -> {
+            LocalPlayer player = this.minecraft.player;
             var selectedPoints = list.getSelectedPoints();
             stackTo.set(ModComponents.LODESTONE_POINT_COMPONENT, new LodestonePointComponent(selectedPoints.getFirst(), selectedPoints, false));
             if (stackFrom.getCustomName() != null) {
@@ -108,6 +111,9 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
             }
             WriteLodestoneComponentPayload payload = new WriteLodestoneComponentPayload(stackTo, this.getBlockPos());
             payload.send();
+            if (player != null) {
+                player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+            }
             list.active = false;
             this.buttonDisabled = true;
             button.active(false);

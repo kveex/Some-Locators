@@ -1,6 +1,7 @@
 package me.kveex.somelocators.client.ui.component;
 
 import me.kveex.somelocators.client.ui.screen.locator.LocatorMenuScreen;
+import me.kveex.somelocators.client.ui.util.TooltipDrawer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -27,7 +28,6 @@ public class PageSwitchComponent extends AbstractWidget {
 
     @Override
     public void renderWidget(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-//        graphics.renderOutline(this.getX() - 1, this.getY() - 1, this.getWidth() + 2, this.getHeight() + 2, 0xFFFFFFFF);
         switchWidget.render(graphics, mouseX, mouseY, partialTick);
     }
 
@@ -63,6 +63,7 @@ public class PageSwitchComponent extends AbstractWidget {
 
     @Override
     public void onRelease(@NonNull MouseButtonEvent event) {
+        if (TooltipDrawer.hasHoveredWidget()) return;
         int snappedX = getSnapX((int) (event.x() - (double) this.switchWidget.getWidth() / 2));
         this.switchWidget.setX(snappedX);
     }
@@ -86,6 +87,7 @@ public class PageSwitchComponent extends AbstractWidget {
 
         @Override
         protected void onDrag(@NonNull MouseButtonEvent event, double mouseX, double mouseY) {
+            if (TooltipDrawer.hasHoveredWidget()) return;
             int nextX = ((int) (event.x() - (double) this.getWidth() / 2));
             if (nextX <= startSwitchLimit) {
                 this.setX(startSwitchLimit);

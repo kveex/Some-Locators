@@ -6,7 +6,9 @@ import me.kveex.somelocators.client.ui.component.PointInfoComponent;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.client.ui.util.TooltipDrawer;
 import me.kveex.somelocators.component.PointComponent;
+import me.kveex.somelocators.network.locator.RemovePointPayload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LocatorMenuScreen extends LocatorRelatedScreen {
@@ -29,6 +31,27 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         this.rebuildWidgets();
     }
 
+    //region This part was made by AI, because I couldn't figure out
+    // how to make remove button not cause "ConcurrentModificationException"
+    // and still being able to use button "long press feature" as I call it
+    // YES I USED AI AND SO BE IT, I'VE TRIED MY BEST
+    private final List<Runnable> pendingActions = new ArrayList<>();
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!pendingActions.isEmpty()) {
+            List<Runnable> actions = new ArrayList<>(pendingActions);
+            pendingActions.clear();
+            actions.forEach(Runnable::run);
+        }
+    }
+
+    public void scheduleAction(Runnable action) {
+        pendingActions.add(action);
+    }
+    //endregion
+
     @Override
     public void onClose() {
         super.onClose();
@@ -42,9 +65,9 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         this.pagesAmount = (int) Math.ceil((double) points.size() / MAX_POINTS_ON_PAGE);
 
         CoordsPair locatorCenter = this.getLocatorCenter();
+        int pageSwitchXOffset = 45, pageSwitchYOffset = 80;
         if (this.pageSwitch == null) {
-            System.out.println("null");
-            this.pageSwitch = new PageSwitchComponent(locatorCenter.x() - 45, locatorCenter.y() + 80, this);
+            this.pageSwitch = new PageSwitchComponent(locatorCenter.x() - pageSwitchXOffset, locatorCenter.y() + pageSwitchYOffset, this);
         }
         this.addRenderableWidget(this.pageSwitch);
 
@@ -77,6 +100,9 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         if (currentPoint != null && currentPoint.target().equals(point.target())) {
             currentPoint = points.isEmpty() ? null : points.getFirst();
         }
+
+        RemovePointPayload removePoint = new RemovePointPayload(point);
+        removePoint.send();
 
         if (this.points.isEmpty()) {
             this.onClose();

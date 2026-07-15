@@ -30,4 +30,8 @@ public class TooltipDrawer {
     public static boolean canClaim(PointInfoComponent pointInfo) {
         return hoveredWidget == null || hoveredWidget == pointInfo;
     }
+
+    public static boolean hasHoveredWidget() {
+        return hoveredWidget != null;
+    }
 }

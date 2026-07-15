@@ -47,7 +47,7 @@ public class LocatorInspectorRelatedScreen extends Screen {
 
     @Override
     protected void init() {
-        this.uiStartCoords = CoordsPair.create(this.width, this.height, uiWidth, uiHeight);
+        this.uiStartCoords = CoordsPair.centered(0, 0, this.width, this.height, uiWidth, uiHeight);
     }
 
     @Override

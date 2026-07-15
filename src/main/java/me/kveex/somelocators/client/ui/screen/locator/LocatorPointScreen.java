@@ -1,6 +1,7 @@
 package me.kveex.somelocators.client.ui.screen.locator;
 
 import me.kveex.somelocators.client.ui.element.BlockElement;
+import me.kveex.somelocators.client.ui.element.ButtonElement;
 import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.element.TextInputElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
@@ -8,7 +9,6 @@ import me.kveex.somelocators.component.PointComponent;
 import me.kveex.somelocators.network.locator.CreateLodestonePointPayload;
 import me.kveex.somelocators.network.locator.RenamePointPayload;
 import me.kveex.somelocators.network.locator.SetLodestonePointPayload;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.component.LodestoneTracker;
@@ -34,18 +34,19 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
 
     @Override
     protected void init() {
+        super.init();
         // Block
         int blockSize = 128;
-        var blockCenter = CoordsPair.create(this.width, this.height, blockSize);
-        int blockOffset = 24, blockY = blockCenter.y() - blockOffset;
+        int blockOffset = 24;
+        var blockCenter = CoordsPair.centered(0, 0, this.width, this.height, blockSize, blockSize);
 
-        BlockElement blockElement = new BlockElement(blockCenter.x(), blockY, blockSize, this.blockState, true);
+        BlockElement blockElement = new BlockElement(blockCenter.x(), blockCenter.y() - blockOffset, blockSize, this.blockState, true);
 
         this.addRenderableWidget(blockElement);
 
         // Text Input
-        int textInputWidth = 120, textInputHeight = this.font.lineHeight + 12;
-        var textInputCenter = CoordsPair.create(this.width, this.height, textInputWidth, textInputHeight);
+        int textInputWidth = 120, textInputHeight = this.font.lineHeight + 12, elementMargin = 4;
+        var textInputCenter = CoordsPair.centered(0, 0, this.width, this.height, textInputWidth, textInputHeight);
         int textInputY = textInputCenter.y() + 80;
 
         Component blockName = Component.translatable(this.blockState.getBlock().getDescriptionId());
@@ -63,7 +64,7 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
                 Component.translatable("ui.some_locators.create_point") :
                 Component.translatable("ui.some_locators.rename_point");
 
-        Button buttonWidget = Button.builder(buttonText, (btn) -> {
+        ButtonElement buttonWidget = ButtonElement.builder(buttonText, button -> {
             String pointName = nameTextBox.getValue().isBlank() ? blockName.getString() : nameTextBox.getValue();
             if (noTracker) {
                 SetLodestonePointPayload setLodestonePoint = new SetLodestonePointPayload(pointName, globalPos, blockState);
@@ -73,7 +74,7 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
                 renamePoint.send();
             }
             this.onClose();
-        }).bounds(textInputCenter.x(), textInputY + textInputHeight, textInputWidth, textInputHeight).build();
+        }).pos(textInputCenter.x(), textInputY + textInputHeight + elementMargin).width(textInputWidth).build();
 
         this.addRenderableWidget(buttonWidget);
 

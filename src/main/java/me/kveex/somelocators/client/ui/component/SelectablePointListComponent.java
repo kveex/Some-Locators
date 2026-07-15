@@ -105,6 +105,7 @@ public class SelectablePointListComponent extends AbstractWidget {
 
         if (index >= 0 && index < list.size()) {
             moveToOtherList(side, index);
+            this.playDownSound(Minecraft.getInstance().getSoundManager());
             this.onPress.onPress(this);
         }
 
@@ -173,7 +174,7 @@ public class SelectablePointListComponent extends AbstractWidget {
             );
             this.pointName = LabelElement.builder(0, 0, Component.literal(point.name()))
                     .centered()
-                    .width(width - BLOCK_SIZE * 2 + TOOLTIP_PADDING)
+                    .width(width - BLOCK_SIZE * 2 + TOOLTIP_PADDING * 2)
                     .build();
         }
 

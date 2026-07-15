@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -88,11 +89,13 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
         } else if (half == LocatorInspectorHalf.BOTTOM) {
             if (stack.isEmpty()) {
                 ItemStack newStack = blockEntity.takeItem();
+
+                if (!newStack.isEmpty()) {
+                    level.playSound(null, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    level.playSound(null, blockEntityPos, SoundEvents.BUNDLE_INSERT, SoundSource.BLOCKS, 1.0F, 1.0F);
+                }
+
                 player.addItem(newStack);
-
-                level.playSound(serverPlayer, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 0.85F);
-                level.playSound(serverPlayer, blockEntityPos, SoundEvents.BUNDLE_INSERT, SoundSource.BLOCKS, 1.0F, 1.0F);
-
             } else {
                 InsertResult insertResult = blockEntity.tryInsertItem(stack.copyWithCount(1));
                 if (insertResult == InsertResult.CONTAINS) {
@@ -102,7 +105,7 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
 
                 player.getItemInHand(mainHand).consume(1, player);
 
-                level.playSound(serverPlayer, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.0F);
+                level.playSound(null, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.15F);
 
             }
         }
@@ -154,6 +157,11 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
     @Override
     public void setPlacedBy(@NonNull Level level, @NonNull BlockPos pos, @NonNull BlockState state, @Nullable LivingEntity placer, @NonNull ItemStack stack) {
         level.setBlock(pos.above(), state.setValue(HALF, LocatorInspectorHalf.TOP), 2);
+    }
+
+    @Override
+    protected boolean isPathfindable(@NonNull BlockState state, @NonNull PathComputationType pathComputationType) {
+        return false;
     }
 
     public static void setUnused(SetUnusedPayload payload, ServerPlayNetworking.Context access) {

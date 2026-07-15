@@ -2,6 +2,7 @@ package me.kveex.somelocators.client.ui.component;
 
 import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.client.ui.element.BlockElement;
+import me.kveex.somelocators.client.ui.element.ButtonElement;
 import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.screen.locator.LocatorMenuScreen;
 import me.kveex.somelocators.client.ui.screen.locator.LocatorPointScreen;
@@ -9,11 +10,9 @@ import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.client.ui.util.TooltipDrawer;
 import me.kveex.somelocators.component.PointComponent;
 import me.kveex.somelocators.network.locator.ChangeTargetPointPayload;
-import me.kveex.somelocators.network.locator.RemovePointPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -22,8 +21,8 @@ import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 
 public class PointInfoComponent extends AbstractWidget {
-    private Button renameButton;
-    private Button removeButton;
+    private ButtonElement renameButton;
+    private ButtonElement removeButton;
     private boolean blockElementHoveredFirst = false;
     private final LocatorMenuScreen parent;
     private final PointComponent point;
@@ -85,29 +84,26 @@ public class PointInfoComponent extends AbstractWidget {
 
         labelElement.render(graphics);
 
-        int buttonWidth = 80, buttonHeight = 20, buttonMargin = 2;
-        CoordsPair buttonCenter = CoordsPair.create(this.getWidth() + blockSize + labelMargin, 0, buttonWidth, buttonHeight);
-        int buttonX = this.getX() + buttonCenter.x(), renameButtonY = labelElement.getY() + MARGIN * 2;
+        int buttonWidth = 82, buttonHeight = 20, buttonMargin = 2;
+        int buttonX = CoordsPair.centeredX(this.getX(), this.getWidth() + blockSize + labelMargin, buttonWidth);
+        int renameButtonY = labelElement.getY() + MARGIN * 2;
 
         // Rename button
         if (this.renameButton == null) {
-            this.renameButton = Button.builder(Component.translatable("ui.some_locators.rename_point"), button -> {
+            this.renameButton = ButtonElement.builder(Component.translatable("ui.some_locators.rename_point"), button -> {
                 TooltipDrawer.clearHoveredWidget();
                 Minecraft.getInstance().setScreen(new LocatorPointScreen(this.point));
-            }).bounds(buttonX, renameButtonY, buttonWidth, buttonHeight).build();
+            }).pos(buttonX, renameButtonY).width(buttonWidth).build();
         }
         this.renameButton.render(graphics, mouseX, mouseY, delta);
 
         // Remove button
         int removeButtonY = renameButtonY + buttonHeight + buttonMargin;
         if (this.removeButton == null) {
-            this.removeButton = Button.builder(Component.translatable("ui.some_locators.remove_point"), button -> {
+            this.removeButton = ButtonElement.builder(Component.translatable("ui.some_locators.remove_point"), button -> this.parent.scheduleAction(() -> {
                 TooltipDrawer.clearHoveredWidget();
-                RemovePointPayload removePoint = new RemovePointPayload(this.point);
-                removePoint.send();
-
                 this.parent.removePoint(this.point);
-            }).bounds(buttonX, removeButtonY, buttonWidth, buttonHeight).build();
+            })).ticksAmountForPress(20).pos(buttonX, removeButtonY).width(buttonWidth).build();
         }
         this.removeButton.render(graphics, mouseX, mouseY, delta);
     }
@@ -138,11 +134,11 @@ public class PointInfoComponent extends AbstractWidget {
         if (!TooltipDrawer.isHoveredWidget(this)) return false;
 
         if (this.renameButton.mouseClicked(event, doubleClicked)) {
-            return super.mouseClicked(event, doubleClicked);
+            return true;
         }
 
         if (this.removeButton.mouseClicked(event, doubleClicked)) {
-            return super.mouseClicked(event, doubleClicked);
+            return true;
         }
 
         if (this.isTracked) return false;
@@ -159,6 +155,13 @@ public class PointInfoComponent extends AbstractWidget {
         TooltipDrawer.clearHoveredWidget();
 
         return super.mouseClicked(event, doubleClicked);
+    }
+
+    @Override
+    public void onRelease(@NonNull MouseButtonEvent event) {
+        if (this.removeButton.mouseReleased(event)) {
+            this.removeButton.onRelease(event);
+        }
     }
 
     private void renderTrackedPointFrame(@NonNull GuiGraphics graphics) {

@@ -17,10 +17,15 @@ public class LocatorRelatedScreen extends Screen {
     }
 
     @Override
+    protected void init() {
+        this.locatorCenter = new CoordsPair(this.width / 2, this.height / 2 - 24);
+    }
+
+    @Override
     public void renderBackground(@NonNull GuiGraphics graphics, int i, int j, float f) {
         int u = 0, v = 0;
         int textureSize = 384;
-        var locatorTextureCenter = CoordsPair.create(this.width, this.height, textureSize);
+        var locatorTextureCenter = CoordsPair.centered(0, 0, this.width, this.height, textureSize, textureSize);
 
         graphics.blit(
                 RenderPipelines.GUI_TEXTURED, LOCATOR_BACK_TEXTURE,
@@ -32,9 +37,6 @@ public class LocatorRelatedScreen extends Screen {
     }
 
     protected CoordsPair getLocatorCenter() {
-        if (locatorCenter == null) {
-            locatorCenter = new CoordsPair(this.width / 2, this.height / 2 - 24);
-        }
         return locatorCenter;
     }
 

@@ -37,19 +37,19 @@ public class PlayerLocatorItem extends Item {
         if (component == null) return;
         if (!component.tracked()) return;
 
-        UUID trackedPlayerUUID = component.trackedPlayerUUID();
+        UUID trackedPlayerUUID = component.gameProfile().id();
 
         Optional<Player> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID);
 
         if (trackedPlayer.isEmpty()) {
-            setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID, PlayerDistance.NOT_FOUND, true, component.expiryTicks() + 1));
+            setPlayerTracker(stack, new PlayerTrackerComponent(component.gameProfile(), PlayerDistance.NOT_FOUND, true, component.expiryTicks() + 1));
             return;
         }
 
         boolean isInSameDimension = trackedPlayer.get().level().dimension().equals(world.dimension());
 
         if (!isInSameDimension) {
-            setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID, PlayerDistance.IN_ANOTHER_DIMENSION, true, component.expiryTicks()));
+            setPlayerTracker(stack, new PlayerTrackerComponent(component.gameProfile(), PlayerDistance.IN_ANOTHER_DIMENSION, true, component.expiryTicks()));
             return;
         }
 
@@ -63,7 +63,7 @@ public class PlayerLocatorItem extends Item {
 
         if (distanceForComponent.equals(component.playerDistance())) return;
 
-        setPlayerTracker(stack, new PlayerTrackerComponent(trackedPlayerUUID, distanceForComponent, true, component.expiryTicks()));
+        setPlayerTracker(stack, new PlayerTrackerComponent(component.gameProfile(), distanceForComponent, true, component.expiryTicks()));
     }
 
     private Optional<Player> locatePlayer(MinecraftServer server, UUID targetUUID) {
@@ -99,11 +99,9 @@ public class PlayerLocatorItem extends Item {
             return InteractionResult.FAIL;
         }
 
-        UUID victimUuid = victim.getUUID();
-
         setPlayerTracker(
                 itemStack,
-                new PlayerTrackerComponent(victimUuid)
+                new PlayerTrackerComponent(victim.getGameProfile())
         );
 
         return InteractionResult.SUCCESS;
@@ -128,7 +126,7 @@ public class PlayerLocatorItem extends Item {
         long expiryTicks = world.getGameTime() + SomeLocatorsConfig.playerLocatorTrackingTime * 20L;
 
         PlayerTrackerComponent newComponent = new PlayerTrackerComponent(
-                component.trackedPlayerUUID(),
+                component.gameProfile(),
                 component.playerDistance(),
                 true,
                 expiryTicks

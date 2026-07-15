@@ -14,6 +14,7 @@ import me.kveex.somelocators.registry.ModComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.PlayerModelPart;
@@ -24,12 +25,10 @@ import static me.kveex.somelocators.client.ui.screen.locator.LocatorMenuScreen.M
 
 public class LocatorInspectorInspectScreen extends LocatorInspectorRelatedScreen {
     private final ItemStack inspectedStack;
-    private final GameProfile gameProfile;
 
     public LocatorInspectorInspectScreen(OpenInspectScreenPayload payload) {
         super(payload.pos());
         this.inspectedStack = payload.inspectedStack();
-        this.gameProfile = payload.playerProfile().isPresent() ? payload.playerProfile().get() : null;
     }
 
     @Override
@@ -106,20 +105,7 @@ public class LocatorInspectorInspectScreen extends LocatorInspectorRelatedScreen
 
             this.addRenderableWidget(list);
         } else if (playerComponent != null) {
-            if (this.gameProfile == null) {
-                initError(Component.translatable("ui.some_locators.locator_inspector_player_not_found"));
-                return;
-            }
-
-            ClientLevel level = Minecraft.getInstance().level;
-            if (level == null) return;
-
-            AbstractClientPlayer fakePlayer = new AbstractClientPlayer(level, this.gameProfile) {
-                @Override
-                public boolean isModelPartShown(@NonNull PlayerModelPart part) {
-                    return true;
-                }
-            };
+            AbstractClientPlayer fakePlayer = makeFakePlayer(playerComponent.gameProfile());
 
             int entityHeight = 80, entityWidth = 80, entityY = uiStartCoords.y() + uiHeight / 2 - entityHeight / 2;
             EntityElement playerModel = EntityElement.builder(uiStartCoords.x() + elementMargin, entityY, fakePlayer)
@@ -133,7 +119,7 @@ public class LocatorInspectorInspectScreen extends LocatorInspectorRelatedScreen
             int labelWidth = uiWidth - entityWidth - elementMargin * 3;
             int labelX = playerModel.getX() + entityWidth + elementMargin;
             LabelElement playerUUID = LabelElement.builder(
-                            labelX, entityY, Component.literal(playerComponent.trackedPlayer()).withStyle(ChatFormatting.DARK_GRAY)
+                            labelX, entityY, Component.literal(playerComponent.gameProfile().id().toString()).withStyle(ChatFormatting.DARK_GRAY)
                     )
                     .staticText(Component.literal("UUID:"))
                     .width(labelWidth)
@@ -141,7 +127,7 @@ public class LocatorInspectorInspectScreen extends LocatorInspectorRelatedScreen
 
             int playerNameY = uiStartCoords.y() + uiHeight / 2 - font.lineHeight / 2;
             LabelElement playerName = LabelElement.builder(
-                    labelX, playerNameY, fakePlayer.getName()
+                    labelX, playerNameY, Component.literal(playerComponent.gameProfile().name())
                     )
                     .staticText(Component.translatable("ui.some_locators.locator_inspector_player_name"))
                     .width(labelWidth)
@@ -178,5 +164,22 @@ public class LocatorInspectorInspectScreen extends LocatorInspectorRelatedScreen
                 .build();
 
         this.addRenderableWidget(errorLabel);
+    }
+
+    private AbstractClientPlayer makeFakePlayer(GameProfile gameProfile) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return null;
+
+        return new AbstractClientPlayer(level, gameProfile) {
+            @Override
+            public boolean isModelPartShown(@NonNull PlayerModelPart part) {
+                return true;
+            }
+
+            @Override
+            protected @NonNull PlayerInfo getPlayerInfo() {
+                return new PlayerInfo(gameProfile, false);
+            }
+        };
     }
 }
