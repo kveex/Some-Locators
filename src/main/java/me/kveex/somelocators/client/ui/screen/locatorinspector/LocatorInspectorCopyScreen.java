@@ -79,7 +79,7 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
                 uiStartCoords.x() + margin,
                 listY,
                 uiWidth - margin * 2,
-                80,
+                96,
                 component.points(),
                 l -> {
                     this.copyButton.active(!this.buttonDisabled && !l.getSelectedPoints().isEmpty());
@@ -89,7 +89,7 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
         );
         this.addRenderableWidget(list);
 
-        int buttonY = list.getY() + list.getHeight() + margin;
+        int buttonY = list.getY() + list.getHeight() + margin / 2;
         int buttonWidth = 80;
 
         int deselectAllButtonX = uiStartCoords.x() + buttonMargin * 3;
@@ -119,7 +119,7 @@ public class LocatorInspectorCopyScreen extends LocatorInspectorRelatedScreen {
             button.active(false);
             this.deselectAllButton.active(false);
             this.selectAllButton.active(false);
-        }).pos(copyButtonX, buttonY).width(buttonWidth).ticksAmountForPress(buttonPressTicks).build();
+        }).pos(copyButtonX, buttonY).width(buttonWidth).ticksAmountForPress(buttonPressTicks, 0xFFEFEFEF).build();
         this.copyButton.active(false);
 
         int selectAllButtonX = copyButtonX + buttonWidth + buttonMargin;

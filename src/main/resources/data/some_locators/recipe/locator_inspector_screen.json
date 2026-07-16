@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "A",
+    "R",
+    "I"
+  ],
+  "key": {
+    "A": [
+      "minecraft:amethyst_shard"
+    ],
+    "R": [
+      "minecraft:redstone"
+    ],
+    "I": [
+      "minecraft:iron_ingot"
+    ]
+  },
+  "result": {
+    "count": 1,
+    "id": "some_locators:locator_inspector_screen"
+  }
+}

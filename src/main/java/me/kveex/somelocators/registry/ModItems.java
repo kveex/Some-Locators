@@ -35,6 +35,12 @@ public class ModItems {
             new Item.Properties().stacksTo(16)
     );
 
+    public static final Item LOCATOR_INSPECTOR_SCREEN_ITEM = registerItem(
+            "locator_inspector_screen",
+            Item::new,
+            new Item.Properties()
+    );
+
     private static  <T extends Item> T registerItem(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings) {
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, name));
 

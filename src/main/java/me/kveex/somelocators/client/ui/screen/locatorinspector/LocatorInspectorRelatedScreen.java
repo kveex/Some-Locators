@@ -17,7 +17,8 @@ import org.jspecify.annotations.NonNull;
 
 public class LocatorInspectorRelatedScreen extends Screen {
     private CoordsPair uiStartCoords;
-    public static final int uiWidth = 256, uiHeight = 192;
+    private static final int TOP_BORDER = 12;
+    public static final int uiWidth = 256, uiHeight = 192 + TOP_BORDER;
     private static final Identifier FRAME = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "locator_inspector_frame");
     private final BlockPos blockPos;
     private boolean blockMoved = false;
@@ -72,7 +73,7 @@ public class LocatorInspectorRelatedScreen extends Screen {
     }
 
     public CoordsPair getUiStartCoords() {
-        return this.uiStartCoords;
+        return new CoordsPair(uiStartCoords.x(), uiStartCoords.y() + TOP_BORDER / 2);
     }
 
     public BlockPos getBlockPos() {

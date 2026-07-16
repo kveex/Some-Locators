@@ -11,6 +11,4 @@ public class SomeLocatorsConfig extends MidnightConfig {
     public static boolean isLocatorGlintDisabled = false;
     @Entry(min = 1, max = 86400)
     public static int playerLocatorTrackingTime = 300;
-    @Entry(min = 1, max = 100)
-    public static int maxPointNameLength = 30;
 }

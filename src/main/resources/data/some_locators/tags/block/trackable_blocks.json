@@ -5,8 +5,6 @@
     "minecraft:reinforced_deepslate",
     "minecraft:conduit",
     "minecraft:beacon",
-    "minecraft:campfire",
-    "minecraft:chest",
-    "minecraft:furnace"
+    "minecraft:campfire"
   ]
 }

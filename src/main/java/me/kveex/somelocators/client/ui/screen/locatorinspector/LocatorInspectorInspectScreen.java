@@ -95,7 +95,7 @@ public class LocatorInspectorInspectScreen extends LocatorInspectorRelatedScreen
             }
 
             int listX = uiStartCoords.x() + borderMargin * 2, listY = uiStartCoords.y() + itemSize;
-            int listWidth = uiWidth - borderMargin * 4, listHeight = 132 - borderMargin * 2 + elementMargin;
+            int listWidth = uiWidth - borderMargin * 4, listHeight = 132 + elementMargin;
 
             ExtendedPointInfoListComponent list = new ExtendedPointInfoListComponent(
                     listX, listY,

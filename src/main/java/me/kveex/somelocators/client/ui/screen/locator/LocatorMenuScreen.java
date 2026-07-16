@@ -1,6 +1,5 @@
 package me.kveex.somelocators.client.ui.screen.locator;
 
-import me.kveex.somelocators.SomeLocators;
 import me.kveex.somelocators.client.ui.component.PageSwitchComponent;
 import me.kveex.somelocators.client.ui.component.PointInfoComponent;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
@@ -151,7 +150,6 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         if (pageNumber < 0) pageNum = 0;
         this.currentPage = pageNum;
         TooltipDrawer.clearHoveredWidget();
-        SomeLocators.LOGGER.info("Raw page number: {} Final page number: {}", pageNumber, pageNum);
         this.rebuildWidgets();
     }
 }

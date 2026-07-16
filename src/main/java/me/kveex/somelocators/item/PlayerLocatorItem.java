@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -71,17 +70,7 @@ public class PlayerLocatorItem extends Item {
     }
 
     @Override
-    public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
-        if (user.level().isClientSide()) return InteractionResult.SUCCESS;
-
-        return trySetTrackedPlayer(user, hand, entity);
-    }
-
-    private InteractionResult trySetTrackedPlayer(Player user, InteractionHand hand, Entity entity) {
-        return trySetTrackedPlayer(user, null, hand, entity, null);
-    }
-
-    public static InteractionResult trySetTrackedPlayer(Player user, Level ignoredWorld, InteractionHand hand, Entity entity, EntityHitResult ignoredHitResult) {
+    public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, @NonNull Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
         if (!(entity instanceof Player victim)) return InteractionResult.PASS;
 
         ItemStack itemStack = user.getItemInHand(hand);
@@ -95,7 +84,7 @@ public class PlayerLocatorItem extends Item {
 
         PlayerTrackerComponent component = itemStack.get(ModComponents.PLAYER_TRACKER_COMPONENT);
         if (component != null && component.tracked()) {
-            user.displayClientMessage(Component.translatable("message.some_locators.player_locator_target_set_already"), true);
+            user.displayClientMessage(Component.translatable("message.some_locators.player_locator_target_set_already", component.gameProfile().name()), true);
             return InteractionResult.FAIL;
         }
 
@@ -106,6 +95,7 @@ public class PlayerLocatorItem extends Item {
 
         return InteractionResult.SUCCESS;
     }
+
 
     @Override
     public @NonNull InteractionResult use(@NonNull Level world, Player user, @NonNull InteractionHand hand) {

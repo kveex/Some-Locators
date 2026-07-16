@@ -4,7 +4,7 @@
   "key": {
     "G": "minecraft:gold_ingot",
     "C": "minecraft:compass",
-    "R": "minecraft:comparator"
+    "R": "minecraft:repeater"
   },
   "pattern": [
     " G ",

@@ -103,7 +103,7 @@ public class PointInfoComponent extends AbstractWidget {
             this.removeButton = ButtonElement.builder(Component.translatable("ui.some_locators.remove_point"), button -> this.parent.scheduleAction(() -> {
                 TooltipDrawer.clearHoveredWidget();
                 this.parent.removePoint(this.point);
-            })).ticksAmountForPress(20).pos(buttonX, removeButtonY).width(buttonWidth).build();
+            })).ticksAmountForPress(20, 0xFFFFD700).pos(buttonX, removeButtonY).width(buttonWidth).build();
         }
         this.removeButton.render(graphics, mouseX, mouseY, delta);
     }

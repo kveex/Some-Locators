@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:redstone",
+    "#minecraft:planks",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "id": "some_locators:punch_card",
+    "count": 4
+  }
+}

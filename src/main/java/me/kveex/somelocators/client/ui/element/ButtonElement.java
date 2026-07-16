@@ -24,14 +24,14 @@ public class ButtonElement extends AbstractButton {
     private boolean actionFired = false;
     private int buttonTextOffset = 2;
     private static final int BORDER_COLOR_EMPTY = 0xFF560319;
-    private static final int BORDER_COLOR_PROGRESS = 0xFFFFD700;
+    private final int borderColorProgress;
     private static final int BUTTON_TEXT_MARGIN = 2;
     private static final Identifier BUTTON = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "widget/redstone_button");
     private static final Identifier BUTTON_DISABLED = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "widget/redstone_button_disabled");
     private static final Identifier BUTTON_HOVERED = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "widget/redstone_button_hover");
     private static final Identifier BUTTON_PRESSED = Identifier.fromNamespaceAndPath(SomeLocators.MOD_ID, "widget/redstone_button_press");
 
-    private ButtonElement(int x, int y, int width, int height, Component message, OnPress onPress, long holdDurationMs) {
+    private ButtonElement(int x, int y, int width, int height, Component message, OnPress onPress, long holdDurationMs, int borderColorProgress) {
         super(
                 x + (holdDurationMs > 0 ? 1 : 0),
                 y + (holdDurationMs > 0 ? 1 : 0),
@@ -45,6 +45,7 @@ public class ButtonElement extends AbstractButton {
                 .centered()
                 .width(this.getWidth() - BUTTON_TEXT_MARGIN * 2)
                 .build();
+        this.borderColorProgress = borderColorProgress;
     }
 
     private Identifier resolveSprite() {
@@ -126,11 +127,11 @@ public class ButtonElement extends AbstractButton {
 
         int filledX = Math.min(x + (int)(w * progress), x + w);
 
-        graphics.fill(x, y, filledX, y + 1, BORDER_COLOR_PROGRESS);
-        graphics.fill(x, y + h - 1, filledX, y + h, BORDER_COLOR_PROGRESS);
-        graphics.fill(x, y, x + 1, y + h, BORDER_COLOR_PROGRESS);
+        graphics.fill(x, y, filledX, y + 1, borderColorProgress);
+        graphics.fill(x, y + h - 1, filledX, y + h, borderColorProgress);
+        graphics.fill(x, y, x + 1, y + h, borderColorProgress);
         if (progress >= 1f) {
-            graphics.fill(x + w - 1, y, x + w, y + h, BORDER_COLOR_PROGRESS);
+            graphics.fill(x + w - 1, y, x + w, y + h, borderColorProgress);
         }
     }
 
@@ -149,6 +150,7 @@ public class ButtonElement extends AbstractButton {
         private int y;
         private int width = 150;
         private long holdDurationMs = 0;
+        private int borderColorProgress = 0xFFFFFFFF;
 
         public Builder(Component text, ButtonElement.OnPress onPress) {
             this.text = text;
@@ -166,8 +168,9 @@ public class ButtonElement extends AbstractButton {
             return this;
         }
 
-        public Builder ticksAmountForPress(int ticks) {
+        public Builder ticksAmountForPress(int ticks, int borderColorProgress) {
             this.holdDurationMs = ticks * 50L;
+            this.borderColorProgress = borderColorProgress;
             return this;
         }
 
@@ -177,7 +180,7 @@ public class ButtonElement extends AbstractButton {
                     this.x, this.y,
                     this.width, height,
                     this.text, this.onPress,
-                    this.holdDurationMs
+                    this.holdDurationMs, this.borderColorProgress
             );
         }
     }

@@ -9,7 +9,7 @@
   "key": {
     "G": "minecraft:gold_ingot",
     "C": "minecraft:recovery_compass",
-    "R": "minecraft:comparator"
+    "R": "minecraft:repeater"
   },
   "result": {
     "count": 1,

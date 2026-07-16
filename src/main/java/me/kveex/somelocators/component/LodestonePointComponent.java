@@ -70,21 +70,10 @@ public record LodestonePointComponent(Optional<PointComponent> currentPoint, Lis
     @Override
     public void addToTooltip(Item.@NonNull TooltipContext context, @NonNull Consumer<Component> consumer, @NonNull TooltipFlag type, @NonNull DataComponentGetter components) {
         if (currentPoint.isPresent() && SomeLocatorsConfig.locatorShowsAdditionalInformation) {
-            BlockPos targetPos = currentPoint.get().target().pos();
-            String dimensionId = currentPoint.get().target().dimension().identifier().toString();
-
             consumer.accept(
                     Component.translatable("tooltip.some_locators.point_name",
                     currentPoint.get().name()).withStyle(ChatFormatting.DARK_GRAY)
             );
-
-            consumer.accept(Component.translatable(
-                    "tooltip.some_locators.point_position",
-                    targetPos.getX(),
-                    targetPos.getY(),
-                    targetPos.getZ(),
-                    dimensionId
-            ).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 }

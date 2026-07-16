@@ -1,6 +1,5 @@
 package me.kveex.somelocators.client.ui.element;
 
-import me.kveex.somelocators.config.SomeLocatorsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
@@ -11,7 +10,7 @@ public class TextInputElement extends EditBox {
     public static final int MAX_FONT_HINT_LENGTH = 110;
     public TextInputElement(int x, int y, int width, int height, Component fromBlockName) {
         super(font, x, y, width, height, Component.empty());
-        this.setMaxLength(SomeLocatorsConfig.maxPointNameLength);
+        this.setMaxLength(32);
         this.fitHint(fromBlockName);
     }
 

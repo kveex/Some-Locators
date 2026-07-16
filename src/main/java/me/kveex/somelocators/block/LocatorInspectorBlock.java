@@ -86,6 +86,7 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
             }
 
             blockEntity.openScreen(serverPlayer);
+            return InteractionResult.SUCCESS;
         } else if (half == LocatorInspectorHalf.BOTTOM) {
             if (stack.isEmpty()) {
                 ItemStack newStack = blockEntity.takeItem();
@@ -98,15 +99,20 @@ public class LocatorInspectorBlock extends HorizontalDirectionalBlock implements
                 player.addItem(newStack);
             } else {
                 InsertResult insertResult = blockEntity.tryInsertItem(stack.copyWithCount(1));
-                if (insertResult == InsertResult.CONTAINS) {
-                    serverPlayer.displayClientMessage(Component.translatable("message.some_locators.locator_inspector_contains"), true);
-                    return InteractionResult.FAIL;
+                switch (insertResult) {
+                    case SUCCESS: {
+                        level.playSound(null, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.15F);
+                        player.getItemInHand(mainHand).consume(1, player);
+                        return InteractionResult.CONSUME;
+                    }
+                    case CONTAINS: {
+                        serverPlayer.displayClientMessage(Component.translatable("message.some_locators.locator_inspector_contains"), true);
+                        return InteractionResult.FAIL;
+                    }
+                    default: {
+                        return InteractionResult.FAIL;
+                    }
                 }
-
-                player.getItemInHand(mainHand).consume(1, player);
-
-                level.playSound(null, blockEntityPos, SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS, 1.0F, 1.15F);
-
             }
         }
         return InteractionResult.CONSUME;

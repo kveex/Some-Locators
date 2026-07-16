@@ -23,6 +23,7 @@ public class ModGroups {
                output.accept(ModItems.PLAYER_LOCATOR_ITEM);
                output.accept(ModBlocks.LOCATOR_INSPECTOR);
                output.accept(ModItems.PUNCH_CARD_ITEM);
+               output.accept(ModItems.LOCATOR_INSPECTOR_SCREEN_ITEM);
             })
             .build();
 
