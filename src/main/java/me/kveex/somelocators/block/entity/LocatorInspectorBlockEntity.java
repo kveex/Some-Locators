@@ -7,13 +7,11 @@ import me.kveex.somelocators.network.locatorinspector.OpenInspectScreenPayload;
 import me.kveex.somelocators.registry.ModBlockEntities;
 import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.Item;
@@ -153,11 +151,8 @@ public class LocatorInspectorBlockEntity extends BlockEntity implements Implemen
     @Override
     public void setChanged() {
         super.setChanged();
-        if (this.level instanceof ServerLevel) {
-            ClientboundBlockEntityDataPacket packet = this.getUpdatePacket();
-            if (packet != null) {
-                PlayerLookup.tracking(this).forEach(p -> p.connection.send(packet));
-            }
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
         }
     }
 }
