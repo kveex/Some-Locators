@@ -1,0 +1,28 @@
+package me.kveex.somelocators;
+
+import eu.midnightdust.lib.config.MidnightConfig;
+import me.kveex.somelocators.config.SomeLocatorsConfig;
+import me.kveex.somelocators.item.LocatorItem;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.ItemCost;
+import net.minecraft.world.item.trading.MerchantOffer;
+
+import java.util.Optional;
+
+public class SomeLocators implements ModInitializer {
+    
+    @Override
+    public void onInitialize() {
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CARTOGRAPHER, 5, factories -> factories.add((world, entity, random) -> new MerchantOffer(
+                new ItemCost(Items.EMERALD, 20),
+                Optional.of(new ItemCost(Items.COMPASS, 1)),
+                LocatorItem.locatorForTrade(world, entity, random),
+                1, 4, 0.04f
+        )));
+        MidnightConfig.init(Constants.MOD_ID, SomeLocatorsConfig.class);
+        CommonClass.init();
+    }
+}

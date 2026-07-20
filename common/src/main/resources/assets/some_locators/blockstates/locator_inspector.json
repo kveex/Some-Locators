@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "half=top,facing=north": {
+      "model": "some_locators:block/locator_inspector_top"
+    },
+    "half=bottom,facing=north": {
+      "model": "some_locators:block/locator_inspector_bottom"
+    },
+    "half=top,facing=east": {
+      "model": "some_locators:block/locator_inspector_top",
+      "y": 90
+    },
+    "half=bottom,facing=east": {
+      "model": "some_locators:block/locator_inspector_bottom",
+      "y": 90
+    },
+    "half=top,facing=south": {
+      "model": "some_locators:block/locator_inspector_top",
+      "y": 180
+    },
+    "half=bottom,facing=south": {
+      "model": "some_locators:block/locator_inspector_bottom",
+      "y": 180
+    },
+    "half=top,facing=west": {
+      "model": "some_locators:block/locator_inspector_top",
+      "y": 270
+    },
+    "half=bottom,facing=west": {
+      "model": "some_locators:block/locator_inspector_bottom",
+      "y": 270
+    }
+  }
+}
