@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-//Code from owo lib, hope it's okay if I grab it
 public record BlockElementRenderState(
     BlockState state,
     @Nullable BlockEntityRenderState entity,
@@ -79,9 +78,11 @@ public record BlockElementRenderState(
 
             var width = state.bounds.width();
             var height = state.bounds.height();
+            float baseSize = Math.min(width, height);
+            float uniformScale = 40 * baseSize / 64f;
 
             matrices.translate(0, -height / 2f, 100);
-            matrices.scale(40 * width / 64f, -40 * height / 64f, -40);
+            matrices.scale(uniformScale, -uniformScale, -uniformScale);
 
             matrices.mulPose(Axis.XP.rotationDegrees(30));
             matrices.mulPose(Axis.YP.rotationDegrees(45));
