@@ -7,9 +7,9 @@ import me.kveex.somelocators.client.ui.element.LabelElement;
 import me.kveex.somelocators.client.ui.element.TextInputElement;
 import me.kveex.somelocators.client.ui.util.CoordsPair;
 import me.kveex.somelocators.component.PointComponent;
-import me.kveex.somelocators.network.locator.CreateLodestonePointPayload;
+import me.kveex.somelocators.network.locator.CreateLocatorPointPayload;
 import me.kveex.somelocators.network.locator.RenamePointPayload;
-import me.kveex.somelocators.network.locator.SetLodestonePointPayload;
+import me.kveex.somelocators.network.locator.SetLocatorPointPayload;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.component.LodestoneTracker;
@@ -21,7 +21,7 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
     private final BlockState blockState;
     @Nullable private final LodestoneTracker tracker;
 
-    public LocatorPointScreen(CreateLodestonePointPayload createLodestonePoint) {
+    public LocatorPointScreen(CreateLocatorPointPayload createLodestonePoint) {
         this.blockState = createLodestonePoint.blockState();
         this.globalPos = createLodestonePoint.globalPos();
         this.tracker = null;
@@ -68,7 +68,7 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
         ButtonElement buttonWidget = ButtonElement.builder(buttonText, button -> {
             String pointName = nameTextBox.getValue().isBlank() ? blockName.getString() : nameTextBox.getValue();
             var payload = noTracker
-                    ? new SetLodestonePointPayload(pointName, globalPos, blockState)
+                    ? new SetLocatorPointPayload(pointName, globalPos, blockState)
                     : new RenamePointPayload(pointName, new PointComponent("", blockState, globalPos, tracker));
             Dispatcher.sendToServer(payload);
             this.onClose();

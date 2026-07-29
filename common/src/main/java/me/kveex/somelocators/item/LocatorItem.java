@@ -2,13 +2,11 @@ package me.kveex.somelocators.item;
 
 import commonnetwork.api.Dispatcher;
 import commonnetwork.networking.data.PacketContext;
-import me.kveex.somelocators.Constants;
+import me.kveex.somelocators.CommonConfig;
 import me.kveex.somelocators.client.CommonClientClass;
 import me.kveex.somelocators.component.LocatorComponent;
 import me.kveex.somelocators.component.PointComponent;
-import me.kveex.somelocators.fun.RandomNullErrorPhrases;
 import me.kveex.somelocators.network.locator.*;
-import me.kveex.somelocators.platform.Services;
 import me.kveex.somelocators.registry.ModComponents;
 import me.kveex.somelocators.registry.ModItems;
 import me.kveex.somelocators.registry.ModTags;
@@ -52,7 +50,7 @@ public class LocatorItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack stack, @NonNull ServerLevel world, @NonNull Entity entity, @Nullable EquipmentSlot slot) {
-        LocatorComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT.get());
+        LocatorComponent component = stack.get(ModComponents.LOCATOR_COMPONENT.get());
         if (component == null) return;
         LocatorComponent component2 = component.forWorld(world);
         if (component2 != component || component2.currentPoint().isEmpty()) {
@@ -64,9 +62,9 @@ public class LocatorItem extends Item {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        LocatorComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT.get());
+        LocatorComponent component = stack.get(ModComponents.LOCATOR_COMPONENT.get());
         if (component == null) return false;
-        return !component.points().isEmpty() && !Services.CONFIG.isLocatorGlintDisabled().get();
+        return !component.points().isEmpty() && !CommonConfig.isLocatorGlintDisabled;
     }
 
     @Override
@@ -156,25 +154,25 @@ public class LocatorItem extends Item {
             setTracker(itemStack, foundTarget.get(), component.points());
             return InteractionResult.PASS;
         } else {
-            if (component.points().size() >= Services.CONFIG.maxLocatorPointsAmount().get()) {
+            if (component.points().size() >= CommonConfig.maxLocatorPointsAmount) {
                 serverPlayer.displayClientMessage(Component.translatable("message.some_locators.locator_points_limit_hit"), true);
                 return InteractionResult.FAIL;
             }
 
-            CreateLodestonePointPayload tracker = new CreateLodestonePointPayload(globalPos, world.getBlockState(blockPos));
+            CreateLocatorPointPayload tracker = new CreateLocatorPointPayload(globalPos, world.getBlockState(blockPos));
             Dispatcher.sendToClient(tracker, serverPlayer);
             return InteractionResult.SUCCESS;
         }
     }
 
-    public static void setTracker(PacketContext<SetLodestonePointPayload> context) {
+    public static void setTracker(PacketContext<SetLocatorPointPayload> context) {
         ServerPlayer player = context.sender();
         ItemStack itemStack = player.getMainHandItem().isEmpty() ? player.getOffhandItem() : player.getMainHandItem();
         Optional<LocatorComponent> optional = getTracker(itemStack);
         if (optional.isEmpty()) return;
         LocatorComponent locatorComponent = optional.get();
 
-        SetLodestonePointPayload tracker = context.message();
+        SetLocatorPointPayload tracker = context.message();
         PointComponent target = tracker.toPointComponent();
         List<PointComponent> targets = new ArrayList<>(locatorComponent.points());
         targets.add(target);
@@ -273,10 +271,10 @@ public class LocatorItem extends Item {
     private static InteractionResult openLocatorMenu(Player player, InteractionHand hand) {
         if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.PASS;
         ItemStack itemStack = player.getItemInHand(hand);
-        LocatorComponent component = itemStack.get(ModComponents.LODESTONE_POINT_COMPONENT.get());
+        LocatorComponent component = itemStack.get(ModComponents.LOCATOR_COMPONENT.get());
 
         if (component == null) return InteractionResult.PASS;
-        OpenLocatorMenuPayload openLocatorMenu = new OpenLocatorMenuPayload(component);
+        OpenLocatorScreenPayload openLocatorMenu = new OpenLocatorScreenPayload(component);
         Dispatcher.sendToClient(openLocatorMenu, serverPlayer);
         return InteractionResult.SUCCESS;
     }
@@ -287,7 +285,7 @@ public class LocatorItem extends Item {
 
     private static void setTracker(ItemStack itemStack, PointComponent point, List<PointComponent> points, boolean skipPointCheck) {
         itemStack.set(
-                ModComponents.LODESTONE_POINT_COMPONENT.get(),
+                ModComponents.LOCATOR_COMPONENT.get(),
                 new LocatorComponent(point, points, skipPointCheck)
         );
 
@@ -298,23 +296,23 @@ public class LocatorItem extends Item {
     }
 
     private static void removeTracker(ItemStack itemStack) {
-        itemStack.set(ModComponents.LODESTONE_POINT_COMPONENT.get(), LocatorComponent.DEFAULT);
+        itemStack.set(ModComponents.LOCATOR_COMPONENT.get(), LocatorComponent.DEFAULT);
         itemStack.remove(DataComponents.LODESTONE_TRACKER);
     }
 
     private static Optional<LocatorComponent> getTracker(ItemStack itemStack) {
-        LocatorComponent locatorComponent = itemStack.get(ModComponents.LODESTONE_POINT_COMPONENT.get());
+        LocatorComponent locatorComponent = itemStack.get(ModComponents.LOCATOR_COMPONENT.get());
         if (locatorComponent == null) {
-            itemStack.set(ModComponents.LODESTONE_POINT_COMPONENT.get(), LocatorComponent.DEFAULT);
-            Constants.LOG.warn(RandomNullErrorPhrases.getRandomPhrase("BetterLodestoneTrackerComponent"));
-            return Optional.empty();
+            itemStack.set(ModComponents.LOCATOR_COMPONENT.get(), LocatorComponent.DEFAULT);
+            LocatorComponent newComponent = itemStack.get(ModComponents.LOCATOR_COMPONENT.get());
+            return Optional.ofNullable(newComponent);
         }
         return Optional.of(locatorComponent);
     }
 
     @Override
     public @NonNull Component getName(ItemStack stack) {
-        LocatorComponent component = stack.get(ModComponents.LODESTONE_POINT_COMPONENT.get());
+        LocatorComponent component = stack.get(ModComponents.LOCATOR_COMPONENT.get());
         if (component == null || component.currentPoint().isEmpty()) {
             return Component.translatable("item.some_locators.locator");
         }

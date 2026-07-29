@@ -1,8 +1,8 @@
 package me.kveex.somelocators.item;
 
+import me.kveex.somelocators.CommonConfig;
 import me.kveex.somelocators.component.PlayerDistance;
 import me.kveex.somelocators.component.PlayerLocatorComponent;
-import me.kveex.somelocators.platform.Services;
 import me.kveex.somelocators.registry.ModComponents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -32,7 +32,7 @@ public class PlayerLocatorItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack stack, @NonNull ServerLevel world, @NonNull Entity entity, @Nullable EquipmentSlot slot) {
-        PlayerLocatorComponent component = stack.get(ModComponents.PLAYER_TRACKER_COMPONENT.get());
+        PlayerLocatorComponent component = stack.get(ModComponents.PLAYER_LOCATOR_COMPONENT.get());
         if (component == null) return;
         if (!component.tracked()) return;
 
@@ -82,7 +82,7 @@ public class PlayerLocatorItem extends Item {
         }
 
 
-        PlayerLocatorComponent component = itemStack.get(ModComponents.PLAYER_TRACKER_COMPONENT.get());
+        PlayerLocatorComponent component = itemStack.get(ModComponents.PLAYER_LOCATOR_COMPONENT.get());
         if (component != null && component.tracked()) {
             user.displayClientMessage(Component.translatable("message.some_locators.player_locator_target_set_already", component.gameProfile().name()), true);
             return InteractionResult.FAIL;
@@ -100,7 +100,7 @@ public class PlayerLocatorItem extends Item {
     @Override
     public @NonNull InteractionResult use(@NonNull Level world, Player user, @NonNull InteractionHand hand) {
         ItemStack stack = user.getItemInHand(hand);
-        PlayerLocatorComponent component = stack.get(ModComponents.PLAYER_TRACKER_COMPONENT.get());
+        PlayerLocatorComponent component = stack.get(ModComponents.PLAYER_LOCATOR_COMPONENT.get());
         if (component == null) return InteractionResult.PASS;
 
         if (component.playerDistance().equals(PlayerDistance.NOT_FOUND)) {
@@ -113,7 +113,7 @@ public class PlayerLocatorItem extends Item {
 
         if (component.tracked()) return InteractionResult.PASS;
 
-        long expiryTicks = world.getGameTime() + Services.CONFIG.playerLocatorTrackingTime().get() * 20L;
+        long expiryTicks = world.getGameTime() + CommonConfig.playerLocatorTrackingTime * 20L;
 
         PlayerLocatorComponent newComponent = new PlayerLocatorComponent(
                 component.gameProfile(),
@@ -128,7 +128,7 @@ public class PlayerLocatorItem extends Item {
 
     private static void setPlayerTracker(ItemStack stack, PlayerLocatorComponent playerLocatorComponent) {
         stack.set(
-                ModComponents.PLAYER_TRACKER_COMPONENT.get(),
+                ModComponents.PLAYER_LOCATOR_COMPONENT.get(),
                 playerLocatorComponent
         );
 
@@ -144,7 +144,7 @@ public class PlayerLocatorItem extends Item {
     }
 
     private void removeEntityTracker(ItemStack stack) {
-        stack.remove(ModComponents.PLAYER_TRACKER_COMPONENT.get());
+        stack.remove(ModComponents.PLAYER_LOCATOR_COMPONENT.get());
         stack.remove(DataComponents.CUSTOM_MODEL_DATA);
     }
 }

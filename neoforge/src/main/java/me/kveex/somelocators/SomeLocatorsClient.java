@@ -1,7 +1,7 @@
 package me.kveex.somelocators;
 
 import me.kveex.somelocators.client.CommonClientClass;
-import me.kveex.somelocators.client.block.LocatorInspectorBlockEntityRenderer;
+import me.kveex.somelocators.client.block.LocatorTerminalBlockEntityRenderer;
 import me.kveex.somelocators.client.ui.util.BlockElementRenderState;
 import me.kveex.somelocators.registry.ModBlockEntityTypes;
 import net.neoforged.api.distmarker.Dist;
@@ -29,8 +29,8 @@ public class SomeLocatorsClient {
     @SubscribeEvent
     private static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(
-                ModBlockEntityTypes.LOCATOR_INSPECTOR_BLOCK_ENTITY.get(),
-                LocatorInspectorBlockEntityRenderer::new
+                ModBlockEntityTypes.LOCATOR_TERMINAL_BLOCK_ENTITY.get(),
+                LocatorTerminalBlockEntityRenderer::new
         );
     }
 

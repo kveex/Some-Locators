@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "some_locators:item/locator_terminal_screen"
+  }
+}

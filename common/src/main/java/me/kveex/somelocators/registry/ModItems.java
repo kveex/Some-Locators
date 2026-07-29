@@ -11,23 +11,23 @@ public class ModItems {
     public static final Supplier<Item> PUNCH_CARD_ITEM = Services.REGISTRY.registerItem(
             "punch_card",
             Item::new,
-            new Item.Properties()
+            new Item.Properties().stacksTo(16)
     );
 
     public static final Supplier<Item> LOCATOR_ITEM = Services.REGISTRY.registerItem(
             "locator",
             LocatorItem::new,
-            new Item.Properties().stacksTo(1)
+            new Item.Properties().stacksTo(64)
     );
 
     public static final Supplier<Item> PLAYER_LOCATOR_ITEM = Services.REGISTRY.registerItem(
             "player_locator",
             PlayerLocatorItem::new,
-            new Item.Properties().stacksTo(1)
+            new Item.Properties().stacksTo(64)
     );
 
-    public static final Supplier<Item> LOCATOR_INSPECTOR_SCREEN_ITEM = Services.REGISTRY.registerItem(
-            "locator_inspector_screen",
+    public static final Supplier<Item> LOCATOR_TERMINAL_SCREEN_ITEM = Services.REGISTRY.registerItem(
+            "locator_terminal_screen",
             Item::new,
             new Item.Properties()
     );

@@ -8,14 +8,14 @@ import net.minecraft.core.component.DataComponentType;
 import java.util.function.Supplier;
 
 public class ModComponents {
-    public static final Supplier<DataComponentType<LocatorComponent>> LODESTONE_POINT_COMPONENT = Services.REGISTRY.registerComponent(
-            "better_tracker_component",
+    public static final Supplier<DataComponentType<LocatorComponent>> LOCATOR_COMPONENT = Services.REGISTRY.registerComponent(
+            "locator_component",
             LocatorComponent.CODEC,
             LocatorComponent.STREAM_CODEC
     );
 
-    public static final Supplier<DataComponentType<PlayerLocatorComponent>> PLAYER_TRACKER_COMPONENT = Services.REGISTRY.registerComponent(
-            "player_tracker_component",
+    public static final Supplier<DataComponentType<PlayerLocatorComponent>> PLAYER_LOCATOR_COMPONENT = Services.REGISTRY.registerComponent(
+            "player_locator_component",
             PlayerLocatorComponent.CODEC
     );
 

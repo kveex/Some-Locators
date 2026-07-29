@@ -41,8 +41,8 @@ neoForge {
 }
 
 dependencies {
-    implementation ("eu.midnightdust:midnightlib:${project.midnightlib_version}-neoforge")
-    implementation "mysticdrew:common-networking-neoforge:${common_networking_version}"
+    implementation jarJar("eu.midnightdust:midnightlib:${project.midnightlib_version}-neoforge")
+    implementation jarJar("mysticdrew:common-networking-neoforge:${common_networking_version}")
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

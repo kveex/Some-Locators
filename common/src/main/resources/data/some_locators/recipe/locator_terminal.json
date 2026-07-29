@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "O",
+    "R"
+  ],
+  "key": {
+    "S": [
+      "some_locators:locator_terminal_screen"
+    ],
+    "O": [
+      "minecraft:observer"
+    ],
+    "R": [
+      "minecraft:repeater"
+    ]
+  },
+  "result": {
+    "count": 1,
+    "id": "some_locators:locator_terminal"
+  }
+}
