@@ -73,6 +73,7 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
                     ? new SetLocatorPointPayload(pointName, globalPos, blockState)
                     : new RenamePointPayload(menuCurrentPage, pointName, blockState, globalPos, tracker);
             Dispatcher.sendToServer(payload);
+            if (noTracker) this.onClose();
         }).pos(textInputCenter.x(), textInputY + textInputHeight + elementMargin).width(textInputWidth).build();
 
         this.addRenderableWidget(buttonWidget);
