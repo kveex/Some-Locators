@@ -50,6 +50,7 @@ public class LocatorTerminalBlock extends HorizontalDirectionalBlock implements 
     public LocatorTerminalBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(
+
                 this.defaultBlockState()
                         .setValue(HALF, LocatorTerminalHalf.BOTTOM)
                         .setValue(FACING, Direction.NORTH)
