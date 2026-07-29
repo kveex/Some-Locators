@@ -14,16 +14,17 @@ import java.util.List;
 public class LocatorMenuScreen extends LocatorRelatedScreen {
     private PointComponent currentPoint;
     private final List<PointComponent> points;
-    private int currentPage = 0;
+    private int currentPage;
     public static final int MAX_POINTS_ON_PAGE = 8;
     public static final int OFFSET_SMALL = 48;
     public static final int OFFSET_BIG = 72;
     private int pagesAmount;
     private PageSwitchComponent pageSwitch;
 
-    public LocatorMenuScreen(PointComponent currentPoint, List<PointComponent> points) {
+    public LocatorMenuScreen(PointComponent currentPoint, List<PointComponent> points, int currentPage) {
         this.currentPoint = currentPoint;
         this.points = points;
+        this.currentPage = currentPage;
     }
 
     public void setCurrentPoint(PointComponent currentPoint) {
@@ -67,7 +68,7 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
         CoordsPair locatorCenter = this.getLocatorCenter();
         int pageSwitchXOffset = 45, pageSwitchYOffset = 80;
         if (this.pageSwitch == null) {
-            this.pageSwitch = new PageSwitchComponent(locatorCenter.x() - pageSwitchXOffset, locatorCenter.y() + pageSwitchYOffset, this);
+            this.pageSwitch = new PageSwitchComponent(locatorCenter.x() - pageSwitchXOffset, locatorCenter.y() + pageSwitchYOffset, this, currentPage);
         }
         this.addRenderableWidget(this.pageSwitch);
 
@@ -113,7 +114,7 @@ public class LocatorMenuScreen extends LocatorRelatedScreen {
     private void drawPoint(PointComponent point, PointPlace pointPlace) {
         var coords = getPointCoords(pointPlace);
         boolean isTracked = point.equals(this.currentPoint);
-        PointInfoComponent uiPointInfo = new PointInfoComponent(point, isTracked, this, coords);
+        PointInfoComponent uiPointInfo = new PointInfoComponent(point, isTracked, this, coords, currentPage);
         this.addRenderableWidget(uiPointInfo);
     }
 

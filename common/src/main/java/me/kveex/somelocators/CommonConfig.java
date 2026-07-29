@@ -5,7 +5,7 @@ import eu.midnightdust.lib.config.MidnightConfig;
 public class CommonConfig extends MidnightConfig {
     @Entry(isSlider = true, min = 1, max = 56)
     @Server
-    public static int maxLocatorPointsAmount = 32;
+    public static int maxLocatorPointsAmount = 56;
     @Entry
     public static boolean locatorShowsAdditionalInformation = false;
     @Entry

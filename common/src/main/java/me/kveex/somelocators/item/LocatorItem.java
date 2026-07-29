@@ -209,7 +209,7 @@ public class LocatorItem extends Item {
 
         for (int i = 0; i < points.size(); i++) {
             PointComponent somePoint = points.get(i);
-            if (somePoint.target().equals(point.renamedPoint().target())) {
+            if (somePoint.target().equals(point.globalPos())) {
                 PointComponent replacement = new PointComponent(
                         point.newName(),
                         somePoint.blockState(),
@@ -235,6 +235,13 @@ public class LocatorItem extends Item {
                 }
 
                 setTracker(itemStack, currentPoint, points);
+
+                Optional<LocatorComponent> optional1 = getTracker(itemStack);
+                if (optional1.isEmpty()) return;
+                LocatorComponent updatedLocatorComponent = optional1.get();
+
+                OpenLocatorScreenPayload openLocatorScreenPayload = new OpenLocatorScreenPayload(updatedLocatorComponent, context.message().currentPage());
+                Dispatcher.sendToClient(openLocatorScreenPayload, player);
                 return;
             }
         }

@@ -34,14 +34,16 @@ public class PointInfoComponent extends AbstractWidget {
     private static final int fullWidth = 120;
     private static final int fullHeight = 62;
     private static final Identifier TARGETED_FRAME_SPRITE = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/targeted_point_frame.png");
+    private final int page;
 
-    public PointInfoComponent(PointComponent pointComponent, boolean isTracked, LocatorMenuScreen parent, CoordsPair startPos) {
+    public PointInfoComponent(PointComponent pointComponent, boolean isTracked, LocatorMenuScreen parent, CoordsPair startPos, int page) {
         super(startPos.x(), startPos.y(), fullWidth, fullHeight, Component.empty());
         this.parent = parent;
         this.point = pointComponent;
         this.isTracked = isTracked;
         this.blockElement = new BlockElement(startPos.x(), startPos.y(), blockSize, point.blockState());
         this.active = false;
+        this.page = page;
     }
 
     @Override
@@ -93,7 +95,7 @@ public class PointInfoComponent extends AbstractWidget {
         if (this.renameButton == null) {
             this.renameButton = ButtonElement.builder(Component.translatable("ui.some_locators.rename_point"), button -> {
                 TooltipDrawer.clearHoveredWidget();
-                Minecraft.getInstance().setScreen(new LocatorPointScreen(this.point));
+                Minecraft.getInstance().setScreen(new LocatorPointScreen(this.point, page));
             }).pos(buttonX, renameButtonY).width(buttonWidth).build();
         }
         this.renameButton.render(graphics, mouseX, mouseY, delta);

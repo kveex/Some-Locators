@@ -20,6 +20,7 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
     private final GlobalPos globalPos;
     private final BlockState blockState;
     @Nullable private final LodestoneTracker tracker;
+    private int menuCurrentPage = 0;
 
     public LocatorPointScreen(CreateLocatorPointPayload createLodestonePoint) {
         this.blockState = createLodestonePoint.blockState();
@@ -27,10 +28,11 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
         this.tracker = null;
     }
 
-    public LocatorPointScreen(PointComponent oldPoint) {
+    public LocatorPointScreen(PointComponent oldPoint, int menuCurrentPage) {
         this.blockState = oldPoint.blockState();
         this.globalPos = oldPoint.target();
         this.tracker = oldPoint.lodestoneTracker();
+        this.menuCurrentPage = menuCurrentPage;
     }
 
     @Override
@@ -69,9 +71,8 @@ public class LocatorPointScreen extends LocatorRelatedScreen {
             String pointName = nameTextBox.getValue().isBlank() ? blockName.getString() : nameTextBox.getValue();
             var payload = noTracker
                     ? new SetLocatorPointPayload(pointName, globalPos, blockState)
-                    : new RenamePointPayload(pointName, new PointComponent("", blockState, globalPos, tracker));
+                    : new RenamePointPayload(menuCurrentPage, pointName, blockState, globalPos, tracker);
             Dispatcher.sendToServer(payload);
-            this.onClose();
         }).pos(textInputCenter.x(), textInputY + textInputHeight + elementMargin).width(textInputWidth).build();
 
         this.addRenderableWidget(buttonWidget);
