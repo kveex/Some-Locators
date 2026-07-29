@@ -1,7 +1,7 @@
 package me.kveex.somelocators;
 
 import me.kveex.somelocators.client.CommonClientClass;
-import me.kveex.somelocators.client.block.LocatorInspectorBlockEntityRenderer;
+import me.kveex.somelocators.client.block.LocatorTerminalBlockEntityRenderer;
 import me.kveex.somelocators.client.ui.util.BlockElementRenderState;
 import me.kveex.somelocators.registry.ModBlockEntityTypes;
 import net.fabricmc.api.ClientModInitializer;
@@ -15,6 +15,6 @@ public class SomeLocatorsClient implements ClientModInitializer {
     public void onInitializeClient() {
         SpecialGuiElementRegistry.register(ctx -> new BlockElementRenderState.Renderer(ctx.vertexConsumers()));
         KeyBindingHelper.registerKeyBinding(CommonClientClass.openLocatorPointsMenu);
-        BlockEntityRenderers.register(ModBlockEntityTypes.LOCATOR_INSPECTOR_BLOCK_ENTITY.get(), LocatorInspectorBlockEntityRenderer::new);
+        BlockEntityRenderers.register(ModBlockEntityTypes.LOCATOR_TERMINAL_BLOCK_ENTITY.get(), LocatorTerminalBlockEntityRenderer::new);
     }
 }

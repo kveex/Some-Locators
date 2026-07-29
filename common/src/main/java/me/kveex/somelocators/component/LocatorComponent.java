@@ -2,7 +2,7 @@ package me.kveex.somelocators.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.kveex.somelocators.platform.Services;
+import me.kveex.somelocators.CommonConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -69,7 +69,7 @@ public record LocatorComponent(Optional<PointComponent> currentPoint, List<Point
 
     @Override
     public void addToTooltip(Item.@NonNull TooltipContext context, @NonNull Consumer<Component> consumer, @NonNull TooltipFlag type, @NonNull DataComponentGetter components) {
-        if (currentPoint.isPresent() && Services.CONFIG.locatorShowsAdditionalInformation().get()) {
+        if (currentPoint.isPresent() && CommonConfig.locatorShowsAdditionalInformation) {
             consumer.accept(
                     Component.translatable("tooltip.some_locators.point_name",
                     currentPoint.get().name()).withStyle(ChatFormatting.DARK_GRAY)

@@ -2,7 +2,7 @@
   "model": {
     "type": "minecraft:condition",
     "property": "minecraft:has_component",
-    "component": "some_locators:better_tracker_component",
+    "component": "some_locators:locator_component",
     "on_false": {
       "type": "minecraft:model",
       "model": "some_locators:item/punch_card_clear"

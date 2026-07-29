@@ -11,9 +11,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
     modImplementation include("eu.midnightdust:midnightlib:${project.midnightlib_version}-fabric")
-    modImplementation "mysticdrew:common-networking-fabric:${common_networking_version}"
+    modImplementation include("mysticdrew:common-networking-fabric:${common_networking_version}")
 }
 
 loom {

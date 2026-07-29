@@ -23,6 +23,7 @@ dependencies {
     annotationProcessor group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
 
     implementation "mysticdrew:common-networking-common:${common_networking_version}"
+    compileOnly "eu.midnightdust:midnightlib:${project.midnightlib_version}-neoforge"
 }
 
 configurations {

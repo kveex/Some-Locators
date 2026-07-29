@@ -1,5 +1,6 @@
 package me.kveex.somelocators;
 
+import eu.midnightdust.lib.config.MidnightConfig;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.kveex.somelocators.item.LocatorItem;
 import net.minecraft.core.registries.Registries;
@@ -29,12 +30,13 @@ public class SomeLocators {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Constants.MOD_ID);
 
     public SomeLocators(IEventBus eventBus) {
+        DATA_COMPONENTS.register(eventBus);
         BLOCKS.register(eventBus);
-        ITEMS.register(eventBus);
         CREATIVE_MODE_TABS.register(eventBus);
         BLOCK_ENTITY_TYPES.register(eventBus);
-        DATA_COMPONENTS.register(eventBus);
+        ITEMS.register(eventBus);
         NeoForge.EVENT_BUS.addListener(SomeLocators::registerVillagerTrades);
+        MidnightConfig.init(Constants.MOD_ID, CommonConfig.class);
         CommonClass.init();
     }
 

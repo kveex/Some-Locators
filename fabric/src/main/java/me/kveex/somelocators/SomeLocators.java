@@ -1,7 +1,6 @@
 package me.kveex.somelocators;
 
 import eu.midnightdust.lib.config.MidnightConfig;
-import me.kveex.somelocators.config.SomeLocatorsConfig;
 import me.kveex.somelocators.item.LocatorItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
@@ -22,7 +21,7 @@ public class SomeLocators implements ModInitializer {
                 LocatorItem.locatorForTrade(world, entity, random),
                 1, 4, 0.04f
         )));
-        MidnightConfig.init(Constants.MOD_ID, SomeLocatorsConfig.class);
+        MidnightConfig.init(Constants.MOD_ID, CommonConfig.class);
         CommonClass.init();
     }
 }
