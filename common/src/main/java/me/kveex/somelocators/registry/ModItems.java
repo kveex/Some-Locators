@@ -17,13 +17,13 @@ public class ModItems {
     public static final Supplier<Item> LOCATOR_ITEM = Services.REGISTRY.registerItem(
             "locator",
             LocatorItem::new,
-            new Item.Properties().stacksTo(64)
+            new Item.Properties().stacksTo(1)
     );
 
     public static final Supplier<Item> PLAYER_LOCATOR_ITEM = Services.REGISTRY.registerItem(
             "player_locator",
             PlayerLocatorItem::new,
-            new Item.Properties().stacksTo(64)
+            new Item.Properties().stacksTo(1)
     );
 
     public static final Supplier<Item> LOCATOR_TERMINAL_SCREEN_ITEM = Services.REGISTRY.registerItem(

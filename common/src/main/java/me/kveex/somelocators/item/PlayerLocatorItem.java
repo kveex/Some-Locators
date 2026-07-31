@@ -41,7 +41,7 @@ public class PlayerLocatorItem extends Item {
         Optional<Player> trackedPlayer = locatePlayer(world.getServer(), trackedPlayerUUID);
 
         if (trackedPlayer.isEmpty()) {
-            setPlayerTracker(stack, new PlayerLocatorComponent(component.gameProfile(), PlayerDistance.NOT_FOUND, true, component.expiryTicks() + 1));
+            setPlayerTracker(stack, new PlayerLocatorComponent(component.gameProfile(), PlayerDistance.NOT_FOUND, true, -1));
             return;
         }
 
@@ -56,6 +56,7 @@ public class PlayerLocatorItem extends Item {
         PlayerDistance distanceForComponent = PlayerDistance.fromDistance(calculatedDistance);
 
         if (world.getGameTime() > component.expiryTicks()) {
+            if (component.expiryTicks() == -1) return;
             removeEntityTracker(stack);
             return;
         }

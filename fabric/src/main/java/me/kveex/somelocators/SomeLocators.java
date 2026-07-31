@@ -2,8 +2,11 @@ package me.kveex.somelocators;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 import me.kveex.somelocators.item.LocatorItem;
+import me.kveex.somelocators.registry.ModComponents;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.ItemCost;
@@ -23,5 +26,7 @@ public class SomeLocators implements ModInitializer {
         )));
         MidnightConfig.init(Constants.MOD_ID, CommonConfig.class);
         CommonClass.init();
+
+        ComponentTooltipAppenderRegistry.addAfter(DataComponents.DAMAGE, ModComponents.PLAYER_LOCATOR_COMPONENT.get());
     }
 }
