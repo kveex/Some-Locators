@@ -23,7 +23,7 @@
   "message.some_locators.player_locator_target_set_already": "Ты уже следишь за %1$s",
   "message.some_locators.sneak_to_set_target": "Нужно пригнуться, используя Локатор, чтобы установить цель",
   "message.some_locators.locator_terminal_empty": "Нужно вложить Локатор или Перфокарту",
-  "message.some_locators.locator_terminal_contains": "Этот предмет уже вложен",
+  "message.some_locators.locator_terminal_contains": "Этот слот уже занят",
   "message.some_locators.locator_terminal_inspect_error": "Во вложенном предмете некорректные данные или их нет!",
   "ui.some_locators.create_point": "Создать",
   "ui.some_locators.rename_point": "Переименовать",

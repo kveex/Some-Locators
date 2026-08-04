@@ -23,7 +23,7 @@
   "message.some_locators.player_locator_target_set_already": "You're already spying on %1$s",
   "message.some_locators.sneak_to_set_target": "You need to sneak while using Locator to set target",
   "message.some_locators.locator_terminal_empty": "You need to insert Locator or punch card",
-  "message.some_locators.locator_terminal_contains": "This item is already inserted",
+  "message.some_locators.locator_terminal_contains": "This slot is already occupied",
   "message.some_locators.locator_terminal_inspect_error": "Broken or no data on item, try to set point!",
   "ui.some_locators.create_point": "Create",
   "ui.some_locators.rename_point": "Rename",

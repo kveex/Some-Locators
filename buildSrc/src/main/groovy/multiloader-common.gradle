@@ -50,6 +50,9 @@ repositories {
 
     maven {
         url = "https://maven.midnightdust.eu/releases"
+        content {
+            includeGroup("eu.midnightdust")
+        }
     }
 }
 

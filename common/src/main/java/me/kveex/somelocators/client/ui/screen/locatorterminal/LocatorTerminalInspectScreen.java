@@ -17,11 +17,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.LodestoneTracker;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.NonNull;
@@ -108,7 +111,8 @@ public class LocatorTerminalInspectScreen extends LocatorTerminalRelatedScreen {
             ExtendedPointInfoListComponent list = new ExtendedPointInfoListComponent(
                     listX, listY,
                     listWidth, listHeight,
-                    lodestoneComponent.points()
+                    lodestoneComponent.points(),
+                    false
             );
 
             this.addRenderableWidget(list);
@@ -157,7 +161,7 @@ public class LocatorTerminalInspectScreen extends LocatorTerminalRelatedScreen {
             this.addRenderableWidget(playerName);
             this.addRenderableWidget(playerUUID);
             this.addRenderableWidget(timeTrackerAmount);
-        } else if (compassComponent != null && compassComponent.target().isPresent()) {
+        } else if (compassComponent != null) {
             int itemScale = 3, itemSize = 16 * itemScale;
             int itemX = uiStartCoords.x() + borderMargin, itemY = uiStartCoords.y() + borderMargin;
             ItemElement item = new ItemElement(itemX, itemY, itemScale, this.inspectedStack);
@@ -180,13 +184,17 @@ public class LocatorTerminalInspectScreen extends LocatorTerminalRelatedScreen {
 
             BlockState lodestone = Blocks.LODESTONE.defaultBlockState();
 
+            GlobalPos pos = compassComponent.target().isPresent()
+                    ? compassComponent.target().get()
+                    : GlobalPos.of(Level.OVERWORLD, BlockPos.ZERO);
 
-            PointComponent fakePoint = new PointComponent(lodestone.getBlock().getName().getString(), lodestone, compassComponent.target().get());
+            PointComponent fakePoint = new PointComponent(lodestone.getBlock().getName().getString(), lodestone, pos);
 
             ExtendedPointInfoListComponent list = new ExtendedPointInfoListComponent(
                     listX, listY,
                     listWidth, listHeight,
-                    List.of(fakePoint)
+                    List.of(fakePoint),
+                    compassComponent.target().isEmpty()
             );
 
             this.addRenderableWidget(list);

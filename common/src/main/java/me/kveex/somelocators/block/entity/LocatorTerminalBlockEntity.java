@@ -62,9 +62,7 @@ public class LocatorTerminalBlockEntity extends BlockEntity implements Implement
     }
 
     public void setWrittenStack(ItemStack stack) {
-        if (!stack.has(ModComponents.LOCATOR_COMPONENT.get())) return;
-
-        if (stack.is(ModItems.LOCATOR_ITEM.get())) {
+        if (stack.is(ModItems.LOCATOR_ITEM.get()) || stack.is(Items.COMPASS)) {
             this.setItem(LOCATOR, stack);
             setChanged();
         } else if (stack.is(ModItems.PUNCH_CARD_ITEM.get())) {
@@ -116,7 +114,7 @@ public class LocatorTerminalBlockEntity extends BlockEntity implements Implement
         ItemStack punchCard = this.getPunchCard();
 
         if (!locator.isEmpty() && !punchCard.isEmpty()) {
-            if (isDataNotFine(locator)) return InteractionResult.FAIL;
+            if (isDataNotFine(locator) && !locator.is(Items.COMPASS)) return InteractionResult.FAIL;
             OpenCopyScreenPayload openCopyScreenPayload = new OpenCopyScreenPayload(
                     this.getBlockPos(), locator, punchCard
             );
