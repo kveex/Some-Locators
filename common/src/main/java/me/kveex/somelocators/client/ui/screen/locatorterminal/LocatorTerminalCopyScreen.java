@@ -94,13 +94,15 @@ public class LocatorTerminalCopyScreen extends LocatorTerminalRelatedScreen {
 
         List<PointComponent> points;
 
-        if (compassComponent.isPresent()) {
+        if (locatorComponent.isPresent()) {
+            points = locatorComponent.get().points();
+        } else {
             GlobalPos pos = compassComponent.get().target().isPresent()
                     ? compassComponent.get().target().get()
                     : GlobalPos.of(Level.OVERWORLD, BlockPos.ZERO);
 
             points = List.of(new PointComponent(lodestone.getBlock().getName().getString(), lodestone, pos));
-        } else points = locatorComponent.get().points();
+        }
 
         SelectablePointListComponent list = new SelectablePointListComponent(
                 uiStartCoords.x() + margin,
