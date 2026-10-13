@@ -1,9 +1,6 @@
 package me.kveex.somelocators.network.locator;
 
-import commonnetwork.networking.data.PacketContext;
 import me.kveex.somelocators.Constants;
-import me.kveex.somelocators.client.ui.screen.locator.LocatorPointScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -26,9 +23,5 @@ public record CreateLocatorPointPayload(
 
     public static CustomPacketPayload.Type<CustomPacketPayload> type() {
         return new CustomPacketPayload.Type<>(ID);
-    }
-
-    public static void handler(PacketContext<CreateLocatorPointPayload> context) {
-        Minecraft.getInstance().setScreen(new LocatorPointScreen(context.message()));
     }
 }

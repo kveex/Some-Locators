@@ -3,7 +3,6 @@ package me.kveex.somelocators.item;
 import commonnetwork.api.Dispatcher;
 import commonnetwork.networking.data.PacketContext;
 import me.kveex.somelocators.CommonConfig;
-import me.kveex.somelocators.client.CommonClientClass;
 import me.kveex.somelocators.component.LocatorComponent;
 import me.kveex.somelocators.component.PointComponent;
 import me.kveex.somelocators.network.locator.*;
@@ -182,8 +181,8 @@ public class LocatorItem extends Item {
 
     @Override
     public @NonNull InteractionResult use(Level world, @NonNull Player player, @NonNull InteractionHand hand) {
-        if (world.isClientSide()) return InteractionResult.PASS;
-        return CommonClientClass.openLocatorPointsMenu.consumeClick() ? openLocatorMenu(player, hand) : InteractionResult.PASS;
+        if (world.isClientSide()) return InteractionResult.SUCCESS;
+        return openLocatorMenu(player, hand);
     }
 
     public static void changeTargetedPoint(PacketContext<ChangeTargetPointPayload> context) {
