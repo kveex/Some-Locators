@@ -13,6 +13,7 @@ public class SomeLocatorsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        CommonClientClass.init();
         SpecialGuiElementRegistry.register(ctx -> new BlockElementRenderState.Renderer(ctx.vertexConsumers()));
         KeyBindingHelper.registerKeyBinding(CommonClientClass.openLocatorPointsMenu);
         BlockEntityRenderers.register(ModBlockEntityTypes.LOCATOR_TERMINAL_BLOCK_ENTITY.get(), LocatorTerminalBlockEntityRenderer::new);

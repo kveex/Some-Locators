@@ -1,9 +1,6 @@
 package me.kveex.somelocators.network.locatorterminal;
 
-import commonnetwork.networking.data.PacketContext;
 import me.kveex.somelocators.Constants;
-import me.kveex.somelocators.client.ui.screen.locatorterminal.LocatorTerminalCopyScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,9 +23,5 @@ public record OpenCopyScreenPayload(
 
     public static CustomPacketPayload.Type<CustomPacketPayload> type() {
         return new CustomPacketPayload.Type<>(ID);
-    }
-
-    public static void handler(PacketContext<OpenCopyScreenPayload> context) {
-        Minecraft.getInstance().setScreen(new LocatorTerminalCopyScreen(context.message()));
     }
 }

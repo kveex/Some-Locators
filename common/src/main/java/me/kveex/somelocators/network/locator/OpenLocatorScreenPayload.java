@@ -1,10 +1,7 @@
 package me.kveex.somelocators.network.locator;
 
-import commonnetwork.networking.data.PacketContext;
 import me.kveex.somelocators.Constants;
-import me.kveex.somelocators.client.ui.screen.locator.LocatorMenuScreen;
 import me.kveex.somelocators.component.LocatorComponent;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,11 +25,5 @@ public record OpenLocatorScreenPayload(
 
     public static CustomPacketPayload.Type<CustomPacketPayload> type() {
         return new CustomPacketPayload.Type<>(ID);
-    }
-
-    public static void handler(PacketContext<OpenLocatorScreenPayload> context) {
-        LocatorComponent locatorComponent = context.message().locatorComponent();
-        if (locatorComponent.currentPoint().isEmpty()) return;
-        Minecraft.getInstance().setScreen(new LocatorMenuScreen(locatorComponent.currentPoint().get(), locatorComponent.points(), context.message().page()));
     }
 }

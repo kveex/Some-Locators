@@ -15,6 +15,7 @@ import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEven
 @Mod(value = Constants.MOD_ID, dist = Dist.CLIENT)
 public class SomeLocatorsClient {
     public SomeLocatorsClient(IEventBus bus) {
+        CommonClientClass.init();
         bus.addListener(SomeLocatorsClient::registerBindings);
         bus.addListener(SomeLocatorsClient::registerEntityRenderers);
         bus.addListener(SomeLocatorsClient::registerPip);
